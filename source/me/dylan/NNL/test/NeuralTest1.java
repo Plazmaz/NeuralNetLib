@@ -1,15 +1,15 @@
-package src.me.dylan.NNL.test;
+package me.dylan.NNL.test;
 
 import java.util.ArrayList;
 
-import src.me.dylan.NNL.Input;
-import src.me.dylan.NNL.MathUtil;
-import src.me.dylan.NNL.NNLib;
-import src.me.dylan.NNL.NNetwork;
-import src.me.dylan.NNL.Neuron;
-import src.me.dylan.NNL.Output;
-import src.me.dylan.NNL.Value;
-import src.me.dylan.NNL.NNLib.NodeType;
+import me.dylan.NNL.Input;
+import me.dylan.NNL.MathUtil;
+import me.dylan.NNL.NNLib;
+import me.dylan.NNL.NNetwork;
+import me.dylan.NNL.Neuron;
+import me.dylan.NNL.Output;
+import me.dylan.NNL.Value;
+import me.dylan.NNL.NNLib.NodeType;
 
 public class NeuralTest1 {
 	public static void main(String[] args) {

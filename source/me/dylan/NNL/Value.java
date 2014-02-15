@@ -1,4 +1,4 @@
-package src.me.dylan.NNL;
+package me.dylan.NNL;
 
 /**
  * A simple class used for storing values of neural inputs and outputs, this is

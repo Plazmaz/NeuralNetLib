@@ -1,8 +1,8 @@
-package src.me.dylan.NNL;
+package me.dylan.NNL;
 
 import java.util.ArrayList;
 
-import src.me.dylan.NNL.NNLib.NodeType;
+import me.dylan.NNL.NNLib.NodeType;
 
 public class Neuron {
 	public ArrayList<Output> dataout = new ArrayList<Output>();

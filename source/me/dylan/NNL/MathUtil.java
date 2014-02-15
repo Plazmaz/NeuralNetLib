@@ -1,4 +1,4 @@
-package src.me.dylan.NNL;
+package me.dylan.NNL;
 
 public class MathUtil {
 	public static int clamp(int min, int max, int val) {

@@ -1,4 +1,4 @@
-package src.me.dylan.NNL;
+package me.dylan.NNL;
 
 import java.util.ArrayList;
 

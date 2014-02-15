@@ -1,4 +1,4 @@
-package src.me.dylan.NNL;
+package me.dylan.NNL;
 
 public class Output {
 	private Value value;
