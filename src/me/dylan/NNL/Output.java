@@ -18,10 +18,8 @@ public class Output {
 	public Output(Value value) {
 		this.value = value;
 	}
-
 	/**
 	 * Get the power of this output
-	 * 
 	 * @return value - This is the power/value of the output.
 	 */
 	public Value getValue() {
@@ -30,9 +28,7 @@ public class Output {
 
 	/**
 	 * Set the power of this output
-	 * 
-	 * @param value
-	 *            - This is the power/value of the output.
+	 * @param value - This is the power/value of the output.
 	 */
 	public void setValue(Value value) {
 		this.value = value;

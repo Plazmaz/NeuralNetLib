@@ -15,9 +15,7 @@ public class NNetwork {
 			ArrayList<Output> outputs) {
 		this.connections = connections;
 	}
-
-	public NNetwork() {
-	};
+	public NNetwork(){};
 
 	public ArrayList<Neuron> getConnections() {
 		return connections;

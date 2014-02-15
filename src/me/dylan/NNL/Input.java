@@ -5,11 +5,10 @@ import java.util.ArrayList;
 public class Input {
 	private ArrayList<Value> data = new ArrayList<Value>();
 	private Value output = new Value();
-
 	public Input() {
-
+		
 	}
-
+	
 	/**
 	 * Retrieve the raw data collected by the neuron
 	 * 
@@ -29,6 +28,6 @@ public class Input {
 
 	public void addData(Value value) {
 		data.add(value);
-
+		
 	}
 }

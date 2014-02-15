@@ -1,5 +1,6 @@
 package me.dylan.NNL;
 
+
 public class MathUtil {
 	public static int clamp(int min, int max, int val) {
 		int value = val;
