@@ -6,6 +6,7 @@ import java.util.HashMap;
 import me.dylan.NNL.NNLib.NodeType;
 
 public class Neuron {
+	public float weight;
 	public HashMap<Output, Integer> dataout = new HashMap<Output, Integer>();
 	public HashMap<Input, Integer> datain = new HashMap<Input, Integer>();
 	ArrayList<Neuron> connected = new ArrayList<Neuron>();
@@ -14,7 +15,7 @@ public class Neuron {
 	public Neuron() {
 
 	}
-
+	
 	public void addSingleInput(Input input) {
 		datain.put(input, 0);
 	}
