@@ -9,7 +9,7 @@ public class Neuron {
 	public HashMap<Output, Integer> dataout = new HashMap<Output, Integer>();
 	public HashMap<Input, Integer> datain = new HashMap<Input, Integer>();
 	ArrayList<Neuron> connected = new ArrayList<Neuron>();
-	Value value = new Value();
+	Value neuronValue = new Value("Hello, there is a yellow cat in the car.");
 
 	public Neuron() {
 
@@ -20,7 +20,7 @@ public class Neuron {
 	}
 
 	public void addManyInputs(ArrayList<Input> inputs) {
-		for(Input i : inputs) {
+		for (Input i : inputs) {
 			datain.put(i, 0);
 		}
 	}
@@ -30,38 +30,30 @@ public class Neuron {
 	}
 
 	public void addManyOutputs(ArrayList<Output> outputs) {
-		for(Output out : outputs) {
+		for (Output out : outputs) {
 			dataout.put(out, 0);
 		}
 	}
 
 	public void doTick() {
-//		value.setValue("");
-//		for (Input in : datain.values()) {
-//			value.avg(in.getOutput());
-//		}
-//		for (Neuron neuron : connected) {
-//			neuron.sendPulse(neuron.value, NodeType.HIDDEN);
-//		}
+		// value.setValue("");
+		// for (Input in : datain.values()) {
+		// value.avg(in.getOutput());
+		// }
+		// for (Neuron neuron : connected) {
+		// neuron.sendPulse(neuron.value, NodeType.HIDDEN);
+		// }
+		String[] regexes = RegParams.regParamsDel.split(", ");
 		for (Output out : dataout.keySet()) {
-//			value.avg(out.getValue());
-			out.setValue(value);
-			
+			// value.avg(out.getValue());
+			neuronValue = new Value(neuronValue.data.replaceAll(RegParams.regParamsDel, ""));
+			out.setValue(neuronValue);
 		}
 	}
 
-	/*public void sendPulse(Value value, NodeType senderType) {
-		switch (senderType) {
-		case HIDDEN:
-			this.value.avg(value);
-			break;
-		case INPUT:
-			this.value.avg(value);
-			break;
-		case OUTPUT:
-			break;
-		default:
-			break;
-		}
-	}*/
+	/*
+	 * public void sendPulse(Value value, NodeType senderType) { switch
+	 * (senderType) { case HIDDEN: this.value.avg(value); break; case INPUT:
+	 * this.value.avg(value); break; case OUTPUT: break; default: break; } }
+	 */
 }

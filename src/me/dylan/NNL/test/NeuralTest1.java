@@ -33,9 +33,9 @@ public class NeuralTest1 {
 			System.out.println("Tick: " + i);
 			for (Neuron neuron : network.getConnections()) {
 				neuron.doTick();
-				for (Input input : neuron.datain.keySet()) {
-					System.out.println("Input value: " + input.getOutput());
-				}
+//				for (Input input : neuron.datain.keySet()) {
+//					System.out.println("Input value: " + input.getOutput());
+//				}
 			}
 			System.out.println("Output Value: " + out.getValue());
 		}

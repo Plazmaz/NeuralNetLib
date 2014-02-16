@@ -10,7 +10,7 @@ package me.dylan.NNL;
  * 
  */
 public class Value {
-	String value = "";
+	String data = "";
 	private float min = 0f;
 	private float max = 1f;
 	public Object extraInfo;
@@ -31,12 +31,12 @@ public class Value {
 	}
 	
 	public String getValue() {
-		return value;
+		return data;
 	}
 
 	public void setValue(String value) {
 
-		this.value = value;
+		this.data = value;
 	}
 
 	public float getMin() {
@@ -56,11 +56,11 @@ public class Value {
 	}
 
 	public void avg(Value value) {
-		setValue(this.getValue() + value.value);
+		setValue(this.getValue() + value.data);
 	}
 
 	@Override
 	public String toString() {
-		return value;
+		return data;
 	}
 }
