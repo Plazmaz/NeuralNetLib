@@ -10,7 +10,7 @@ package me.dylan.NNL;
  * 
  */
 public class Value {
-	private float value = 0f;
+	String value = "";
 	private float min = 0f;
 	private float max = 1f;
 	public Object extraInfo;
@@ -26,43 +26,17 @@ public class Value {
 	 * 
 	 * @param value
 	 */
-	public Value(float value) {
+	public Value(String value) {
 		this.setValue(value);
 	}
-
-	/**
-	 * Initialize a Value object with value and maximum parameters.
-	 * 
-	 * @param value
-	 *            The current value
-	 * @param max
-	 *            The maximum possible value
-	 */
-	public Value(float value, float max) {
-		this.setValue(value);
-		this.setMax(max);
-	}
-
-	/**
-	 * Initialize a Value object with value, minimum, and maximum parameters.
-	 * 
-	 * @param value
-	 * @param max
-	 * @param min
-	 */
-	public Value(float value, float max, float min) {
-		this.setMax(max);
-		this.setMin(min);
-		this.setValue(value);
-	}
-
-	public float getValue() {
+	
+	public String getValue() {
 		return value;
 	}
 
-	public void setValue(float value) {
+	public void setValue(String value) {
 
-		this.value = MathUtil.clamp(getMin(), getMax(), value);
+		this.value = value;
 	}
 
 	public float getMin() {
@@ -82,13 +56,11 @@ public class Value {
 	}
 
 	public void avg(Value value) {
-		float val1 = getValue();
-		float val2 = value.getValue();
-		this.value = (val1 + val2) / 2;
+		setValue(this.getValue() + value.value);
 	}
 
 	@Override
 	public String toString() {
-		return value + "";
+		return value;
 	}
 }
