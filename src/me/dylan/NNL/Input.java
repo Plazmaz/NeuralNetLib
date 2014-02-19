@@ -2,13 +2,9 @@ package me.dylan.NNL;
 
 import java.util.ArrayList;
 
-public class Input {
+public class Input extends Node {
 	private ArrayList<Value> data = new ArrayList<Value>();
 	private Value output = new Value();
-	public Input() {
-		
-	}
-	
 	/**
 	 * Retrieve the raw data collected by the neuron
 	 * 

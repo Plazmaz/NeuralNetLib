@@ -1,6 +1,6 @@
 package me.dylan.NNL;
 
-public class Output {
+public class Output extends Node {
 	private Value value;
 
 	/**
