@@ -11,8 +11,8 @@ public class Node {
 	 * @param destination
 	 */
 	public void connectRandom(Node destination) {
-		connect(destination, NNLib.rand
-				.nextInt(NNLib.MAX_NODE_WEIGHT) + 1);
+		this.connections.add(new Synapse(this, destination, NNLib.rand
+				.nextInt(NNLib.MAX_NODE_WEIGHT) + 1));
 	}
 
 	public void connect(Node destination, int weight) {

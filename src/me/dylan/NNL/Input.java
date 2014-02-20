@@ -13,7 +13,7 @@ public class Input extends Node {
 	public ArrayList<Value> getData() {
 		return data;
 	}
-
+	
 	public Value getOutput() {
 		return output;
 	}
