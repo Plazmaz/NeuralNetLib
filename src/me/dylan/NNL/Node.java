@@ -11,9 +11,9 @@ import me.dylan.NNL.Visualizer.NodePaint;
 public class Node {
 	private ArrayList<Synapse> connections = new ArrayList<Synapse>();
 	protected NodeType nodeVariety;
-	public static final int NODE_DRAW_SIZE = 15;
+	public static final int NODE_DRAW_SIZE = 10;
 	public NodePaint graphicsRepresentationObject = new NodePaint(NODE_DRAW_SIZE,
-			Color.RED);
+			Color.GREEN);
 
 	public NodeType getNodeVariety() {
 		return nodeVariety;
@@ -26,10 +26,10 @@ public class Node {
 	 */
 	public void connectWithRandomWeight(Node destination) {
 		this.connections.add(new Synapse(this, destination, NNLib.GLOBAL_RANDOM
-				.nextInt(NNLib.MAX_NODE_WEIGHT) + 1));
+				.nextInt(NNLib.MAX_CONNECTION_WEIGHT)));
 	}
 
-	public void connectNeuronToNode(Node destination, int weight) {
+	public void connectNodeToNode(Node destination, int weight) {
 		this.connections.add(new Synapse(this, destination, weight));
 	}
 

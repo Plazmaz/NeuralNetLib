@@ -7,10 +7,9 @@ import java.util.Random;
 import me.dylan.NNL.NNLib.NodeType;
 
 public class Neuron extends Node {
-	public float weight;
 	public HashMap<Output, Integer> dataout = new HashMap<Output, Integer>();
 	public HashMap<Input, Integer> datain = new HashMap<Input, Integer>();
-	ArrayList<Neuron> connectedNodes = new ArrayList<Neuron>();
+	ArrayList<Neuron> connectedNeurons = new ArrayList<Neuron>();
 	Value neuronValue = new Value();
 	NodeType nodeVariety = NodeType.HIDDEN;
 
@@ -41,7 +40,7 @@ public class Neuron extends Node {
 		for (Input in : datain.keySet()) {
 			setNeuronValueInNode(in.getInformation(), NodeType.INPUT);
 		}
-		for (Neuron neuron : connectedNodes) {
+		for (Neuron neuron : connectedNeurons) {
 			neuron.setNeuronValueInNode(neuron.neuronValue, NodeType.HIDDEN);
 		}
 		for (Output out : dataout.keySet()) {
@@ -71,10 +70,9 @@ public class Neuron extends Node {
 				.size()); i++) {
 			addSingleOutputNode(parentNet.getOutputNodesInNetwork().get(i));
 		}
-
 		for (int i = 0; i <= rand.nextInt(parentNet.getNeuronsInNetwork()
 				.size()); i++) {
-			this.connectedNodes.add(parentNet.getNeuronsInNetwork().get(i));
+			this.connectedNeurons.add(parentNet.getNeuronsInNetwork().get(i));
 			connectWithRandomWeight(parentNet.getNeuronsInNetwork().get(i));
 		}
 
@@ -97,19 +95,19 @@ public class Neuron extends Node {
 
 	public ArrayList<Node> getConnectedNodes() {
 		ArrayList<Node> nodes = new ArrayList<Node>();
-		nodes.addAll(connectedNodes);
+		nodes.addAll(connectedNeurons);
 		nodes.addAll(datain.keySet());
 		nodes.addAll(dataout.keySet());
 		return nodes;
 	}
 
-	public void connectNeuronToNode(Node destination, int weight) {
+	public void connectNodeToNode(Node destination, int weight) {
 		if (destination instanceof Input)
 			addSingleInputNode((Input) destination);
 		if (destination instanceof Output)
 			addSingleOutputNode((Output) destination);
 		if (destination instanceof Neuron)
-			connectedNodes.add((Neuron) destination);
+			connectedNeurons.add((Neuron) destination);
 	}
 
 }

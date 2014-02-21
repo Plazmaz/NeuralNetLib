@@ -85,9 +85,11 @@ public class NNetwork {
 		networkSynapses.clear();
 		for (Neuron hidden : networkNeurons) {
 			hidden.randomizeNodeConnections(this);
-			ArrayList<Neuron> connected = (ArrayList<Neuron>) hidden.connectedNodes
+			ArrayList<Neuron> connected = (ArrayList<Neuron>) hidden.connectedNeurons
 					.clone();
 			for (Neuron n : connected) {
+				if(n.equals(hidden))
+					continue;
 				n.randomizeNodeConnections(this);
 				for (Synapse synapse : n.getNodeConnections()) {
 					if (!networkSynapses.contains(synapse))

@@ -112,7 +112,7 @@ public class NetworkUtil {
 				for (Synapse parent2Synapse : parent2.getNodeConnections()) {
 					Synapse childSynapse = null;
 					if(parentSynapse.getConnectionDestination().equals(parent2Synapse)) {
-						child.connectNeuronToNode(parentSynapse.getConnectionDestination(),
+						child.connectNodeToNode(parentSynapse.getConnectionDestination(),
 								parentSynapse.getSynapseWeight() + INCREASE_WEIGHT_ON_MATCH);
 						continue;
 						
@@ -125,7 +125,7 @@ public class NetworkUtil {
 
 					}
 					if (childSynapse != null) {
-						child.connectNeuronToNode(childSynapse.getConnectionDestination(),
+						child.connectNodeToNode(childSynapse.getConnectionDestination(),
 								childSynapse.getSynapseWeight() + INCREASE_WEIGHT_ON_CHOOSE);
 					}
 				}
