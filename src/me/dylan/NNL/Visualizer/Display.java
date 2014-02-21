@@ -6,26 +6,31 @@ import java.awt.Graphics;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
+/**
+ * Basic painting and frame class
+ * @author Dylan
+ *
+ */
 public class Display {
 	private static JFrame main;
-	private static JPanel displayPanel;
-	private static Color color = Color.BLACK;
-	public static void show(String title, Dimension size, Color backgroundFill) {
+	private static DisplayCanvas displayPanel;
+	static Graphics graphics;
+	public static void showDisplay(String title, Dimension size, Color backgroundFill) {
 		main = new JFrame(title);
-		displayPanel = new JPanel();
+		displayPanel = new DisplayCanvas();
 		displayPanel.setBackground(backgroundFill);
 		main.setSize(size);
 		main.add(displayPanel);
 		main.setVisible(true);
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		graphics = displayPanel.getGraphics();
 	}
 	
 	public static Graphics getGraphics() {
-		return displayPanel.getGraphics();
+		return graphics;
 	}
 	
-	public static void setColor(Color c) {
+	public static void setDisplayBackgroundColor(Color c) {
 		getGraphics().setColor(c);
 	}
 	
@@ -40,4 +45,12 @@ public class Display {
 	public static void repaint() {
 		displayPanel.repaint();
 	}
+
+	public static Color getDisplayBackgroundColor() {
+		return getGraphics().getColor();
+	}
+	
+//	public static void updateDoubleBuffer() {
+//		displayPanel.update(getGraphics());
+//	}
 }

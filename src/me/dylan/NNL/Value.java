@@ -11,9 +11,9 @@ package me.dylan.NNL;
  */
 public class Value {
 	String data = "";
-	private float min = 0f;
-	private float max = 1f;
-	public Object extraInfo;
+//	private float min = 0f;
+//	private float max = 1f;
+	//public Object extraInfo;
 
 	/**
 	 * Initialize a blank-slate Value object.
@@ -39,25 +39,31 @@ public class Value {
 		this.data = value;
 	}
 
-	public float getMin() {
-		return min;
-	}
+//	public float getMin() {
+//		return min;
+//	}
+//
+//	public void setMin(float min) {
+//		this.min = min;
+//	}
+//
+//	public float getMax() {
+//		return max;
+//	}
+//
+//	public void setMax(float max) {
+//		this.max = max;
+//	}
 
-	public void setMin(float min) {
-		this.min = min;
-	}
 
-	public float getMax() {
-		return max;
-	}
-
-	public void setMax(float max) {
-		this.max = max;
-	}
-
-	public void avg(Value value) {
+//	May be useful in the future:
+/*	public void appendToValue(Value value) {
+		try {
 		setValue(this.getValue() + value.data);
-	}
+		} catch(OutOfMemoryError ex) {
+			System.out.println(this.getValue());
+		}
+	}*/
 
 	@Override
 	public String toString() {

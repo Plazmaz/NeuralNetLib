@@ -11,99 +11,99 @@ import me.dylan.NNL.Utils.StringUtil;
  * 
  */
 public class NNetwork {
-	private ArrayList<Neuron> neurons = new ArrayList<Neuron>();
-	ArrayList<Synapse> synapses = new ArrayList<Synapse>();
-	private ArrayList<Input> inputs = new ArrayList<Input>();
-	private ArrayList<Output> outputs = new ArrayList<Output>();
+	private ArrayList<Neuron> networkNeurons = new ArrayList<Neuron>();
+	ArrayList<Synapse> networkSynapses = new ArrayList<Synapse>();
+	private ArrayList<Input> networkInputs = new ArrayList<Input>();
+	private ArrayList<Output> networkoutputs = new ArrayList<Output>();
 	private boolean isLearningMode = false;
 
 	public NNetwork(ArrayList<Input> inputs, ArrayList<Neuron> connections,
 			ArrayList<Output> outputs) {
-		this.neurons = connections;
-		this.inputs = inputs;
-		this.outputs = outputs;
+		this.networkNeurons = connections;
+		this.networkInputs = inputs;
+		this.networkoutputs = outputs;
 	}
 
 	public NNetwork() {
 	}
 
-	public void addOutput(Output out) {
-		outputs.add(out);
+	public void addOutputNodeToNetwork(Output out) {
+		networkoutputs.add(out);
 	}
 
-	public void addInput(Input in) {
-		inputs.add(in);
+	public void addInputNodeToNetwork(Input in) {
+		networkInputs.add(in);
 	}
 
-	public void addManyInputs(ArrayList<Input> inputs) {
+	public void addManyInputNodesToNetwork(ArrayList<Input> inputs) {
 		for (Input input : inputs) {
-			addInput(input);
+			addInputNodeToNetwork(input);
 		}
 	}
 
-	public void addManyOutputs(ArrayList<Output> outputs) {
+	public void addManyOutputNodesToNetwork(ArrayList<Output> outputs) {
 		for (Output output : outputs) {
-			addOutput(output);
+			addOutputNodeToNetwork(output);
 		}
 	}
 
-	public void addManyNeurons(ArrayList<Neuron> neurons) {
+	public void addManyNeuronsToNetwork(ArrayList<Neuron> neurons) {
 		for (Neuron neuron : neurons) {
-			addNeuron(neuron);
+			addNeuronToNetwork(neuron);
 		}
 	}
 
-	public ArrayList<Node> getNodes() {
+	public ArrayList<Node> getNodesInNetwork() {
 		ArrayList<Node> nodes = new ArrayList<Node>();
-		nodes.addAll(neurons);
-		nodes.addAll(inputs);
-		nodes.addAll(outputs);
+		nodes.addAll(networkNeurons);
+		nodes.addAll(networkInputs);
+		nodes.addAll(networkoutputs);
 		return nodes;
 	}
 
-	public ArrayList<Neuron> getNeurons() {
-		return neurons;
+	public ArrayList<Neuron> getNeuronsInNetwork() {
+		return networkNeurons;
 	}
 
-	public ArrayList<Input> getInputs() {
-		return inputs;
+	public ArrayList<Input> getInputNodesInNetwork() {
+		return networkInputs;
 	}
 
-	public ArrayList<Output> getOutputs() {
-		return outputs;
+	public ArrayList<Output> getOutputNodesInNetwork() {
+		return networkoutputs;
 	}
 
-	public void addNeuron(Neuron neuron) {
-		neurons.add(neuron);
+	public void addNeuronToNetwork(Neuron neuron) {
+		networkNeurons.add(neuron);
 	}
 
-	public void randomize() {
-		for (Neuron hidden : neurons) {
-			hidden.randomize(this);
-			ArrayList<Neuron> connected = (ArrayList<Neuron>) hidden.connected.clone();
+	public void randomizeConnections() {
+		for (Neuron hidden : networkNeurons) {
+			hidden.randomizeNodeConnections(this);
+			ArrayList<Neuron> connected = (ArrayList<Neuron>) hidden.connectedNodes.clone();
 			for (Neuron n : connected) {
-				n.randomize(this);
+				n.randomizeNodeConnections(this);
 			}
 		}
 	}
 
-	public String getResult() {
+	public String getNetworkOutput() {
 		String result = "";
-		for (Output out : getOutputs()) {
-			result += out.getValue().data;
+		for (Output out : getOutputNodesInNetwork()) {
+			result += out.getOutputValue().data;
 		}
 		return result;
 	}
 
-	public int getErrorPercentage(String desiredOutput) {
-		return StringUtil.calculateStringDifference(getResult(), desiredOutput) * 100;
+	public int getNetworkErrorPercentage(String desiredOutput) {
+		return StringUtil.calculateStringDifferenceCount(getNetworkOutput(), desiredOutput) * 100;
 	}
 
-	public boolean isLearningMode() {
+	public boolean isNetworkInLearningMode() {
 		return isLearningMode;
 	}
 
-	public void setLearningMode(boolean isLearningMode) {
+	public void setNetworkLearningMode(boolean isLearningMode) {
 		this.isLearningMode = isLearningMode;
 	}
 }

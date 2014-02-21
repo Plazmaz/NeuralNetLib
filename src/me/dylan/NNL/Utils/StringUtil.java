@@ -3,7 +3,7 @@ package me.dylan.NNL.Utils;
 import java.util.ArrayList;
 
 public class StringUtil {
-	public static int calculateArrayIntersect(String[] a, String[] b) {
+	public static int calculateArraySimilarityCount(String[] a, String[] b) {
 		int intersect = 0;
 		int totalLength = a.length+b.length;
 		for (String s : a) {
@@ -21,7 +21,7 @@ public class StringUtil {
 	 * The following methods are related to the StrikeAMatch method.
 	 * http://www.catalysoft.com/articles/StrikeAMatch.html
 	 */
-	private static String[] letterPairs(String str) {
+	private static String[] extractLetterPairs(String str) {
 		int numPairs = str.length() - 1;
 		String[] pairs = new String[numPairs];
 		for (int i = 0; i < numPairs; i++) {
@@ -30,19 +30,19 @@ public class StringUtil {
 		return pairs;
 	}
 
-	public static ArrayList<String> getLetterPairsWords(String str) {
+	public static ArrayList<String> getLetterPairsFromWords(String str) {
 		ArrayList<String> pairs = new ArrayList<String>();
 		for (String s : str.split("\\s")) {
-			for (String pair : letterPairs(s)) {
+			for (String pair : extractLetterPairs(s)) {
 				pairs.add(pair);
 			}
 		}
 		return pairs;
 	}
 
-	public static int calculateStringDifference(String a, String b) {
-		ArrayList<String> aArr = getLetterPairsWords(a.toUpperCase());
-		ArrayList<String> bArr = getLetterPairsWords(b.toUpperCase());
-		return calculateArrayIntersect((String[])aArr.toArray(), (String[])bArr.toArray());
+	public static int calculateStringDifferenceCount(String a, String b) {
+		ArrayList<String> aArr = getLetterPairsFromWords(a.toUpperCase());
+		ArrayList<String> bArr = getLetterPairsFromWords(b.toUpperCase());
+		return calculateArraySimilarityCount((String[])aArr.toArray(), (String[])bArr.toArray());
 	}
 }

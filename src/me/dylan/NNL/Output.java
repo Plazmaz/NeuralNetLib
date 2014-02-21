@@ -1,13 +1,13 @@
 package me.dylan.NNL;
 
 public class Output extends Node {
-	private Value value;
+	private Value outputValue;
 
 	/**
 	 * Initialize a blank output, with no initial value
 	 */
 	public Output() {
-		value = new Value();
+		outputValue = new Value();
 	}
 
 	/**
@@ -16,21 +16,21 @@ public class Output extends Node {
 	 * @param value
 	 */
 	public Output(Value value) {
-		this.value = value;
+		this.outputValue = value;
 	}
 	/**
-	 * Get the power of this output
+	 * Get the value of this output
 	 * @return value - This is the power/value of the output.
 	 */
-	public Value getValue() {
-		return value;
+	public Value getOutputValue() {
+		return outputValue;
 	}
 
 	/**
-	 * Set the power of this output
+	 * Set the value of this output
 	 * @param value - This is the power/value of the output.
 	 */
 	public void setValue(Value value) {
-		this.value = value;
+		this.outputValue = value;
 	}
 }

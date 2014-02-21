@@ -10,39 +10,39 @@ public class Neuron extends Node {
 	public float weight;
 	public HashMap<Output, Integer> dataout = new HashMap<Output, Integer>();
 	public HashMap<Input, Integer> datain = new HashMap<Input, Integer>();
-	ArrayList<Neuron> connected = new ArrayList<Neuron>();
+	ArrayList<Neuron> connectedNodes = new ArrayList<Neuron>();
 	ArrayList<Synapse> synapses = new ArrayList<Synapse>();
 	Value neuronValue = new Value();
 
-	public void addSingleInput(Input input) {
-		connectRandom(input);
+	public void addSingleInputNode(Input input) {
+		connectWithRandomWeight(input);
 		datain.put(input, 0);
 	}
 
-	public void addManyInputs(ArrayList<Input> inputs) {
+	public void addManyInputNodes(ArrayList<Input> inputs) {
 		for (Input i : inputs) {
-			addSingleInput(i);
+			addSingleInputNode(i);
 		}
 	}
 
-	public void addSingleOutput(Output output) {
-		connectRandom(output);
+	public void addSingleOutputNode(Output output) {
+		connectWithRandomWeight(output);
 		dataout.put(output, 0);
 	}
 
-	public void addManyOutputs(ArrayList<Output> outputs) {
+	public void addManyOutputNodes(ArrayList<Output> outputs) {
 		for (Output out : outputs) {
-			addSingleOutput(out);
+			addSingleOutputNode(out);
 		}
 	}
 
 	public void doTick() {
 		neuronValue.setValue("");
 		for (Input in : datain.keySet()) {
-			sendPulse(in.getOutput(), NodeType.INPUT);
+			setNeuronValueInNode(in.getInformation(), NodeType.INPUT);
 		}
-		for (Neuron neuron : connected) {
-			neuron.sendPulse(neuron.neuronValue, NodeType.HIDDEN);
+		for (Neuron neuron : connectedNodes) {
+			neuron.setNeuronValueInNode(neuron.neuronValue, NodeType.HIDDEN);
 		}
 
 		// Old regex implementation:
@@ -55,31 +55,31 @@ public class Neuron extends Node {
 		// }
 	}
 
-	public void randomize(NNetwork parentNet) {
-		Random rand = NNLib.rand;
+	public void randomizeNodeConnections(NNetwork parentNet) {
+		Random rand = NNLib.GLOBAL_RANDOM;
 
-		for (int i = 0; i < rand.nextInt(parentNet.getInputs().size()); i++) {
-			addSingleInput(parentNet.getInputs().get(i));
+		for (int i = 0; i < rand.nextInt(parentNet.getInputNodesInNetwork().size()); i++) {
+			addSingleInputNode(parentNet.getInputNodesInNetwork().get(i));
 		}
 
-		for (int i = 0; i < rand.nextInt(parentNet.getOutputs().size()); i++) {
-			addSingleOutput(parentNet.getOutputs().get(i));
+		for (int i = 0; i < rand.nextInt(parentNet.getOutputNodesInNetwork().size()); i++) {
+			addSingleOutputNode(parentNet.getOutputNodesInNetwork().get(i));
 		}
 
-		for (int i = 0; i < rand.nextInt(parentNet.getNeurons().size()); i++) {
-			this.connected.add(parentNet.getNeurons().get(i));
-			connectRandom(parentNet.getNeurons().get(i));
+		for (int i = 0; i < rand.nextInt(parentNet.getNeuronsInNetwork().size()); i++) {
+			this.connectedNodes.add(parentNet.getNeuronsInNetwork().get(i));
+			connectWithRandomWeight(parentNet.getNeuronsInNetwork().get(i));
 		}
 
 	}
 
-	public void sendPulse(Value value, NodeType senderType) {
+	public void setNeuronValueInNode(Value value, NodeType senderType) {
 		switch (senderType) {
 		case HIDDEN:
-			this.neuronValue.avg(value);
+			this.neuronValue = value;
 			break;
 		case INPUT:
-			this.neuronValue.avg(value);
+			this.neuronValue = value;
 			break;
 		case OUTPUT:
 			break;
@@ -88,21 +88,21 @@ public class Neuron extends Node {
 		}
 	}
 
-	public ArrayList<Node> getNodes() {
+	public ArrayList<Node> getConnectedNodes() {
 		ArrayList<Node> nodes = new ArrayList<Node>();
-		nodes.addAll(connected);
+		nodes.addAll(connectedNodes);
 		nodes.addAll(datain.keySet());
 		nodes.addAll(dataout.keySet());
 		return nodes;
 	}
 
-	public void connect(Node destination, int weight) {
+	public void connectNeuronToNode(Node destination, int weight) {
 		if (destination instanceof Input)
-			addSingleInput((Input) destination);
+			addSingleInputNode((Input) destination);
 		if (destination instanceof Output)
-			addSingleOutput((Output) destination);
+			addSingleOutputNode((Output) destination);
 		if (destination instanceof Neuron)
-			connected.add((Neuron) destination);
+			connectedNodes.add((Neuron) destination);
 	}
 
 }

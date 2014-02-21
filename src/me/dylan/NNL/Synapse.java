@@ -4,34 +4,34 @@ public class Synapse {
 	private Node origin, destination;
 	private int weight = 0;
 	public Synapse(Node origin, Node destination, int weight) {
-		this.setOrigin(origin);
-		this.setDestination(destination);
+		this.setConnectionOrigin(origin);
+		this.setConnectionDestination(destination);
 	}
 
-	public Node getOrigin() {
+	public Node getConnectionOrigin() {
 		return origin;
 	}
 
-	public void setOrigin(Node origin) {
+	public void setConnectionOrigin(Node origin) {
 		this.origin = origin;
 	}
 
-	public Node getDestination() {
+	public Node getConnectionDestination() {
 		return destination;
 	}
 
-	public void setDestination(Node destination) {
+	public void setConnectionDestination(Node destination) {
 		this.destination = destination;
 	}
 
-	public int getWeight() {
+	public int getSynapseWeight() {
 		return weight;
 	}
 
-	public void setWeight(int weight) {
+	public void setSynapseWeight(int weight) {
 		this.weight = weight;
 	}
 	public Synapse clone() {
-		return new Synapse(getOrigin(), getDestination(), getWeight());
+		return new Synapse(getConnectionOrigin(), getConnectionDestination(), getSynapseWeight());
 	}
 }

@@ -21,26 +21,26 @@ public class NetworkUtil {
 	private static int INCREASE_WEIGHT_ON_MATCH = 4;
 	public static NNetwork initializeNetwork(int neuronCount, int inputCount,
 			int outputCount) {
-		ArrayList<Neuron> neurons = new ArrayList<Neuron>();
-		ArrayList<Input> inputs = new ArrayList<Input>();
-		ArrayList<Output> outputs = new ArrayList<Output>();
+		ArrayList<Neuron> networkNeurons = new ArrayList<Neuron>();
+		ArrayList<Input> inputNeurons = new ArrayList<Input>();
+		ArrayList<Output> outputNeurons = new ArrayList<Output>();
 		for (int i = 0; i < inputCount; i++) {
-			inputs.add(new Input());
+			inputNeurons.add(new Input());
 		}
 		for (int i = 0; i < outputCount; i++) {
-			outputs.add(new Output());
+			outputNeurons.add(new Output());
 		}
 		for (int i = 0; i < neuronCount; i++) {
 			Neuron neuron = new Neuron();
-			neuron.addManyInputs(inputs);
-			neuron.addManyOutputs(outputs);
-			neurons.add(neuron);
+			neuron.addManyInputNodes(inputNeurons);
+			neuron.addManyOutputNodes(outputNeurons);
+			networkNeurons.add(neuron);
 		}
-		return new NNetwork(inputs, neurons, outputs);
+		return new NNetwork(inputNeurons, networkNeurons, outputNeurons);
 	}
 
 	/**
-	 * 'Breed' two or more networks together through fussion, combining neural
+	 * 'Breed' two or more networks together through fusion, combining neural
 	 * pathways based on weight with a random chance for mutation. This will also
 	 * combine all inputs and outputs into one network. 
 	 * 
@@ -52,20 +52,20 @@ public class NetworkUtil {
 	 */
 	public static NNetwork breedNetworks(ArrayList<NNetwork> networks,
 			int mutationChance) {
-		Random rand = NNLib.rand;
+		Random rand = NNLib.GLOBAL_RANDOM;
 		NNetwork childNet = new NNetwork();
 		for (NNetwork net : networks) {
 			for (NNetwork net2 : networks) {
 
-				ArrayList<Input> inputs = net.getInputs();
-				inputs.addAll(net2.getInputs());
-				ArrayList<Output> outputs = net.getOutputs();
-				outputs.addAll(net2.getOutputs());
-				ArrayList<Neuron> neurons = net.getNeurons();
-				neurons.addAll(net2.getNeurons());
-				childNet.addManyInputs(inputs);
-				childNet.addManyOutputs(outputs);
-				for (Neuron neuron : net.getNeurons()) {
+				ArrayList<Input> inputs = net.getInputNodesInNetwork();
+				inputs.addAll(net2.getInputNodesInNetwork());
+				ArrayList<Output> outputs = net.getOutputNodesInNetwork();
+				outputs.addAll(net2.getOutputNodesInNetwork());
+				ArrayList<Neuron> neurons = net.getNeuronsInNetwork();
+				neurons.addAll(net2.getNeuronsInNetwork());
+				childNet.addManyInputNodesToNetwork(inputs);
+				childNet.addManyOutputNodesToNetwork(outputs);
+				for (Neuron neuron : net.getNeuronsInNetwork()) {
 					if (rand.nextInt(101) <= mutationChance) { /*
 																 * java randoms
 																 * are
@@ -73,9 +73,9 @@ public class NetworkUtil {
 																 * to the last
 																 * number
 																 */
-						neuron.randomize(net);
+						neuron.randomizeNodeConnections(net);
 					} else {
-						for (Neuron neuron2 : net2.getNeurons()) {
+						for (Neuron neuron2 : net2.getNeuronsInNetwork()) {
 							breedNeurons(neuron, neuron2, mutationChance, childNet);
 						}
 					}
@@ -101,32 +101,32 @@ public class NetworkUtil {
 	public static Neuron breedNeurons(Neuron parent1, Neuron parent2,
 			int mutationChance, NNetwork parentNet) {
 		Neuron child = new Neuron();
-		for (Synapse parentSynapse : parent1.getConnections()) {
-			if (NNLib.rand.nextInt(101) <= mutationChance) {
+		for (Synapse parentSynapse : parent1.getNodeConnections()) {
+			if (NNLib.GLOBAL_RANDOM.nextInt(101) <= mutationChance) {
 				Synapse childSynapse = parentSynapse.clone();
-				childSynapse.setDestination(parent1.getNodes().get(
-						NNLib.rand.nextInt(parentNet.getNodes().size())));
-				child.connectRandom(childSynapse.getDestination());
+				childSynapse.setConnectionDestination(parent1.getConnectedNodes().get(
+						NNLib.GLOBAL_RANDOM.nextInt(parentNet.getNodesInNetwork().size())));
+				child.connectWithRandomWeight(childSynapse.getConnectionDestination());
 			} else {
 
-				for (Synapse parent2Synapse : parent2.getConnections()) {
+				for (Synapse parent2Synapse : parent2.getNodeConnections()) {
 					Synapse childSynapse = null;
-					if(parentSynapse.getDestination().equals(parent2Synapse)) {
-						child.connect(parentSynapse.getDestination(),
-								parentSynapse.getWeight() + INCREASE_WEIGHT_ON_MATCH);
+					if(parentSynapse.getConnectionDestination().equals(parent2Synapse)) {
+						child.connectNeuronToNode(parentSynapse.getConnectionDestination(),
+								parentSynapse.getSynapseWeight() + INCREASE_WEIGHT_ON_MATCH);
 						continue;
 						
 					}
-					if (parent2Synapse.getWeight() > parentSynapse.getWeight()) {
+					if (parent2Synapse.getSynapseWeight() > parentSynapse.getSynapseWeight()) {
 						childSynapse = parent2Synapse.clone();
-					} else if (parentSynapse.getWeight() > parent2Synapse
-							.getWeight()) {
+					} else if (parentSynapse.getSynapseWeight() > parent2Synapse
+							.getSynapseWeight()) {
 						childSynapse = parentSynapse.clone();
 
 					}
 					if (childSynapse != null) {
-						child.connect(childSynapse.getDestination(),
-								childSynapse.getWeight() + INCREASE_WEIGHT_ON_CHOOSE);
+						child.connectNeuronToNode(childSynapse.getConnectionDestination(),
+								childSynapse.getSynapseWeight() + INCREASE_WEIGHT_ON_CHOOSE);
 					}
 				}
 			}
