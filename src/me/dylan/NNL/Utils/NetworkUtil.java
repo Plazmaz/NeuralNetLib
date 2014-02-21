@@ -32,8 +32,8 @@ public class NetworkUtil {
 		}
 		for (int i = 0; i < neuronCount; i++) {
 			Neuron neuron = new Neuron();
-			neuron.addManyInputNodes(inputNeurons);
-			neuron.addManyOutputNodes(outputNeurons);
+//			neuron.addManyInputNodes(inputNeurons);
+//			neuron.addManyOutputNodes(outputNeurons);
 			networkNeurons.add(neuron);
 		}
 		return new NNetwork(inputNeurons, networkNeurons, outputNeurons);

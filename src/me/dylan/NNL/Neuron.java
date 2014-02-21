@@ -11,8 +11,8 @@ public class Neuron extends Node {
 	public HashMap<Output, Integer> dataout = new HashMap<Output, Integer>();
 	public HashMap<Input, Integer> datain = new HashMap<Input, Integer>();
 	ArrayList<Neuron> connectedNodes = new ArrayList<Neuron>();
-	ArrayList<Synapse> synapses = new ArrayList<Synapse>();
 	Value neuronValue = new Value();
+	NodeType nodeVariety = NodeType.HIDDEN;
 
 	public void addSingleInputNode(Input input) {
 		connectWithRandomWeight(input);
@@ -44,6 +44,9 @@ public class Neuron extends Node {
 		for (Neuron neuron : connectedNodes) {
 			neuron.setNeuronValueInNode(neuron.neuronValue, NodeType.HIDDEN);
 		}
+		for (Output out : dataout.keySet()) {
+			out.setValue(new Value(neuronValue.getValue()));
+		}
 
 		// Old regex implementation:
 		// String[] regexes = RegParams.regParamsDel.split(", ");
@@ -57,16 +60,20 @@ public class Neuron extends Node {
 
 	public void randomizeNodeConnections(NNetwork parentNet) {
 		Random rand = NNLib.GLOBAL_RANDOM;
-
-		for (int i = 0; i < rand.nextInt(parentNet.getInputNodesInNetwork().size()); i++) {
+		datain.clear();
+		dataout.clear();
+		for (int i = 0; i <= rand.nextInt(parentNet.getInputNodesInNetwork()
+				.size()); i++) {
 			addSingleInputNode(parentNet.getInputNodesInNetwork().get(i));
 		}
 
-		for (int i = 0; i < rand.nextInt(parentNet.getOutputNodesInNetwork().size()); i++) {
+		for (int i = 0; i <= rand.nextInt(parentNet.getOutputNodesInNetwork()
+				.size()); i++) {
 			addSingleOutputNode(parentNet.getOutputNodesInNetwork().get(i));
 		}
 
-		for (int i = 0; i < rand.nextInt(parentNet.getNeuronsInNetwork().size()); i++) {
+		for (int i = 0; i <= rand.nextInt(parentNet.getNeuronsInNetwork()
+				.size()); i++) {
 			this.connectedNodes.add(parentNet.getNeuronsInNetwork().get(i));
 			connectWithRandomWeight(parentNet.getNeuronsInNetwork().get(i));
 		}

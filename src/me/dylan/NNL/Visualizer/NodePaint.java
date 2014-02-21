@@ -10,20 +10,26 @@ public class NodePaint {
 	/**
 	 * This class is for painting all nodes(neurons, inputs, outputs)
 	 * @param x
-	 * @param y
-	 * @param size The size(x and y) of the graphics to display
 	 * @param nodeColor The color of the node
 	 */
-	public NodePaint(int x, int y, int size, Color nodeColor) {
-		nodeLocation = new Point(x, y);
+	public NodePaint(int size, Color nodeColor) {
 		color = nodeColor;
 		this.size = size;
 	}
 	
-	public void paintNode() {
+	public Point getPaintCoords() {
+		return nodeLocation;
+	}
+	
+	public void paintNode(int x, int y) {
+		nodeLocation = new Point(x, y);
 		Color original = Display.getDisplayBackgroundColor();
 		Display.setDisplayBackgroundColor(color);
 		Display.fillOval(nodeLocation.x, nodeLocation.y, size, size);
 		Display.setDisplayBackgroundColor(original);
+	}
+
+	public void setColor(Color c) {
+		this.color = c;
 	}
 }

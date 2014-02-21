@@ -3,9 +3,11 @@ package me.dylan.NNL;
 public class Synapse {
 	private Node origin, destination;
 	private int weight = 0;
+	private boolean hasPaintedInTick = false;
 	public Synapse(Node origin, Node destination, int weight) {
 		this.setConnectionOrigin(origin);
 		this.setConnectionDestination(destination);
+		setSynapseWeight(weight);
 	}
 
 	public Node getConnectionOrigin() {
@@ -33,5 +35,13 @@ public class Synapse {
 	}
 	public Synapse clone() {
 		return new Synapse(getConnectionOrigin(), getConnectionDestination(), getSynapseWeight());
+	}
+
+	public boolean hasPaintedInTick() {
+		return hasPaintedInTick;
+	}
+
+	public void setHasPaintedInTick(boolean hasPaintedInTick) {
+		this.hasPaintedInTick = hasPaintedInTick;
 	}
 }

@@ -12,7 +12,7 @@ import me.dylan.NNL.Utils.StringUtil;
  */
 public class NNetwork {
 	private ArrayList<Neuron> networkNeurons = new ArrayList<Neuron>();
-	ArrayList<Synapse> networkSynapses = new ArrayList<Synapse>();
+	private ArrayList<Synapse> networkSynapses = new ArrayList<Synapse>();
 	private ArrayList<Input> networkInputs = new ArrayList<Input>();
 	private ArrayList<Output> networkoutputs = new ArrayList<Output>();
 	private boolean isLearningMode = false;
@@ -74,15 +74,25 @@ public class NNetwork {
 	}
 
 	public void addNeuronToNetwork(Neuron neuron) {
+		for(Synapse synapse : neuron.getNodeConnections()) {
+			if (!networkSynapses.contains(synapse))
+				networkSynapses.add(synapse);			
+		}
 		networkNeurons.add(neuron);
 	}
 
 	public void randomizeConnections() {
+		networkSynapses.clear();
 		for (Neuron hidden : networkNeurons) {
 			hidden.randomizeNodeConnections(this);
-			ArrayList<Neuron> connected = (ArrayList<Neuron>) hidden.connectedNodes.clone();
+			ArrayList<Neuron> connected = (ArrayList<Neuron>) hidden.connectedNodes
+					.clone();
 			for (Neuron n : connected) {
 				n.randomizeNodeConnections(this);
+				for (Synapse synapse : n.getNodeConnections()) {
+					if (!networkSynapses.contains(synapse))
+						networkSynapses.add(synapse);
+				}
 			}
 		}
 	}
@@ -96,7 +106,8 @@ public class NNetwork {
 	}
 
 	public int getNetworkErrorPercentage(String desiredOutput) {
-		return StringUtil.calculateStringDifferenceCount(getNetworkOutput(), desiredOutput) * 100;
+		return StringUtil.calculateStringDifferenceCount(getNetworkOutput(),
+				desiredOutput) * 100;
 	}
 
 	public boolean isNetworkInLearningMode() {
@@ -105,5 +116,13 @@ public class NNetwork {
 
 	public void setNetworkLearningMode(boolean isLearningMode) {
 		this.isLearningMode = isLearningMode;
+	}
+
+	public ArrayList<Synapse> getNetworkSynapses() {
+		return networkSynapses;
+	}
+
+	public void setNetworkSynapses(ArrayList<Synapse> networkSynapses) {
+		this.networkSynapses = networkSynapses;
 	}
 }

@@ -1,8 +1,11 @@
 package me.dylan.NNL.Visualizer;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,11 +16,11 @@ import javax.swing.JPanel;
  */
 public class Display {
 	private static JFrame main;
-	private static DisplayCanvas displayPanel;
+	private static JPanel displayPanel;
 	static Graphics graphics;
 	public static void showDisplay(String title, Dimension size, Color backgroundFill) {
 		main = new JFrame(title);
-		displayPanel = new DisplayCanvas();
+		displayPanel = new JPanel();
 		displayPanel.setBackground(backgroundFill);
 		main.setSize(size);
 		main.add(displayPanel);
@@ -25,7 +28,9 @@ public class Display {
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		graphics = displayPanel.getGraphics();
 	}
-	
+	public static void setStrokeWidth(int width) {
+		((Graphics2D)getGraphics()).setStroke(new BasicStroke(width));
+	}
 	public static Graphics getGraphics() {
 		return graphics;
 	}
@@ -43,11 +48,15 @@ public class Display {
 	}
 	
 	public static void repaint() {
-		displayPanel.repaint();
+		displayPanel.revalidate();
 	}
 
 	public static Color getDisplayBackgroundColor() {
 		return getGraphics().getColor();
+	}
+	
+	public static void setOffset(Point offset) {
+		getGraphics().translate(offset.x, offset.y);
 	}
 	
 //	public static void updateDoubleBuffer() {

@@ -1,13 +1,17 @@
 package me.dylan.NNL;
 
+import java.awt.Color;
+
+import me.dylan.NNL.NNLib.NodeType;
+
 public class Output extends Node {
 	private Value outputValue;
-
+	NodeType nodeVariety = NodeType.OUTPUT;
 	/**
 	 * Initialize a blank output, with no initial value
 	 */
 	public Output() {
-		outputValue = new Value();
+		this(new Value());
 	}
 
 	/**
@@ -17,6 +21,7 @@ public class Output extends Node {
 	 */
 	public Output(Value value) {
 		this.outputValue = value;
+		this.setDisplayColor(Color.GREEN);
 	}
 	/**
 	 * Get the value of this output
