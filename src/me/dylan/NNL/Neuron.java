@@ -34,7 +34,9 @@ public class Neuron extends Node {
 			addSingleOutputNode(out);
 		}
 	}
-
+	public void sendPulse(Node sender) {
+//		setNeuronValueInNode(, sender.getNodeVariety());
+	}
 	public void doTick() {
 		neuronValue.setValue("");
 		for (Input in : datain.keySet()) {
@@ -61,6 +63,7 @@ public class Neuron extends Node {
 		Random rand = NNLib.GLOBAL_RANDOM;
 		datain.clear();
 		dataout.clear();
+		this.connectedNeurons.clear();
 		for (int i = 0; i <= rand.nextInt(parentNet.getInputNodesInNetwork()
 				.size()); i++) {
 			addSingleInputNode(parentNet.getInputNodesInNetwork().get(i));
@@ -72,6 +75,7 @@ public class Neuron extends Node {
 		}
 		for (int i = 0; i <= rand.nextInt(parentNet.getNeuronsInNetwork()
 				.size()); i++) {
+//			if(!parentNet.)
 			this.connectedNeurons.add(parentNet.getNeuronsInNetwork().get(i));
 			connectWithRandomWeight(parentNet.getNeuronsInNetwork().get(i));
 		}

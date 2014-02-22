@@ -6,7 +6,6 @@ import me.dylan.NNL.NNLib.NodeType;
 
 public class Output extends Node {
 	private Value outputValue;
-	NodeType nodeVariety = NodeType.OUTPUT;
 	/**
 	 * Initialize a blank output, with no initial value
 	 */
@@ -21,6 +20,7 @@ public class Output extends Node {
 	 */
 	public Output(Value value) {
 		this.outputValue = value;
+		nodeVariety = NodeType.OUTPUT;
 		this.setDisplayColor(Color.GREEN);
 	}
 	/**

@@ -1,5 +1,6 @@
 package me.dylan.NNL.Utils;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -19,6 +20,7 @@ public class NetworkUtil {
 	 * How much to increase the weight when two pathways are identical
 	 */
 	private static int INCREASE_WEIGHT_ON_MATCH = 4;
+
 	public static NNetwork initializeNetwork(int neuronCount, int inputCount,
 			int outputCount) {
 		ArrayList<Neuron> networkNeurons = new ArrayList<Neuron>();
@@ -32,8 +34,8 @@ public class NetworkUtil {
 		}
 		for (int i = 0; i < neuronCount; i++) {
 			Neuron neuron = new Neuron();
-//			neuron.addManyInputNodes(inputNeurons);
-//			neuron.addManyOutputNodes(outputNeurons);
+			// neuron.addManyInputNodes(inputNeurons);
+			// neuron.addManyOutputNodes(outputNeurons);
 			networkNeurons.add(neuron);
 		}
 		return new NNetwork(inputNeurons, networkNeurons, outputNeurons);
@@ -41,8 +43,8 @@ public class NetworkUtil {
 
 	/**
 	 * 'Breed' two or more networks together through fusion, combining neural
-	 * pathways based on weight with a random chance for mutation. This will also
-	 * combine all inputs and outputs into one network. 
+	 * pathways based on weight with a random chance for mutation. This will
+	 * also combine all inputs and outputs into one network.
 	 * 
 	 * @param networks
 	 *            The list of parents to combine into a child
@@ -76,7 +78,8 @@ public class NetworkUtil {
 						neuron.randomizeNodeConnections(net);
 					} else {
 						for (Neuron neuron2 : net2.getNeuronsInNetwork()) {
-							breedNeurons(neuron, neuron2, mutationChance, childNet);
+							breedNeurons(neuron, neuron2, mutationChance,
+									childNet);
 						}
 					}
 				}
@@ -104,20 +107,27 @@ public class NetworkUtil {
 		for (Synapse parentSynapse : parent1.getNodeConnections()) {
 			if (NNLib.GLOBAL_RANDOM.nextInt(101) <= mutationChance) {
 				Synapse childSynapse = parentSynapse.clone();
-				childSynapse.setConnectionDestination(parent1.getConnectedNodes().get(
-						NNLib.GLOBAL_RANDOM.nextInt(parentNet.getNodesInNetwork().size())));
-				child.connectWithRandomWeight(childSynapse.getConnectionDestination());
+				childSynapse.setConnectionDestination(parent1
+						.getConnectedNodes().get(
+								NNLib.GLOBAL_RANDOM.nextInt(parentNet
+										.getNodesInNetwork().size())));
+				child.connectWithRandomWeight(childSynapse
+						.getConnectionDestination());
 			} else {
 
 				for (Synapse parent2Synapse : parent2.getNodeConnections()) {
 					Synapse childSynapse = null;
-					if(parentSynapse.getConnectionDestination().equals(parent2Synapse)) {
-						child.connectNodeToNode(parentSynapse.getConnectionDestination(),
-								parentSynapse.getSynapseWeight() + INCREASE_WEIGHT_ON_MATCH);
+					if (parentSynapse.getConnectionDestination().equals(
+							parent2Synapse)) {
+						child.connectNodeToNode(
+								parentSynapse.getConnectionDestination(),
+								parentSynapse.getSynapseWeight()
+										+ INCREASE_WEIGHT_ON_MATCH);
 						continue;
-						
+
 					}
-					if (parent2Synapse.getSynapseWeight() > parentSynapse.getSynapseWeight()) {
+					if (parent2Synapse.getSynapseWeight() > parentSynapse
+							.getSynapseWeight()) {
 						childSynapse = parent2Synapse.clone();
 					} else if (parentSynapse.getSynapseWeight() > parent2Synapse
 							.getSynapseWeight()) {
@@ -125,12 +135,42 @@ public class NetworkUtil {
 
 					}
 					if (childSynapse != null) {
-						child.connectNodeToNode(childSynapse.getConnectionDestination(),
-								childSynapse.getSynapseWeight() + INCREASE_WEIGHT_ON_CHOOSE);
+						child.connectNodeToNode(
+								childSynapse.getConnectionDestination(),
+								childSynapse.getSynapseWeight()
+										+ INCREASE_WEIGHT_ON_CHOOSE);
 					}
 				}
 			}
 		}
 		return child;
+	}
+
+	public static Color returnWeightColor(int colorVariable) {
+		int oneThirdConnectionWeight = NNLib.MAX_CONNECTION_WEIGHT / 3;
+		if (colorVariable <= oneThirdConnectionWeight) {
+			return Color.BLUE;
+		}
+		if (colorVariable <= oneThirdConnectionWeight * 2) {
+			return Color.GREEN;
+		}
+		if (colorVariable <= NNLib.MAX_CONNECTION_WEIGHT) {
+			return Color.RED;
+		}
+		return Color.WHITE;
+	}
+
+	public static Color returnNodeWeightColor(int colorVariable, int MAX_CONNECTIONS) {
+		int oneThirdConnectionWeight = MAX_CONNECTIONS / 3;
+		if (colorVariable <= oneThirdConnectionWeight) {
+			return Color.BLUE;
+		}
+		if (colorVariable <= oneThirdConnectionWeight * 2) {
+			return Color.GREEN;
+		}
+		if (colorVariable <= NNLib.MAX_CONNECTION_WEIGHT) {
+			return Color.RED;
+		}
+		return Color.WHITE;
 	}
 }

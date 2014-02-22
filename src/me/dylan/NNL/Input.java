@@ -11,9 +11,8 @@ import me.dylan.NNL.NNLib.NodeType;
  */
 public class Input extends Node {
 	private Value information = new Value();
-	NodeType nodeVariety = NodeType.HIDDEN;
 	public Input() {
-		this.setDisplayColor(Color.BLUE);
+		nodeVariety = NodeType.INPUT;
 	}
 	/**
 	 * Retrieve the raw data collected by the neuron
