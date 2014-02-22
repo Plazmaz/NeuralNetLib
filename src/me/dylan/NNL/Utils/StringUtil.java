@@ -5,16 +5,16 @@ import java.util.ArrayList;
 public class StringUtil {
 	public static int calculateArraySimilarityCount(String[] a, String[] b) {
 		int intersect = 0;
-		int totalLength = a.length+b.length;
+		int totalLength = a.length + b.length;
 		for (String s : a) {
-			for(String s2 : b) {
-				if(s.equals(s2)) {
+			for (String s2 : b) {
+				if (s.equals(s2)) {
 					intersect++;
 					break;
 				}
 			}
 		}
-		return (intersect*2)/totalLength;
+		return (intersect * 2) / totalLength;
 	}
 
 	/*
@@ -22,10 +22,14 @@ public class StringUtil {
 	 * http://www.catalysoft.com/articles/StrikeAMatch.html
 	 */
 	private static String[] extractLetterPairs(String str) {
-		int numPairs = str.length() - 1;
+		int numPairs = str.length();
 		String[] pairs = new String[numPairs];
 		for (int i = 0; i < numPairs; i++) {
-			pairs[i] = str.substring(i, i + 2);
+			if (i + 2 < numPairs) {
+				pairs[i] = str.substring(i, i + 2);
+			} else {
+				pairs[i] = "" + str.charAt(i);
+			}
 		}
 		return pairs;
 	}
@@ -43,6 +47,7 @@ public class StringUtil {
 	public static int calculateStringDifferenceCount(String a, String b) {
 		ArrayList<String> aArr = getLetterPairsFromWords(a.toUpperCase());
 		ArrayList<String> bArr = getLetterPairsFromWords(b.toUpperCase());
-		return calculateArraySimilarityCount((String[])aArr.toArray(), (String[])bArr.toArray());
+		return calculateArraySimilarityCount((String[]) aArr.toArray(),
+				(String[]) bArr.toArray());
 	}
 }

@@ -35,28 +35,28 @@ public class Node {
 		destination.connections.add(new Synapse(destination, this, weight));
 	}
 
-	public void paint(int x, int y, int maxnodes) {
-		if(this.nodeVariety == NodeType.OUTPUT) {
-			graphicsRepresentationObject.paintNode(x, y, Color.MAGENTA);
-		} else if(this.nodeVariety == NodeType.INPUT) {
-			graphicsRepresentationObject.paintNode(x, y, Color.YELLOW);
-		} else {
-			graphicsRepresentationObject.paintNode(x, y, NetworkUtil
-					.returnNodeWeightColor(getNodeConnections().size(), maxnodes));
-		}
-
-	}
-//	public void paint(int x, int y) {
+//	public void paint(int x, int y, int maxnodes) {
 //		if(this.nodeVariety == NodeType.OUTPUT) {
 //			graphicsRepresentationObject.paintNode(x, y, Color.MAGENTA);
 //		} else if(this.nodeVariety == NodeType.INPUT) {
 //			graphicsRepresentationObject.paintNode(x, y, Color.YELLOW);
 //		} else {
-////			Color c = Color.WHITE;
-//			graphicsRepresentationObject.paintNode(x, y, c);
+//			graphicsRepresentationObject.paintNode(x, y, NetworkUtil
+//					.returnNodeWeightColor(getNodeConnections().size(), maxnodes));
 //		}
-//		
+//
 //	}
+	public void paint(int x, int y) {
+		if(this.nodeVariety == NodeType.OUTPUT) {
+			graphicsRepresentationObject.paintNode(x, y, Color.MAGENTA);
+		} else if(this.nodeVariety == NodeType.INPUT) {
+			graphicsRepresentationObject.paintNode(x, y, Color.YELLOW);
+		} else {
+			Color c = Color.WHITE;
+			graphicsRepresentationObject.paintNode(x, y, c);
+		}
+//		
+	}
 
 	public void setDisplayColor(Color c) {
 		graphicsRepresentationObject.setColor(c);

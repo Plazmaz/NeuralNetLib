@@ -6,10 +6,13 @@ import java.util.Random;
 
 import me.dylan.NNL.Input;
 import me.dylan.NNL.NNLib;
+import me.dylan.NNL.NNLib.NodeType;
 import me.dylan.NNL.NNetwork;
-import me.dylan.NNL.Neuron;
+import me.dylan.NNL.HiddenNode;
+import me.dylan.NNL.Node;
 import me.dylan.NNL.Output;
 import me.dylan.NNL.Synapse;
+import me.dylan.NNL.Value;
 
 public class NetworkUtil {
 	/**
@@ -21,24 +24,24 @@ public class NetworkUtil {
 	 */
 	private static int INCREASE_WEIGHT_ON_MATCH = 4;
 
-	public static NNetwork initializeNetwork(int neuronCount, int inputCount,
+	public static NNetwork initializeNetwork(int HiddenCount, int inputCount,
 			int outputCount) {
-		ArrayList<Neuron> networkNeurons = new ArrayList<Neuron>();
-		ArrayList<Input> inputNeurons = new ArrayList<Input>();
-		ArrayList<Output> outputNeurons = new ArrayList<Output>();
+		ArrayList<HiddenNode> networkHiddens = new ArrayList<HiddenNode>();
+		ArrayList<Input> inputHiddens = new ArrayList<Input>();
+		ArrayList<Output> outputHiddens = new ArrayList<Output>();
 		for (int i = 0; i < inputCount; i++) {
-			inputNeurons.add(new Input());
+			inputHiddens.add(new Input());
 		}
 		for (int i = 0; i < outputCount; i++) {
-			outputNeurons.add(new Output());
+			outputHiddens.add(new Output());
 		}
-		for (int i = 0; i < neuronCount; i++) {
-			Neuron neuron = new Neuron();
-			// neuron.addManyInputNodes(inputNeurons);
-			// neuron.addManyOutputNodes(outputNeurons);
-			networkNeurons.add(neuron);
+		for (int i = 0; i < HiddenCount; i++) {
+			HiddenNode Hidden = new HiddenNode();
+			// Hidden.addManyInputNodes(inputHiddens);
+			// Hidden.addManyOutputNodes(outputHiddens);
+			networkHiddens.add(Hidden);
 		}
-		return new NNetwork(inputNeurons, networkNeurons, outputNeurons);
+		return new NNetwork(inputHiddens, networkHiddens, outputHiddens);
 	}
 
 	/**
@@ -63,11 +66,11 @@ public class NetworkUtil {
 				inputs.addAll(net2.getInputNodesInNetwork());
 				ArrayList<Output> outputs = net.getOutputNodesInNetwork();
 				outputs.addAll(net2.getOutputNodesInNetwork());
-				ArrayList<Neuron> neurons = net.getNeuronsInNetwork();
-				neurons.addAll(net2.getNeuronsInNetwork());
+				ArrayList<HiddenNode> Hiddens = net.getHiddenNodesInNetwork();
+				Hiddens.addAll(net2.getHiddenNodesInNetwork());
 				childNet.addManyInputNodesToNetwork(inputs);
 				childNet.addManyOutputNodesToNetwork(outputs);
-				for (Neuron neuron : net.getNeuronsInNetwork()) {
+				for (HiddenNode Hidden : net.getHiddenNodesInNetwork()) {
 					if (rand.nextInt(101) <= mutationChance) { /*
 																 * java randoms
 																 * are
@@ -75,10 +78,10 @@ public class NetworkUtil {
 																 * to the last
 																 * number
 																 */
-						neuron.randomizeNodeConnections(net);
+						Hidden.randomizeNodeConnections(net);
 					} else {
-						for (Neuron neuron2 : net2.getNeuronsInNetwork()) {
-							breedNeurons(neuron, neuron2, mutationChance,
+						for (HiddenNode Hidden2 : net2.getHiddenNodesInNetwork()) {
+							breedHiddens(Hidden, Hidden2, mutationChance,
 									childNet);
 						}
 					}
@@ -89,7 +92,7 @@ public class NetworkUtil {
 	}
 
 	/**
-	 * 'Breed' the two neurons together, combining random parental features.
+	 * 'Breed' the two Hiddens together, combining random parental features.
 	 * This is more fusion than asexual or sexual reproduction
 	 * 
 	 * @param parent1
@@ -101,9 +104,9 @@ public class NetworkUtil {
 	 *            percentage(suggested: 30%)
 	 * @return
 	 */
-	public static Neuron breedNeurons(Neuron parent1, Neuron parent2,
+	public static HiddenNode breedHiddens(HiddenNode parent1, HiddenNode parent2,
 			int mutationChance, NNetwork parentNet) {
-		Neuron child = new Neuron();
+		HiddenNode child = new HiddenNode();
 		for (Synapse parentSynapse : parent1.getNodeConnections()) {
 			if (NNLib.GLOBAL_RANDOM.nextInt(101) <= mutationChance) {
 				Synapse childSynapse = parentSynapse.clone();
@@ -172,5 +175,11 @@ public class NetworkUtil {
 			return Color.RED;
 		}
 		return Color.WHITE;
+	}
+	
+	public static HiddenNode createHidden(String incomingData, NodeType senderType) {
+		HiddenNode output = new HiddenNode();
+		output.setHiddenValueInNode(new Value(incomingData), senderType);
+		return output;
 	}
 }

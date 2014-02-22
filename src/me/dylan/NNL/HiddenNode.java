@@ -6,12 +6,15 @@ import java.util.Random;
 
 import me.dylan.NNL.NNLib.NodeType;
 
-public class Neuron extends Node {
+public class HiddenNode extends Node {
 	public HashMap<Output, Integer> dataout = new HashMap<Output, Integer>();
 	public HashMap<Input, Integer> datain = new HashMap<Input, Integer>();
-	ArrayList<Neuron> connectedNeurons = new ArrayList<Neuron>();
-	Value neuronValue = new Value();
-	NodeType nodeVariety = NodeType.HIDDEN;
+	ArrayList<HiddenNode> connectedHiddenNodes = new ArrayList<HiddenNode>();
+	Value HiddenValue = new Value();
+
+	public HiddenNode() {
+		nodeVariety = NodeType.HIDDEN;
+	}
 
 	public void addSingleInputNode(Input input) {
 		connectWithRandomWeight(input);
@@ -34,28 +37,30 @@ public class Neuron extends Node {
 			addSingleOutputNode(out);
 		}
 	}
+
 	public void sendPulse(Node sender) {
-//		setNeuronValueInNode(, sender.getNodeVariety());
+		// setHiddenValueInNode(, sender.getNodeVariety());
 	}
+
 	public void doTick() {
-		neuronValue.setValue("");
+		HiddenValue.setValue("");
 		for (Input in : datain.keySet()) {
-			setNeuronValueInNode(in.getInformation(), NodeType.INPUT);
+			setHiddenValueInNode(in.getInputData(), NodeType.INPUT);
 		}
-		for (Neuron neuron : connectedNeurons) {
-			neuron.setNeuronValueInNode(neuron.neuronValue, NodeType.HIDDEN);
+		for (HiddenNode Hidden : connectedHiddenNodes) {
+			Hidden.setHiddenValueInNode(Hidden.HiddenValue, NodeType.HIDDEN);
 		}
 		for (Output out : dataout.keySet()) {
-			out.setValue(new Value(neuronValue.getValue()));
+			out.setValue(new Value(HiddenValue.getValue()));
 		}
 
 		// Old regex implementation:
 		// String[] regexes = RegParams.regParamsDel.split(", ");
 		// for (Output out : dataout.keySet()) {
 		// // value.avg(out.getValue());
-		// neuronValue = new Value(neuronValue.data.replaceAll(
+		// HiddenValue = new Value(HiddenValue.data.replaceAll(
 		// RegParams.regParamsDel, ""));
-		// out.setValue(neuronValue);
+		// out.setValue(HiddenValue);
 		// }
 	}
 
@@ -63,32 +68,36 @@ public class Neuron extends Node {
 		Random rand = NNLib.GLOBAL_RANDOM;
 		datain.clear();
 		dataout.clear();
-		this.connectedNeurons.clear();
-		for (int i = 0; i <= rand.nextInt(parentNet.getInputNodesInNetwork()
-				.size()); i++) {
-			addSingleInputNode(parentNet.getInputNodesInNetwork().get(i));
-		}
-
-		for (int i = 0; i <= rand.nextInt(parentNet.getOutputNodesInNetwork()
-				.size()); i++) {
-			addSingleOutputNode(parentNet.getOutputNodesInNetwork().get(i));
-		}
-		for (int i = 0; i <= rand.nextInt(parentNet.getNeuronsInNetwork()
-				.size()); i++) {
-//			if(!parentNet.)
-			this.connectedNeurons.add(parentNet.getNeuronsInNetwork().get(i));
-			connectWithRandomWeight(parentNet.getNeuronsInNetwork().get(i));
-		}
+		this.connectedHiddenNodes.clear();
+		if (!parentNet.getInputNodesInNetwork().isEmpty())
+			for (int i = 0; i <= rand.nextInt(parentNet
+					.getInputNodesInNetwork().size()); i++) {
+				addSingleInputNode(parentNet.getInputNodesInNetwork().get(i));
+			}
+		if (!parentNet.getOutputNodesInNetwork().isEmpty())
+			for (int i = 0; i <= rand.nextInt(parentNet
+					.getOutputNodesInNetwork().size()); i++) {
+				addSingleOutputNode(parentNet.getOutputNodesInNetwork().get(i));
+			}
+		if (!parentNet.getHiddenNodesInNetwork().isEmpty())
+			for (int i = 0; i <= rand.nextInt(parentNet
+					.getHiddenNodesInNetwork().size()); i++) {
+				// if(!parentNet.)
+				this.connectedHiddenNodes.add(parentNet
+						.getHiddenNodesInNetwork().get(i));
+				connectWithRandomWeight(parentNet.getHiddenNodesInNetwork()
+						.get(i));
+			}
 
 	}
 
-	public void setNeuronValueInNode(Value value, NodeType senderType) {
+	public void setHiddenValueInNode(Value value, NodeType senderType) {
 		switch (senderType) {
 		case HIDDEN:
-			this.neuronValue = value;
+			this.HiddenValue = value;
 			break;
 		case INPUT:
-			this.neuronValue = value;
+			this.HiddenValue = value;
 			break;
 		case OUTPUT:
 			break;
@@ -99,7 +108,7 @@ public class Neuron extends Node {
 
 	public ArrayList<Node> getConnectedNodes() {
 		ArrayList<Node> nodes = new ArrayList<Node>();
-		nodes.addAll(connectedNeurons);
+		nodes.addAll(connectedHiddenNodes);
 		nodes.addAll(datain.keySet());
 		nodes.addAll(dataout.keySet());
 		return nodes;
@@ -110,8 +119,8 @@ public class Neuron extends Node {
 			addSingleInputNode((Input) destination);
 		if (destination instanceof Output)
 			addSingleOutputNode((Output) destination);
-		if (destination instanceof Neuron)
-			connectedNeurons.add((Neuron) destination);
+		if (destination instanceof HiddenNode)
+			connectedHiddenNodes.add((HiddenNode) destination);
 	}
 
 }

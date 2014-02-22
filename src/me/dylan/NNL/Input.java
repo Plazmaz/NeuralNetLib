@@ -15,16 +15,20 @@ public class Input extends Node {
 		nodeVariety = NodeType.INPUT;
 	}
 	/**
-	 * Retrieve the raw data collected by the neuron
+	 * Retrieve the raw data collected by the Hidden
 	 * 
-	 * @return data A dump of all data collected by neuron this tick
+	 * @return data A dump of all data collected by Hidden this tick
 	 */
-	public Value getInformation() {
+	public Value getInputData() {
 		return information;
 	}
 
 	public void setInformation(Value info) {
 		this.information = info;
+	}
+	
+	public void appendInfo(String info) {
+		this.information.setValue(info);
 	}
 
 }

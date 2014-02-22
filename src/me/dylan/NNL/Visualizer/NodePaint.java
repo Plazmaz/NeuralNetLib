@@ -9,7 +9,7 @@ public class NodePaint {
 	Color color;
 
 	/**
-	 * This class is for painting all nodes(neurons, inputs, outputs)
+	 * This class is for painting all nodes(Hiddens, inputs, outputs)
 	 * 
 	 * @param x
 	 * @param nodeColor

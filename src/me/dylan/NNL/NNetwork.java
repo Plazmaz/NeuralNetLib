@@ -11,15 +11,15 @@ import me.dylan.NNL.Utils.StringUtil;
  * 
  */
 public class NNetwork {
-	private ArrayList<Neuron> networkNeurons = new ArrayList<Neuron>();
+	private ArrayList<HiddenNode> networkHidden = new ArrayList<HiddenNode>();
 	private ArrayList<Synapse> networkSynapses = new ArrayList<Synapse>();
 	private ArrayList<Input> networkInputs = new ArrayList<Input>();
 	private ArrayList<Output> networkoutputs = new ArrayList<Output>();
 	private boolean isLearningMode = false;
 
-	public NNetwork(ArrayList<Input> inputs, ArrayList<Neuron> connections,
+	public NNetwork(ArrayList<Input> inputs, ArrayList<HiddenNode> connections,
 			ArrayList<Output> outputs) {
-		this.networkNeurons = connections;
+		this.networkHidden = connections;
 		this.networkInputs = inputs;
 		this.networkoutputs = outputs;
 	}
@@ -47,22 +47,22 @@ public class NNetwork {
 		}
 	}
 
-	public void addManyNeuronsToNetwork(ArrayList<Neuron> neurons) {
-		for (Neuron neuron : neurons) {
-			addNeuronToNetwork(neuron);
+	public void addManyHiddenNodesToNetwork(ArrayList<HiddenNode> Hiddens) {
+		for (HiddenNode Hidden : Hiddens) {
+			addHiddenNodeToNetwork(Hidden);
 		}
 	}
 
 	public ArrayList<Node> getNodesInNetwork() {
 		ArrayList<Node> nodes = new ArrayList<Node>();
-		nodes.addAll(networkNeurons);
+		nodes.addAll(networkHidden);
 		nodes.addAll(networkInputs);
 		nodes.addAll(networkoutputs);
 		return nodes;
 	}
 
-	public ArrayList<Neuron> getNeuronsInNetwork() {
-		return networkNeurons;
+	public ArrayList<HiddenNode> getHiddenNodesInNetwork() {
+		return networkHidden;
 	}
 
 	public ArrayList<Input> getInputNodesInNetwork() {
@@ -73,17 +73,17 @@ public class NNetwork {
 		return networkoutputs;
 	}
 
-	public void addNeuronToNetwork(Neuron neuron) {
-		for(Synapse synapse : neuron.getNodeConnections()) {
+	public void addHiddenNodeToNetwork(HiddenNode Hidden) {
+		for(Synapse synapse : Hidden.getNodeConnections()) {
 			if (!networkSynapses.contains(synapse))
 				networkSynapses.add(synapse);			
 		}
-		networkNeurons.add(neuron);
+		networkHidden.add(Hidden);
 	}
 
 	public void randomizeConnections() {
 		networkSynapses.clear();
-		for (Neuron hidden : networkNeurons) {
+		for (HiddenNode hidden : networkHidden) {
 				hidden.randomizeNodeConnections(this);
 				for (Synapse synapse : hidden.getNodeConnections()) {
 					if (!networkSynapses.contains(synapse))
