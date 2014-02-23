@@ -42,9 +42,9 @@ public class HiddenNode extends Node {
 	public void sendPulseToAppendData(Node sender) {
 		try {
 			Value vInNode = getNodeInfo().appendToValue(sender.getNodeInfo());
-		setHiddenValueInNode(vInNode, sender.getNodeVariety());
-		} catch(Exception ex) {
-			System.out.println();
+			setHiddenValueInNode(vInNode, sender.getNodeVariety());
+		} catch (Exception ex) {
+//			System.out.println();
 			ex.printStackTrace();
 		}
 		this.setActive(true);
@@ -54,24 +54,24 @@ public class HiddenNode extends Node {
 	}
 
 	public void doTick() {
-		for (Input in : datain.keySet()) {
-			if (in.active) {
-				this.setActive(true);
-			}
-		}
-		for (HiddenNode Hidden : connectedHiddenNodes) {
-			if (this.active) {
-				Hidden.sendPulseToAppendData(Hidden);
-//				getNodeInfo().setValue("");
-			}
-		}
-		for (Output out : dataout.keySet()) {
-			if (this.active) {
-				Value concattedValue = out.getOutputValue();
-				concattedValue = concattedValue.appendToValue(getNodeInfo());
-				out.setValue(concattedValue);
-				System.out.println(out.getOutputValue());
-//				getNodeInfo().setValue("");
+		for(Synapse synapse : getNodeConnections()) {
+			if(synapse.getConnectionDestination() instanceof Input) {
+				Input in = (Input)synapse.getConnectionDestination();
+				if(in.active)
+					this.setActive(true);
+			} else if(synapse.getConnectionDestination() instanceof HiddenNode) {
+				HiddenNode connectedHidden = (HiddenNode)synapse.getConnectionDestination();
+				if(this.active) {
+					connectedHidden.sendPulseToAppendData(this);
+				}
+			} else if(synapse.getConnectionDestination() instanceof Output) {
+				Output connectedOutput = (Output) synapse.getConnectionDestination();
+				if(this.active) {
+					Value concattedValue = connectedOutput.getOutputValue();
+					concattedValue = concattedValue.appendToValue(getNodeInfo());
+					connectedOutput.setValue(concattedValue);
+//					System.out.println(connectedOutput.getOutputValue());
+				}
 			}
 		}
 

@@ -80,7 +80,8 @@ public class NetworkUtil {
 																 */
 						Hidden.randomizeNodeConnections(childNet);
 					} else {
-						for (HiddenNode Hidden2 : net2.getHiddenNodesInNetwork()) {
+						for (HiddenNode Hidden2 : net2
+								.getHiddenNodesInNetwork()) {
 							breedHiddens(Hidden, Hidden2, mutationChance,
 									childNet);
 						}
@@ -104,8 +105,8 @@ public class NetworkUtil {
 	 *            percentage(suggested: 30%)
 	 * @return
 	 */
-	public static HiddenNode breedHiddens(HiddenNode parent1, HiddenNode parent2,
-			int mutationChance, NNetwork parentNet) {
+	public static HiddenNode breedHiddens(HiddenNode parent1,
+			HiddenNode parent2, int mutationChance, NNetwork parentNet) {
 		HiddenNode child = new HiddenNode();
 		for (Synapse parentSynapse : parent1.getNodeConnections()) {
 			if (NNLib.GLOBAL_RANDOM.nextInt(101) <= mutationChance) {
@@ -117,32 +118,32 @@ public class NetworkUtil {
 				child.connectWithRandomWeight(childSynapse
 						.getConnectionDestination());
 			} else {
+				Synapse parent2Synapse = parent2.getNodeConnections().get(
+						parent1.getConnectedNodes().indexOf(parentSynapse));
+				
+				Synapse childSynapse = null;
+				if (parentSynapse.getConnectionDestination().equals(
+						parent2Synapse)) {
+					child.connectNodeToNode(
+							parentSynapse.getConnectionDestination(),
+							parentSynapse.getSynapseWeight()
+									+ INCREASE_WEIGHT_ON_MATCH);
+					continue;
 
-				for (Synapse parent2Synapse : parent2.getNodeConnections()) {
-					Synapse childSynapse = null;
-					if (parentSynapse.getConnectionDestination().equals(
-							parent2Synapse)) {
-						child.connectNodeToNode(
-								parentSynapse.getConnectionDestination(),
-								parentSynapse.getSynapseWeight()
-										+ INCREASE_WEIGHT_ON_MATCH);
-						continue;
+				}
+				if (parent2Synapse.getSynapseWeight() > parentSynapse
+						.getSynapseWeight()) {
+					childSynapse = parent2Synapse.clone();
+				} else if (parentSynapse.getSynapseWeight() > parent2Synapse
+						.getSynapseWeight()) {
+					childSynapse = parentSynapse.clone();
 
-					}
-					if (parent2Synapse.getSynapseWeight() > parentSynapse
-							.getSynapseWeight()) {
-						childSynapse = parent2Synapse.clone();
-					} else if (parentSynapse.getSynapseWeight() > parent2Synapse
-							.getSynapseWeight()) {
-						childSynapse = parentSynapse.clone();
-
-					}
-					if (childSynapse != null) {
-						child.connectNodeToNode(
-								childSynapse.getConnectionDestination(),
-								childSynapse.getSynapseWeight()
-										+ INCREASE_WEIGHT_ON_CHOOSE);
-					}
+				}
+				if (childSynapse != null) {
+					child.connectNodeToNode(
+							childSynapse.getConnectionDestination(),
+							childSynapse.getSynapseWeight()
+									+ INCREASE_WEIGHT_ON_CHOOSE);
 				}
 			}
 		}
@@ -163,7 +164,8 @@ public class NetworkUtil {
 		return Color.WHITE;
 	}
 
-	public static Color returnNodeWeightColor(int colorVariable, int MAX_CONNECTIONS) {
+	public static Color returnNodeWeightColor(int colorVariable,
+			int MAX_CONNECTIONS) {
 		int oneThirdConnectionWeight = MAX_CONNECTIONS / 3;
 		if (colorVariable <= oneThirdConnectionWeight) {
 			return Color.BLUE;
@@ -176,8 +178,9 @@ public class NetworkUtil {
 		}
 		return Color.WHITE;
 	}
-	
-	public static HiddenNode createHidden(String incomingData, NodeType senderType) {
+
+	public static HiddenNode createHidden(String incomingData,
+			NodeType senderType) {
 		HiddenNode hiddenOut = new HiddenNode();
 		hiddenOut.setHiddenValueInNode(new Value(incomingData), senderType);
 		return hiddenOut;
