@@ -35,7 +35,13 @@ public class TestUtil {
 						"WHAT HAPPENED?!?!?! In WhatNodesExist"));
 			}
 		}
-		System.out.println("Hidden: ");
+		System.out.println("Hidden: "+hiddenCount);
+		System.out.println("Inputs: "+inputCount);
+		System.out.println("Outputs: "+outputCount);
 
+	}
+	
+	public static boolean AHiddenNodeHasValue(NNetwork networkToCheck) {
+		return !networkToCheck.getHiddenNodesInNetwork().isEmpty();
 	}
 }

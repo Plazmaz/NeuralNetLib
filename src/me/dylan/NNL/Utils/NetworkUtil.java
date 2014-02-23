@@ -78,7 +78,7 @@ public class NetworkUtil {
 																 * to the last
 																 * number
 																 */
-						Hidden.randomizeNodeConnections(net);
+						Hidden.randomizeNodeConnections(childNet);
 					} else {
 						for (HiddenNode Hidden2 : net2.getHiddenNodesInNetwork()) {
 							breedHiddens(Hidden, Hidden2, mutationChance,
@@ -178,8 +178,8 @@ public class NetworkUtil {
 	}
 	
 	public static HiddenNode createHidden(String incomingData, NodeType senderType) {
-		HiddenNode output = new HiddenNode();
-		output.setHiddenValueInNode(new Value(incomingData), senderType);
-		return output;
+		HiddenNode hiddenOut = new HiddenNode();
+		hiddenOut.setHiddenValueInNode(new Value(incomingData), senderType);
+		return hiddenOut;
 	}
 }

@@ -43,6 +43,10 @@ public class Display {
 		getGraphics().fillOval(x, y, width, height);
 	}
 	
+	public static void drawString(int x, int y, String value) {
+		getGraphics().drawString(value, x, y);
+	}
+	
 	public static void drawLine(int x, int y, int x2, int y2) {
 		getGraphics().drawLine(x, y, x2, y2);
 	}

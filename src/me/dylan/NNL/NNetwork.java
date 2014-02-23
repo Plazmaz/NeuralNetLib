@@ -100,8 +100,8 @@ public class NNetwork {
 		return result;
 	}
 
-	public int getNetworkErrorPercentage(String desiredOutput) {
-		return StringUtil.calculateStringDifferenceCount(getNetworkOutput(),
+	public int getNetworkSimilarityPercentage(String desiredOutput) {
+		return StringUtil.calculateStringSimilarityCount(getNetworkOutput(),
 				desiredOutput) * 100;
 	}
 

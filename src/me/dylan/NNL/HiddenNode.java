@@ -1,5 +1,6 @@
 package me.dylan.NNL;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -10,7 +11,7 @@ public class HiddenNode extends Node {
 	public HashMap<Output, Integer> dataout = new HashMap<Output, Integer>();
 	public HashMap<Input, Integer> datain = new HashMap<Input, Integer>();
 	ArrayList<HiddenNode> connectedHiddenNodes = new ArrayList<HiddenNode>();
-	Value HiddenValue = new Value();
+	private boolean active = false;
 
 	public HiddenNode() {
 		nodeVariety = NodeType.HIDDEN;
@@ -38,20 +39,40 @@ public class HiddenNode extends Node {
 		}
 	}
 
-	public void sendPulse(Node sender) {
+	public void sendPulseToAppendData(Node sender) {
+		try {
+			Value vInNode = getNodeInfo().appendToValue(sender.getNodeInfo());
+		setHiddenValueInNode(vInNode, sender.getNodeVariety());
+		} catch(Exception ex) {
+			System.out.println();
+			ex.printStackTrace();
+		}
+		this.setActive(true);
+		if (sender instanceof HiddenNode)
+			((HiddenNode) sender).setActive(false);
 		// setHiddenValueInNode(, sender.getNodeVariety());
 	}
 
 	public void doTick() {
-		HiddenValue.setValue("");
 		for (Input in : datain.keySet()) {
-			setHiddenValueInNode(in.getInputData(), NodeType.INPUT);
+			if (in.active) {
+				this.setActive(true);
+			}
 		}
 		for (HiddenNode Hidden : connectedHiddenNodes) {
-			Hidden.setHiddenValueInNode(Hidden.HiddenValue, NodeType.HIDDEN);
+			if (this.active) {
+				Hidden.sendPulseToAppendData(Hidden);
+//				getNodeInfo().setValue("");
+			}
 		}
 		for (Output out : dataout.keySet()) {
-			out.setValue(new Value(HiddenValue.getValue()));
+			if (this.active) {
+				Value concattedValue = out.getOutputValue();
+				concattedValue = concattedValue.appendToValue(getNodeInfo());
+				out.setValue(concattedValue);
+				System.out.println(out.getOutputValue());
+//				getNodeInfo().setValue("");
+			}
 		}
 
 		// Old regex implementation:
@@ -94,10 +115,10 @@ public class HiddenNode extends Node {
 	public void setHiddenValueInNode(Value value, NodeType senderType) {
 		switch (senderType) {
 		case HIDDEN:
-			this.HiddenValue = value;
+			this.information = value;
 			break;
 		case INPUT:
-			this.HiddenValue = value;
+			this.information = value;
 			break;
 		case OUTPUT:
 			break;
@@ -121,6 +142,14 @@ public class HiddenNode extends Node {
 			addSingleOutputNode((Output) destination);
 		if (destination instanceof HiddenNode)
 			connectedHiddenNodes.add((HiddenNode) destination);
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 }

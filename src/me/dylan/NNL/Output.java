@@ -5,7 +5,6 @@ import java.awt.Color;
 import me.dylan.NNL.NNLib.NodeType;
 
 public class Output extends Node {
-	private Value outputValue;
 	/**
 	 * Initialize a blank output, with no initial value
 	 */
@@ -19,7 +18,7 @@ public class Output extends Node {
 	 * @param value
 	 */
 	public Output(Value value) {
-		this.outputValue = value;
+		this.information = value;
 		nodeVariety = NodeType.OUTPUT;
 		this.setDisplayColor(Color.GREEN);
 	}
@@ -28,7 +27,7 @@ public class Output extends Node {
 	 * @return value - This is the power/value of the output.
 	 */
 	public Value getOutputValue() {
-		return outputValue;
+		return information;
 	}
 
 	/**
@@ -36,6 +35,6 @@ public class Output extends Node {
 	 * @param value - This is the power/value of the output.
 	 */
 	public void setValue(Value value) {
-		this.outputValue = value;
+		this.information = value;
 	}
 }

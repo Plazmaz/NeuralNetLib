@@ -44,10 +44,9 @@ public class StringUtil {
 		return pairs;
 	}
 
-	public static int calculateStringDifferenceCount(String a, String b) {
+	public static int calculateStringSimilarityCount(String a, String b) {
 		ArrayList<String> aArr = getLetterPairsFromWords(a.toUpperCase());
 		ArrayList<String> bArr = getLetterPairsFromWords(b.toUpperCase());
-		return calculateArraySimilarityCount((String[]) aArr.toArray(),
-				(String[]) bArr.toArray());
+		return calculateArraySimilarityCount(aArr.toArray(new String[aArr.size()]), bArr.toArray(new String[aArr.size()]));
 	}
 }

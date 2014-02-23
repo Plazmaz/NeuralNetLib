@@ -15,7 +15,7 @@ public class Node {
 	public static final int NODE_DRAW_SIZE = 10;
 	public NodePaint graphicsRepresentationObject = new NodePaint(
 			NODE_DRAW_SIZE, Color.GREEN);
-
+	protected Value information = new Value();
 	public NodeType getNodeVariety() {
 		return nodeVariety;
 	}
@@ -48,13 +48,13 @@ public class Node {
 //	}
 	public void paint(int x, int y) {
 		if(this.nodeVariety == NodeType.OUTPUT) {
-			graphicsRepresentationObject.paintNode(x, y, Color.MAGENTA);
+			graphicsRepresentationObject.setColor(Color.MAGENTA);
 		} else if(this.nodeVariety == NodeType.INPUT) {
-			graphicsRepresentationObject.paintNode(x, y, Color.YELLOW);
+			graphicsRepresentationObject.setColor(Color.YELLOW);
 		} else {
-			Color c = Color.WHITE;
-			graphicsRepresentationObject.paintNode(x, y, c);
+			graphicsRepresentationObject.setColor(Color.GRAY);
 		}
+		graphicsRepresentationObject.paintNode(x, y, this);
 //		
 	}
 
@@ -64,5 +64,13 @@ public class Node {
 
 	public ArrayList<Synapse> getNodeConnections() {
 		return connections;
+	}
+	
+	public Value getNodeInfo() {
+		return information;
+	}
+	
+	public void setNodeInfo(String info) {
+		this.information = new Value(info);
 	}
 }
