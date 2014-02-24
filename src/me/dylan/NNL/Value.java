@@ -10,65 +10,65 @@ package me.dylan.NNL;
  * 
  */
 public class Value {
-	String data = "";
+    String data = "";
 
-	// private float min = 0f;
-	// private float max = 1f;
-	// public Object extraInfo;
+    // private float min = 0f;
+    // private float max = 1f;
+    // public Object extraInfo;
 
-	/**
-	 * Initialize a blank-slate Value object.
-	 */
-	public Value() {
-	}
+    /**
+     * Initialize a blank-slate Value object.
+     */
+    public Value() {
+    }
 
-	/**
-	 * Initialize a Value object with the given float as the current value.
-	 * 
-	 * @param value
-	 */
-	public Value(String value) {
-		this.setValue(value);
-	}
+    /**
+     * Initialize a Value object with the given float as the current value.
+     * 
+     * @param value
+     */
+    public Value(String value) {
+	this.setValue(value);
+    }
 
-	public String getValue() {
-		return data;
-	}
+    public String getValue() {
+	return data;
+    }
 
-	public void setValue(String value) {
+    public void setValue(String value) {
 
-		this.data = value;
-	}
+	this.data = value;
+    }
 
-	// public float getMin() {
-	// return min;
+    // public float getMin() {
+    // return min;
+    // }
+    //
+    // public void setMin(float min) {
+    // this.min = min;
+    // }
+    //
+    // public float getMax() {
+    // return max;
+    // }
+    //
+    // public void setMax(float max) {
+    // this.max = max;
+    // }
+
+    public Value appendToValue(Value value) {
+	Value out = new Value();
+	// try {
+	out.setValue(this.getValue() + value.data);
+	// } catch (OutOfMemoryError ex) {
+	// ex.printStackTrace();
+	// // System.out.println(this.getValue());
 	// }
-	//
-	// public void setMin(float min) {
-	// this.min = min;
-	// }
-	//
-	// public float getMax() {
-	// return max;
-	// }
-	//
-	// public void setMax(float max) {
-	// this.max = max;
-	// }
+	return out;
+    }
 
-	public Value appendToValue(Value value) {
-		Value out = new Value();
-		try {
-			out.setValue(this.getValue() + value.data);
-		} catch (OutOfMemoryError ex) {
-			ex.printStackTrace();
-//			System.out.println(this.getValue());
-		}
-		return out;
-	}
-
-	@Override
-	public String toString() {
-		return data;
-	}
+    @Override
+    public String toString() {
+	return data;
+    }
 }
