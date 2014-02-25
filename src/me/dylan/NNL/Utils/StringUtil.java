@@ -7,27 +7,24 @@ import java.util.List;
 import me.dylan.NNL.Test.TestUtil;
 
 public class StringUtil {
-    public static double calculateArraySimilarityPercentage(String[] array1,
-	    String[] array2) {
-	int conflict = 0;
-	int shortestLength = Math.min(array1.length, array2.length), longestLength = Math
-		.max(array1.length, array2.length);
-	conflict = longestLength - shortestLength;
-	for (int i = 0; i < shortestLength; i++) {
-	    String s = array1[i];
-	    String s2 = array2[i];
-
-	    if (!s.equalsIgnoreCase(s2)) {
-		conflict++;
-		// break;
+    public static double compareStrings(String stringA, String stringB) {
+	ArrayList<String> pairs1 = getLetterPairsFromWords(stringA);
+	ArrayList<String> pairs2 = getLetterPairsFromWords(stringB);/*new ArrayList<String>(
+		Arrays.asList(extractLetterTriplets(stringB.toUpperCase())));*/
+	int intersection = 0;
+	int union = pairs1.size() + pairs2.size();
+	for (int i = 0; i < pairs1.size(); i++) {
+	    Object pair1 = pairs1.get(i);
+	    for (int j = 0; j < pairs2.size(); j++) {
+		Object pair2 = pairs2.get(j);
+		if (pair1.equals(pair2)) {
+		    intersection++;
+		    pairs2.remove(j);
+		    break;
+		}
 	    }
 	}
-	double similarity = 100d - (((double) conflict / (double) longestLength) * 100d);
-	if (similarity > 0) {
-	    return similarity;
-	}
-
-	return 0;
+	return ((2.0 * intersection) / ((double)union));
     }
 
     /*
@@ -75,12 +72,6 @@ public class StringUtil {
     }
 
     public static double calculateStringSimilarityPercentage(String a, String b) {
-	List<String> aArr = Arrays
-		.asList(extractLetterTriplets(a.toUpperCase()));
-	List<String> bArr = Arrays
-		.asList(extractLetterTriplets(b.toUpperCase()));
-	return calculateArraySimilarityPercentage(
-		aArr.toArray(new String[aArr.size()]),
-		bArr.toArray(new String[aArr.size()]));
+	return compareStrings(a, b);
     }
 }

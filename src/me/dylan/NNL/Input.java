@@ -36,4 +36,8 @@ public class Input extends Node {
 	this.information.setValue(info);
     }
 
+    public void deactiveInputNode() {
+	active = false;
+    }
+
 }

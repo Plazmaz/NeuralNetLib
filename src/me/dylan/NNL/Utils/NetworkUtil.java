@@ -36,8 +36,8 @@ public class NetworkUtil {
 	}
 	for (int i = 0; i < HiddenCount; i++) {
 	    HiddenNode Hidden = new HiddenNode();
-	    // Hidden.addManyInputNodes(inputHiddens);
-	    // Hidden.addManyOutputNodes(outputHiddens);
+	     Hidden.addManyInputNodes(inputHiddens);
+	     Hidden.addManyOutputNodes(outputHiddens);
 	    networkHiddens.add(Hidden);
 	}
 	return new NNetwork(inputHiddens, networkHiddens, outputHiddens);
@@ -58,18 +58,14 @@ public class NetworkUtil {
 	    int mutationChance) {
 	Random rand = NNLib.GLOBAL_RANDOM;
 	NNetwork childNet = new NNetwork();
+	childNet.addOutputNodeToNetwork(new Output());
+	childNet.addInputNodeToNetwork(new Input());
 	for (NNetwork net : networks) {
 	    for (NNetwork net2 : networks) {
-
-		ArrayList<Input> inputs = net.getInputNodesInNetwork();
-		inputs.addAll(net2.getInputNodesInNetwork());
-		ArrayList<Output> outputs = net.getOutputNodesInNetwork();
-		outputs.addAll(net2.getOutputNodesInNetwork());
-		ArrayList<HiddenNode> Hiddens = net.getHiddenNodesInNetwork();
-		Hiddens.addAll(net2.getHiddenNodesInNetwork());
-		childNet.addManyInputNodesToNetwork(inputs);
-		childNet.addManyOutputNodesToNetwork(outputs);
-		for (HiddenNode Hidden : net.getHiddenNodesInNetwork()) {
+		ArrayList<HiddenNode> HiddenNodes = (ArrayList<HiddenNode>) net
+			.getHiddenNodesInNetwork().clone();
+		HiddenNodes.addAll(net2.getHiddenNodesInNetwork());
+		for (HiddenNode Hidden : HiddenNodes) {
 		    if (rand.nextInt(101) <= mutationChance) { /*
 							        * java randoms
 							        * are
@@ -79,11 +75,11 @@ public class NetworkUtil {
 							        */
 			Hidden.randomizeNodeConnections(childNet);
 		    } else {
-			for (HiddenNode Hidden2 : net2
-				.getHiddenNodesInNetwork()) {
-			    breedHiddens(Hidden, Hidden2, mutationChance,
-				    childNet);
-			}
+			    breedHiddens(
+				    Hidden,
+				    HiddenNodes.get(HiddenNodes
+						    .indexOf(Hidden)),
+				    mutationChance, childNet);
 		    }
 		}
 	    }
@@ -107,47 +103,50 @@ public class NetworkUtil {
     public static HiddenNode breedHiddens(HiddenNode parent1,
 	    HiddenNode parent2, int mutationChance, NNetwork parentNet) {
 	HiddenNode child = new HiddenNode();
-	for (Synapse parentSynapse : parent1.getNodeConnections()) {
+	ArrayList<Synapse> parent1Synapses = (ArrayList<Synapse>) parent1
+		.getNodeConnections().clone();
+	for (Synapse parentSynapse : parent1Synapses) {
 
 	    if (NNLib.GLOBAL_RANDOM.nextInt(101) <= mutationChance) {
 		Synapse childSynapse = parentSynapse.clone();
-		childSynapse.setConnectionDestination(parent1
-			.getConnectedNodes().get(
+		childSynapse.setConnectionDestination(parentNet
+			.getNodesInNetwork().get(
 				NNLib.GLOBAL_RANDOM.nextInt(parentNet
 					.getNodesInNetwork().size())));
 		child.disconnectNode(childSynapse);
 		child.connectWithRandomWeight(childSynapse
 			.getConnectionDestination());
 	    } else {
-		Synapse parent2Synapse = parent2.getNodeConnections().get(
-			parent1.getConnectedNodes().indexOf(parentSynapse));
-
 		Synapse childSynapse = null;
-		if (parentSynapse.getConnectionDestination().equals(
-			parent2Synapse)) {
-		    child.connectNodeToNode(
-			    parentSynapse.getConnectionDestination(),
-			    parentSynapse.getSynapseWeight()
-				    + INCREASE_WEIGHT_ON_MATCH);
-		    continue;
+		ArrayList<Synapse> parent2Synapses = (ArrayList<Synapse>) parent2
+			.getNodeConnections().clone();
+		for (Synapse parent2Synapse : parent2Synapses) {
+		    if (parentSynapse.getConnectionDestination().equals(
+			    parent2Synapse)) {
+			child.connectNodeToNode(
+				parentSynapse.getConnectionDestination(),
+				parentSynapse.getSynapseWeight()
+					+ INCREASE_WEIGHT_ON_MATCH);
+			continue;
 
-		}
-		if (parent2Synapse.getSynapseWeight() > parentSynapse
-			.getSynapseWeight()) {
-		    childSynapse = parent2Synapse.clone();
-		} else if (parentSynapse.getSynapseWeight() > parent2Synapse
-			.getSynapseWeight()) {
-		    childSynapse = parentSynapse.clone();
+		    }
+		    if (parent2Synapse.getSynapseWeight() > parentSynapse
+			    .getSynapseWeight()) {
+			childSynapse = parent2Synapse.clone();
+		    } else if (parentSynapse.getSynapseWeight() > parent2Synapse
+			    .getSynapseWeight()) {
+			childSynapse = parentSynapse.clone();
 
-		}
-		if (childSynapse != null) {
-		    child.connectNodeToNode(
-			    childSynapse.getConnectionDestination(),
-			    childSynapse.getSynapseWeight()
-				    + INCREASE_WEIGHT_ON_CHOOSE);
-		}
-		if (parentSynapse.getSynapseWeight() < NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD) {
-		    parentSynapse.severConnections();
+		    }
+		    if (childSynapse != null) {
+			child.connectNodeToNode(
+				childSynapse.getConnectionDestination(),
+				childSynapse.getSynapseWeight()
+					+ INCREASE_WEIGHT_ON_CHOOSE);
+		    }
+		    if (parentSynapse.getSynapseWeight() < NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD) {
+			parentSynapse.severConnections();
+		    }
 		}
 
 	    }

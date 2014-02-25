@@ -3,6 +3,7 @@ package me.dylan.NNL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Set;
 
 import me.dylan.NNL.NNLib.NodeType;
 
@@ -41,6 +42,9 @@ public class HiddenNode extends Node {
     public void sendPulseToAppendData(Node sender) {
 	try {
 	    Value vInNode = getNodeInfo().appendToValue(sender.getNodeInfo());
+	    setActive(true);
+	    if (sender instanceof HiddenNode)
+		((HiddenNode) sender).setActive(false);
 	    setHiddenValueInNode(vInNode, sender.getNodeVariety());
 	} catch (Exception ex) {
 	    // System.out.println();
@@ -59,12 +63,11 @@ public class HiddenNode extends Node {
 		if (in.active)
 		    this.setActive(true);
 	    } else if (synapse.getConnectionDestination() instanceof HiddenNode) {
-		HiddenNode connectedHidden = (HiddenNode) synapse
-			.getConnectionDestination();
-		if (this.active) {
-		    connectedHidden.sendPulseToAppendData(this);
-		}
+		if (this.isActive())
+		    ((HiddenNode) synapse.getConnectionDestination())
+			    .sendPulseToAppendData(this);
 	    } else if (synapse.getConnectionDestination() instanceof Output) {
+
 		Output connectedOutput = (Output) synapse
 			.getConnectionDestination();
 		if (this.active) {
@@ -87,10 +90,28 @@ public class HiddenNode extends Node {
 	// }
     }
 
+    public ArrayList<HiddenNode> traceBack() {
+	ArrayList<HiddenNode> trace = new ArrayList<HiddenNode>();
+	trace.addAll(connectedHiddenNodes);
+	for (HiddenNode node : connectedHiddenNodes) {
+	    if (!trace.contains(node))
+		trace.addAll(node.traceBack());
+	}
+	return trace;
+    }
+
     public void randomizeNodeConnections(NNetwork parentNet) {
 	Random rand = NNLib.GLOBAL_RANDOM;
-	datain.clear();
-	dataout.clear();
+	Set<Input> dataInputs = datain.keySet();
+	Set<Output> dataOutputs = dataout.keySet();
+	for (Input in : dataInputs) {
+	    in.disconnectNode(this);
+	}
+	for (Output out : dataOutputs) {
+	    out.disconnectNode(this);
+	}
+	// datain.clear();
+	// dataout.clear();
 	connectedHiddenNodes.clear();
 	if (!parentNet.getInputNodesInNetwork().isEmpty()) {
 	    for (int i = 0; i < parentNet.getInputNodesInNetwork().size(); i++) {
@@ -116,13 +137,10 @@ public class HiddenNode extends Node {
 	    }
 	}
 	if (!parentNet.getHiddenNodesInNetwork().isEmpty())
-	    for (int i = 0; i < parentNet
-		    .getHiddenNodesInNetwork().size(); i++) {
-		 if(rand.nextInt(101) <= NNLib.CHANCE_FOR_HIDDEN_CONNECTION)
-		this.connectedHiddenNodes.add(parentNet
-			.getHiddenNodesInNetwork().get(i));
-		connectWithRandomWeight(parentNet.getHiddenNodesInNetwork()
-			.get(i));
+	    for (int i = 0; i < parentNet.getHiddenNodesInNetwork().size(); i++) {
+		if (rand.nextInt(101) <= NNLib.CHANCE_FOR_HIDDEN_CONNECTION)
+		    connectWithRandomWeight(parentNet.getHiddenNodesInNetwork()
+			    .get(i));
 	    }
 
     }

@@ -106,7 +106,7 @@ public class NNetwork {
 	    return 0;
 	double percentMatch = StringUtil.calculateStringSimilarityPercentage(getNetworkOutput(),
 		desiredOutput);
-	return percentMatch;
+	return percentMatch * 100;
     }
 
     public boolean isNetworkInLearningMode() {
