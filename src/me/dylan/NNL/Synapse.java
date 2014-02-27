@@ -1,11 +1,12 @@
 package me.dylan.NNL;
 
 public class Synapse {
-    private Node origin, destination;
-    private int weight = 0;
+    private Node origin;
+    private Node destination;
+    private double weight = 0;
     private boolean hasPaintedInTick = false;
 
-    public Synapse(Node origin, Node destination, int weight) {
+    public Synapse(Node origin, Node destination, double weight) {
 	this.setConnectionOrigin(origin);
 	this.setConnectionDestination(destination);
 	setSynapseWeight(weight);
@@ -16,8 +17,12 @@ public class Synapse {
     }
 
     public void severConnections() {
-	origin.getNodeConnections().remove(this);
-	destination.getNodeConnections().remove(this);
+	if (origin != null)
+	    origin.disconnectNode(this);
+	else if(destination != null)
+	    destination.disconnectNode(this);
+	origin = null;
+	destination = null;
     }
 
     public void setConnectionOrigin(Node origin) {
@@ -32,12 +37,12 @@ public class Synapse {
 	this.destination = destination;
     }
 
-    public int getSynapseWeight() {
+    public double getSynapseWeight() {
 	return weight;
     }
 
-    public void setSynapseWeight(int weight) {
-	this.weight = weight;
+    public void setSynapseWeight(double d) {
+	this.weight = d;
     }
 
     @Override
@@ -52,5 +57,10 @@ public class Synapse {
 
     public void setHasPaintedInTick(boolean hasPaintedInTick) {
 	this.hasPaintedInTick = hasPaintedInTick;
+    }
+    
+    @Override
+    public String toString() {
+	return "A: "+origin+" B:"+destination+" Weight:"+weight;
     }
 }

@@ -2,6 +2,7 @@ package me.dylan.NNL;
 
 import java.util.ArrayList;
 
+import me.dylan.NNL.NNLib.NodeType;
 import me.dylan.NNL.Utils.StringUtil;
 
 /**
@@ -47,8 +48,8 @@ public class NNetwork {
 	}
     }
 
-    public void addManyHiddenNodesToNetwork(ArrayList<HiddenNode> Hiddens) {
-	for (HiddenNode Hidden : Hiddens) {
+    public void addManyHiddenNodesToNetwork(ArrayList<HiddenNode> HiddenNodes) {
+	for (HiddenNode Hidden : HiddenNodes) {
 	    addHiddenNodeToNetwork(Hidden);
 	}
     }
@@ -81,6 +82,7 @@ public class NNetwork {
 	networkHidden.add(Hidden);
     }
 
+    @Deprecated
     public void randomizeConnections() {
 	networkSynapses.clear();
 	for (HiddenNode hidden : networkHidden) {
@@ -92,20 +94,42 @@ public class NNetwork {
 	}
     }
 
+    public void connectAll() {
+	// for (Input inNode : getInputNodesInNetwork()) {
+	// for (Output outNode : getOutputNodesInNetwork()) {
+	// for (HiddenNode hidden : getHiddenNodesInNetwork()) {
+	// hidden.connectWithRandomWeight(outNode, this);
+	// }
+	// outNode.connectWithRandomWeight(inNode, this);
+	//
+	// }
+	// }
+	for (Node node : getNodesInNetwork()) {
+	    for (Node node2 : getNodesInNetwork()) {
+		if ((node.getNodeVariety() != NodeType.OUTPUT)
+			&& (node.getNodeVariety() != node2.getNodeVariety() || node
+				.getNodeVariety() == NodeType.HIDDEN))
+		    node.connectWithRandomWeight(node2, this);
+	    }
+	}
+    }
+
     public String getNetworkOutput() {
 	String result = "";
 	for (Output out : getOutputNodesInNetwork()) {
-	    result += out.getOutputValue().data;
+	    String outPulse = out.getOutputValue().getValue();
+	    if (!outPulse.isEmpty())
+		result += "|||||" + outPulse;
 	}
 	return result;
     }
 
     public double getNetworkSimilarityPercentage(String desiredOutput) {
 	String netOut = getNetworkOutput();
-	if(netOut.isEmpty())
+	if (netOut.isEmpty())
 	    return 0;
-	double percentMatch = StringUtil.calculateStringSimilarityPercentage(getNetworkOutput(),
-		desiredOutput);
+	double percentMatch = StringUtil.calculateStringSimilarityPercentage(
+		netOut, desiredOutput);
 	return percentMatch * 100;
     }
 
@@ -121,7 +145,32 @@ public class NNetwork {
 	return networkSynapses;
     }
 
-    public void setNetworkSynapses(ArrayList<Synapse> networkSynapses) {
-	this.networkSynapses = networkSynapses;
+    public void removeUnusedSynapses() {
+	ArrayList<Synapse> netSynapsesClone = (ArrayList<Synapse>) getNetworkSynapses()
+		.clone();
+	for (Synapse synapse : netSynapsesClone) {
+	    if (synapse == null) {
+		removeSynapse(synapse);
+		continue;
+	    }
+	    if (synapse.getConnectionDestination() == null
+		    || synapse.getConnectionOrigin() == null) {
+		removeSynapse(synapse);
+	    }
+	}
+    }
+
+    public void clearSynapses() {
+	networkSynapses.clear();
+    }
+
+    public void addSynapse(Synapse synapse) {
+	networkSynapses.add(synapse);
+    }
+
+    public void removeSynapse(Synapse connection) {
+	if (connection != null)
+	    connection.severConnections();
+	networkSynapses.remove(connection);
     }
 }

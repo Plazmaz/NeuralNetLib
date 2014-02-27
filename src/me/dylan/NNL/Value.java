@@ -28,7 +28,7 @@ public class Value {
      * @param value
      */
     public Value(String value) {
-	this.setValue(value);
+	this.setValue(value.intern());
     }
 
     public String getValue() {
@@ -37,7 +37,7 @@ public class Value {
 
     public void setValue(String value) {
 
-	this.data = value;
+	this.data = value.intern();
     }
 
     // public float getMin() {

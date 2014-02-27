@@ -10,10 +10,11 @@ public class Node {
     private ArrayList<Synapse> connections = new ArrayList<Synapse>();
     protected NodeType nodeVariety;
     public static final int NODE_DRAW_SIZE = 10;
+    int maxDataStorage = 50; // this is in words delimited by spaces
     public NodePaint graphicsRepresentationObject = new NodePaint(
 	    NODE_DRAW_SIZE, Color.GREEN);
     protected Value information = new Value();
-
+    protected Value originalValue;
     public NodeType getNodeVariety() {
 	return nodeVariety;
     }
@@ -23,21 +24,25 @@ public class Node {
      * 
      * @param destination
      */
-    public void connectWithRandomWeight(Node destination) {
+    public void connectWithRandomWeight(Node destination, NNetwork parentNetwork) {
 	int weight = NNLib.GLOBAL_RANDOM.nextInt(NNLib.MAX_CONNECTION_WEIGHT);
 	if (weight > NNLib.MAX_CONNECTION_WEIGHT) {
 	    weight = NNLib.MAX_CONNECTION_WEIGHT;
 	}
-	this.connections.add(new Synapse(this, destination, weight));
-	destination.connections.add(new Synapse(destination, this, weight));
+	Synapse connection = new Synapse(this, destination, weight);
+	this.connections.add(connection);
+	destination.connections.add(connection);
+	parentNetwork.addSynapse(connection);
     }
 
-    public void connectNodeToNode(Node destination, int weight) {
+    public void connectNodeToNode(Node destination, double weight, NNetwork parentNetwork) {
 	if (weight > NNLib.MAX_CONNECTION_WEIGHT) {
 	    weight = NNLib.MAX_CONNECTION_WEIGHT;
 	}
-	this.connections.add(new Synapse(this, destination, weight));
-	destination.connections.add(new Synapse(destination, this, weight));
+	Synapse connection = new Synapse(this, destination, weight);
+	this.connections.add(connection);
+	parentNetwork.addSynapse(connection);
+	destination.connections.add(connection);
     }
 
     public void disconnectNode(Synapse bridge) {
@@ -93,5 +98,54 @@ public class Node {
 
     public void setNodeInfo(String info) {
 	this.information = new Value(info);
+	if(this.originalValue == null) {
+	    this.originalValue = new Value(info);
+	}
     }
+
+    public ArrayList<Node> traceBack(boolean backwards) {
+	ArrayList<Node> trace = new ArrayList<Node>();
+	trace.add(this);
+	for (Synapse connection : getNodeConnections()) {
+	    Node node = backwards ? connection.getConnectionDestination()
+		    : connection.getConnectionOrigin();
+	    if (!trace.contains(node))
+		trace.addAll(node.traceBack(backwards));
+	}
+	return trace;
+    }
+
+    public ArrayList<Synapse> traceBackSynapses(boolean backwards,
+	    NNetwork parentNetwork) {
+	ArrayList<Synapse> validConnections = new ArrayList<Synapse>();
+	parentNetwork.removeUnusedSynapses();
+	for (Synapse synapse : parentNetwork.getNetworkSynapses()) {
+	    if ((!backwards && synapse.getConnectionOrigin().equals(
+		    synapse.getConnectionOrigin()))
+		    || (backwards && synapse.getConnectionDestination().equals(
+			    synapse.getConnectionDestination()))) {
+		validConnections.add(synapse);
+	    }
+	}
+	return validConnections;
+    }
+    // public ArrayList<Synapse> traceBackSynapses(boolean backwards) {
+    // boolean hasConnection = false;
+    // ArrayList<Synapse> trace = new ArrayList<Synapse>();
+    // for (Synapse connection : getNodeConnections()) {
+    // hasConnection = true;
+    // Node node = backwards ? connection.getConnectionDestination()
+    // : connection.getConnectionOrigin();
+    // if (!trace.contains(connection)) {
+    // trace.add(connection);
+    // ArrayList<Synapse> returnTrace = node.traceBackSynapses(backwards);
+    // if(returnTrace.isEmpty())
+    // return trace;
+    // trace.addAll(returnTrace);
+    // }
+    // }
+    // if(!hasConnection)
+    // return null;
+    // return trace;
+    // }
 }

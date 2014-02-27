@@ -31,14 +31,4 @@ public class Output extends Node {
     public Value getOutputValue() {
 	return information;
     }
-
-    /**
-     * Set the value of this output
-     * 
-     * @param value
-     *            - This is the power/value of the output.
-     */
-    public void setValue(Value value) {
-	this.information = value;
-    }
 }

@@ -1,16 +1,23 @@
 package me.dylan.NNL.Utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import me.dylan.NNL.Test.TestUtil;
 
 public class StringUtil {
     public static double compareStrings(String stringA, String stringB) {
 	ArrayList<String> pairs1 = getLetterPairsFromWords(stringA);
-	ArrayList<String> pairs2 = getLetterPairsFromWords(stringB);/*new ArrayList<String>(
-		Arrays.asList(extractLetterTriplets(stringB.toUpperCase())));*/
+	ArrayList<String> pairs2 = getLetterPairsFromWords(stringB);/*
+								     * new
+								     * ArrayList
+								     * <String>(
+								     * Arrays
+								     * .asList(
+								     * extractLetterTriplets
+								     * (stringB.
+								     * toUpperCase
+								     * ())));
+								     */
 	int intersection = 0;
 	int union = pairs1.size() + pairs2.size();
 	for (int i = 0; i < pairs1.size(); i++) {
@@ -24,7 +31,7 @@ public class StringUtil {
 		}
 	    }
 	}
-	return ((2.0 * intersection) / ((double)union));
+	return ((2.0 * intersection) / ((double) union));
     }
 
     /*
@@ -60,13 +67,13 @@ public class StringUtil {
 	return formatTemp.toArray(new String[formatTemp.size()]);
     }
 
-    @Deprecated
     public static ArrayList<String> getLetterPairsFromWords(String str) {
 	ArrayList<String> pairs = new ArrayList<String>();
 	for (String s : str.split("\\s")) {
-	    for (String pair : extractLetterTriplets(s)) {
-		pairs.add(pair);
-	    }
+	    if (!s.isEmpty())
+		for (String pair : extractLetterTriplets(s)) {
+		    pairs.add(pair);
+		}
 	}
 	return pairs;
     }

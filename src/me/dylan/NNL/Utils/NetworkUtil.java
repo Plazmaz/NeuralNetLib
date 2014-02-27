@@ -4,11 +4,12 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
+import me.dylan.NNL.HiddenNode;
 import me.dylan.NNL.Input;
 import me.dylan.NNL.NNLib;
 import me.dylan.NNL.NNLib.NodeType;
 import me.dylan.NNL.NNetwork;
-import me.dylan.NNL.HiddenNode;
+import me.dylan.NNL.Node;
 import me.dylan.NNL.Output;
 import me.dylan.NNL.Synapse;
 import me.dylan.NNL.Value;
@@ -25,22 +26,88 @@ public class NetworkUtil {
 
     public static NNetwork initializeNetwork(int HiddenCount, int inputCount,
 	    int outputCount) {
-	ArrayList<HiddenNode> networkHiddens = new ArrayList<HiddenNode>();
-	ArrayList<Input> inputHiddens = new ArrayList<Input>();
-	ArrayList<Output> outputHiddens = new ArrayList<Output>();
+	ArrayList<HiddenNode> networkHiddenNodes = new ArrayList<HiddenNode>();
+	ArrayList<Input> inputHiddenNodes = new ArrayList<Input>();
+	ArrayList<Output> outputHiddenNodes = new ArrayList<Output>();
 	for (int i = 0; i < inputCount; i++) {
-	    inputHiddens.add(new Input());
+	    inputHiddenNodes.add(new Input());
 	}
 	for (int i = 0; i < outputCount; i++) {
-	    outputHiddens.add(new Output());
+	    outputHiddenNodes.add(new Output());
 	}
+	NNetwork net = new NNetwork(inputHiddenNodes, networkHiddenNodes,
+		outputHiddenNodes);
 	for (int i = 0; i < HiddenCount; i++) {
 	    HiddenNode Hidden = new HiddenNode();
-	     Hidden.addManyInputNodes(inputHiddens);
-	     Hidden.addManyOutputNodes(outputHiddens);
-	    networkHiddens.add(Hidden);
+	    Hidden.addManyInputNodes(inputHiddenNodes, net);
+	    Hidden.addManyOutputNodes(outputHiddenNodes, net);
+	    networkHiddenNodes.add(Hidden);
 	}
-	return new NNetwork(inputHiddens, networkHiddens, outputHiddens);
+	return net;
+    }
+
+    private static void addRandomSynapse(NNetwork parentNetwork,
+	    Synapse seedSynapse) {
+
+	parentNetwork.addSynapse(randomizeSynapse(parentNetwork, seedSynapse));
+    }
+
+    public static void updateSynapseGenerations(NNetwork parentNetwork) {
+	ArrayList<Synapse> synapsesClone = (ArrayList<Synapse>) parentNetwork
+		.getNetworkSynapses().clone();
+	double weightToDistribute = 0;
+	double avgWeight = 0;
+	for (Synapse netSynapse : synapsesClone) {
+	    if (parentNetwork.getNetworkSynapses().isEmpty())
+		break;
+	    if (NNLib.GLOBAL_RANDOM.nextInt(101) <= NNLib.SYNAPSE_MUTATION_CHANCE) {
+		addRandomSynapse(parentNetwork, netSynapse);
+	    }
+	    if (netSynapse.getSynapseWeight() < NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD) {
+
+		parentNetwork.removeSynapse(netSynapse);
+//		addRandomSynapse(parentNetwork, netSynapse);
+	    } else {
+		avgWeight += netSynapse.getSynapseWeight();
+		weightToDistribute += netSynapse.getSynapseWeight();
+	    }
+	}
+	avgWeight /= synapsesClone.size();
+	// parentNetwork.removeUnusedSynapses();
+	synapsesClone = (ArrayList<Synapse>) parentNetwork.getNetworkSynapses()
+		.clone();
+	for (Synapse netSynapse : synapsesClone) {
+	    if (parentNetwork.getNetworkSynapses().isEmpty())
+		break;
+	    if (netSynapse.getSynapseWeight() < avgWeight
+		    + NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD) {
+		// randomizeSynapse(parentNetwork, netSynapse);
+		if (parentNetwork.getNetworkSynapses().isEmpty()) {
+		    // if
+		    // (parentNetwork.getNetworkSynapses().contains(netSynapse))
+		    // {
+		    Synapse netSynapseClone = netSynapse.clone();
+
+		    parentNetwork.getNetworkSynapses().set(
+			    parentNetwork.getNetworkSynapses().indexOf(
+				    netSynapse),
+			    randomizeSynapse(parentNetwork, netSynapseClone));
+
+		    netSynapse.severConnections();
+
+		    // }
+
+		} else {
+		    if (netSynapse.getSynapseWeight() > 0)
+			netSynapse.setSynapseWeight(netSynapse
+				.getSynapseWeight() - 1);
+		}
+	    } else {
+		netSynapse.setSynapseWeight(netSynapse.getSynapseWeight()
+			+ weightToDistribute / synapsesClone.size());
+		weightToDistribute -= weightToDistribute / synapsesClone.size();
+	    }
+	}
     }
 
     /**
@@ -75,11 +142,9 @@ public class NetworkUtil {
 							        */
 			Hidden.randomizeNodeConnections(childNet);
 		    } else {
-			    breedHiddens(
-				    Hidden,
-				    HiddenNodes.get(HiddenNodes
-						    .indexOf(Hidden)),
-				    mutationChance, childNet);
+			breedHiddenNodes(Hidden,
+				HiddenNodes.get(HiddenNodes.indexOf(Hidden)),
+				mutationChance, childNet);
 		    }
 		}
 	    }
@@ -88,8 +153,8 @@ public class NetworkUtil {
     }
 
     /**
-     * 'Breed' the two Hiddens together, combining random parental features.
-     * This is more fusion than asexual or sexual reproduction
+     * 'Breed' the two Hidden Nodes together, combining random parental
+     * features. This is more fusion than asexual or sexual reproduction
      * 
      * @param parent1
      *            The first parent
@@ -100,7 +165,7 @@ public class NetworkUtil {
      *            percentage(suggested: 30%)
      * @return
      */
-    public static HiddenNode breedHiddens(HiddenNode parent1,
+    public static HiddenNode breedHiddenNodes(HiddenNode parent1,
 	    HiddenNode parent2, int mutationChance, NNetwork parentNet) {
 	HiddenNode child = new HiddenNode();
 	ArrayList<Synapse> parent1Synapses = (ArrayList<Synapse>) parent1
@@ -108,14 +173,7 @@ public class NetworkUtil {
 	for (Synapse parentSynapse : parent1Synapses) {
 
 	    if (NNLib.GLOBAL_RANDOM.nextInt(101) <= mutationChance) {
-		Synapse childSynapse = parentSynapse.clone();
-		childSynapse.setConnectionDestination(parentNet
-			.getNodesInNetwork().get(
-				NNLib.GLOBAL_RANDOM.nextInt(parentNet
-					.getNodesInNetwork().size())));
-		child.disconnectNode(childSynapse);
-		child.connectWithRandomWeight(childSynapse
-			.getConnectionDestination());
+		randomizeSynapse(parentNet, parentSynapse);
 	    } else {
 		Synapse childSynapse = null;
 		ArrayList<Synapse> parent2Synapses = (ArrayList<Synapse>) parent2
@@ -126,7 +184,7 @@ public class NetworkUtil {
 			child.connectNodeToNode(
 				parentSynapse.getConnectionDestination(),
 				parentSynapse.getSynapseWeight()
-					+ INCREASE_WEIGHT_ON_MATCH);
+					+ INCREASE_WEIGHT_ON_MATCH, parentNet);
 			continue;
 
 		    }
@@ -142,7 +200,7 @@ public class NetworkUtil {
 			child.connectNodeToNode(
 				childSynapse.getConnectionDestination(),
 				childSynapse.getSynapseWeight()
-					+ INCREASE_WEIGHT_ON_CHOOSE);
+					+ INCREASE_WEIGHT_ON_CHOOSE, parentNet);
 		    }
 		    if (parentSynapse.getSynapseWeight() < NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD) {
 			parentSynapse.severConnections();
@@ -154,15 +212,15 @@ public class NetworkUtil {
 	return child;
     }
 
-    public static Color returnWeightColor(int colorVariable) {
+    public static Color returnWeightColor(double d) {
 	int oneThirdConnectionWeight = NNLib.MAX_CONNECTION_WEIGHT / 3;
-	if (colorVariable <= oneThirdConnectionWeight) {
+	if (d <= oneThirdConnectionWeight) {
 	    return Color.BLUE;
 	}
-	if (colorVariable <= oneThirdConnectionWeight * 2) {
+	if (d <= oneThirdConnectionWeight * 2) {
 	    return Color.GREEN;
 	}
-	if (colorVariable <= NNLib.MAX_CONNECTION_WEIGHT) {
+	if (d <= NNLib.MAX_CONNECTION_WEIGHT) {
 	    return Color.RED;
 	}
 	return Color.WHITE;
@@ -188,5 +246,34 @@ public class NetworkUtil {
 	HiddenNode hiddenOut = new HiddenNode();
 	hiddenOut.setHiddenValueInNode(new Value(incomingData), senderType);
 	return hiddenOut;
+    }
+
+    public static Synapse randomizeSynapse(NNetwork parentNetwork,
+	    Synapse synapseToRandomize) {
+	Synapse randSynapse = synapseToRandomize.clone();
+	Node destination = null;
+	Node origin = null;
+	parentNetwork.removeUnusedSynapses();
+	int i = 0;
+	while (i == 0
+		|| destination == synapseToRandomize.getConnectionDestination()
+		|| origin == synapseToRandomize.getConnectionOrigin()) {
+	    destination = parentNetwork.getNodesInNetwork().get(
+		    NNLib.GLOBAL_RANDOM.nextInt(parentNetwork
+			    .getNodesInNetwork().size()));
+
+	    origin = parentNetwork.getNodesInNetwork().get(
+		    NNLib.GLOBAL_RANDOM.nextInt(parentNetwork
+			    .getNodesInNetwork().size()));
+	    i++;
+
+	}
+	destination.getNodeConnections().add(randSynapse);
+	origin.getNodeConnections().add(randSynapse);
+	randSynapse.setConnectionDestination(destination);
+	randSynapse.setConnectionOrigin(origin);
+	randSynapse.setSynapseWeight(NNLib.GLOBAL_RANDOM
+		.nextInt(NNLib.MAX_CONNECTION_WEIGHT));
+	return randSynapse;
     }
 }

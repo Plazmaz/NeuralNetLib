@@ -12,7 +12,7 @@ public class NodePaint {
     Color color;
 
     /**
-     * This class is for painting all nodes(Hiddens, inputs, outputs)
+     * This class is for painting all nodes(HiddenNodes, inputs, outputs)
      * 
      * @param x
      * @param nodeColor
@@ -36,8 +36,8 @@ public class NodePaint {
 		Display.setDisplayBackgroundColor(Color.YELLOW);
 	}
 	Display.fillOval(nodeLocation.x, nodeLocation.y, size, size);
+	Display.drawString(x, y, nodeToPaint.getNodeInfo().getValue());
 	Display.setDisplayBackgroundColor(original);
-	// Display.drawString(x, y, nodeToPaint.getNodeInfo().getValue());
     }
 
     public void setColor(Color c) {

@@ -1,11 +1,15 @@
 package me.dylan.NNL.Visualizer;
 
+import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Robot;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -19,10 +23,15 @@ import javax.swing.JPanel;
 public class Display {
     private static JFrame main;
     private static JPanel displayPanel;
-    static Graphics graphics;
-
+    private static Graphics graphics;
+    private static Robot bot;
     public static void showDisplay(String title, Dimension size,
 	    Color backgroundFill) {
+	try {
+	    bot = new Robot();
+	} catch (AWTException e) {
+	    e.printStackTrace();
+	}
 	main = new JFrame(title);
 	displayPanel = new JPanel();
 	displayPanel.setBackground(backgroundFill);
@@ -31,6 +40,26 @@ public class Display {
 	main.setVisible(true);
 	main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	graphics = displayPanel.getGraphics();
+    }
+
+    public static int getWidth() {
+	return main.getWidth();
+    }
+
+    public static int getHeight() {
+	return main.getHeight();
+    }
+
+    public static void clearRect(int x, int y, int width, int height) {
+	getGraphics().clearRect(x, y, width, height);
+    }
+
+    public static void addMouseMotionListener(MouseMotionListener listener) {
+	displayPanel.addMouseMotionListener(listener);
+    }
+
+    public static void addMouseListener(MouseListener listener) {
+	displayPanel.addMouseListener(listener);
     }
 
     public static void setStrokeWidth(int width) {
@@ -61,6 +90,10 @@ public class Display {
 	displayPanel.revalidate();
     }
 
+    public static void fillRect(int x, int y, int width, int height) {
+	getGraphics().fillRect(x, y, width, height);
+    }
+
     public static Color getDisplayBackgroundColor() {
 	return getGraphics().getColor();
     }
@@ -68,7 +101,14 @@ public class Display {
     public static void setOffset(Point offset) {
 	getGraphics().translate(offset.x, offset.y);
     }
-
+    
+    public static Point getWindowLocOnScreen() {
+	return main.getLocationOnScreen();
+    }
+    
+    public static void setMouseLocation(Point location) {
+	bot.mouseMove((int)location.getX(), (int)location.getY());
+    }
     // public static void updateDoubleBuffer() {
     // displayPanel.update(getGraphics());
     // }

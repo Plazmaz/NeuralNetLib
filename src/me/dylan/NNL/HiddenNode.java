@@ -1,113 +1,99 @@
 package me.dylan.NNL;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
-import java.util.Set;
 
 import me.dylan.NNL.NNLib.NodeType;
 
 public class HiddenNode extends Node {
-    public HashMap<Output, Integer> dataout = new HashMap<Output, Integer>();
-    public HashMap<Input, Integer> datain = new HashMap<Input, Integer>();
+    public ArrayList<Output> dataout = new ArrayList<Output>();
+    public ArrayList<Input> datain = new ArrayList<Input>();
     ArrayList<HiddenNode> connectedHiddenNodes = new ArrayList<HiddenNode>();
     private boolean active = false;
+    int pulsesSeen = 0;
 
     public HiddenNode() {
 	nodeVariety = NodeType.HIDDEN;
     }
 
-    public void addSingleInputNode(Input input) {
-	connectWithRandomWeight(input);
-	datain.put(input, 0);
+    public void addSingleInputNode(Input input, NNetwork parentNet) {
+	connectWithRandomWeight(input, parentNet);
+	datain.add(input);
     }
 
-    public void addManyInputNodes(ArrayList<Input> inputs) {
+    public void addManyInputNodes(ArrayList<Input> inputs, NNetwork parentNet) {
 	for (Input i : inputs) {
-	    addSingleInputNode(i);
+	    addSingleInputNode(i, parentNet);
 	}
     }
 
-    public void addSingleOutputNode(Output output) {
-	connectWithRandomWeight(output);
-	dataout.put(output, 0);
+    public void addSingleOutputNode(Output output, NNetwork parentNet) {
+	connectWithRandomWeight(output, parentNet);
+	dataout.add(output);
     }
 
-    public void addManyOutputNodes(ArrayList<Output> outputs) {
+    public void addManyOutputNodes(ArrayList<Output> outputs, NNetwork parentNet) {
 	for (Output out : outputs) {
-	    addSingleOutputNode(out);
+	    addSingleOutputNode(out, parentNet);
 	}
     }
 
     public void sendPulseToAppendData(Node sender) {
-	try {
-	    Value vInNode = getNodeInfo().appendToValue(sender.getNodeInfo());
-	    setActive(true);
-	    if (sender instanceof HiddenNode)
-		((HiddenNode) sender).setActive(false);
-	    setHiddenValueInNode(vInNode, sender.getNodeVariety());
-	} catch (Exception ex) {
-	    // System.out.println();
-	    ex.printStackTrace();
+	pulsesSeen++;
+	// if (pulsesSeen % 2 == 0 && originalValue != null) {
+	// setNodeInfo(originalValue.getValue());
+	// return;
+	// }
+
+	if (getNodeInfo().getValue().length()
+		+ sender.getNodeInfo().getValue().length() > maxDataStorage) {
+	    String tmp = sender.getNodeInfo().getValue();
+	    getNodeInfo().setValue("");
+	    for (int i = tmp.split(" ").length - 1; i > maxDataStorage; i--) {
+		setNodeInfo(getNodeInfo().appendToValue(
+			new Value(tmp.split(" ")[i])).getValue());
+	    }
 	}
-	this.setActive(true);
-	if (sender instanceof HiddenNode)
+	// Value vInNode = getNodeInfo().appendToValue(sender.getNodeInfo());
+	// sender.setNodeInfo("");
+	setActive(true);
+	// setHiddenValueInNode(vInNode, sender.getNodeVariety());
+	// if (sender.originalValue != null)
+	// sender.setNodeInfo(sender.originalValue.getValue());
+	for (Output out : dataout) {
+	    out.setNodeInfo(getNodeInfo().getValue());
+	}
+	if (sender.getNodeVariety() == NodeType.HIDDEN)
 	    ((HiddenNode) sender).setActive(false);
 	// setHiddenValueInNode(, sender.getNodeVariety());
     }
 
     public void doTick() {
 	for (Synapse synapse : getNodeConnections()) {
-	    if (synapse.getConnectionDestination() instanceof Input) {
-		Input in = (Input) synapse.getConnectionDestination();
-		if (in.active)
+	    if (synapse.getConnectionOrigin().getNodeVariety() == NodeType.INPUT) {
+		Input in = (Input) synapse.getConnectionOrigin();
+		if (in.active) {
 		    this.setActive(true);
-	    } else if (synapse.getConnectionDestination() instanceof HiddenNode) {
+		    // in.active = false;
+		}
+	    } else if (synapse.getConnectionDestination().getNodeVariety() == NodeType.HIDDEN) {
 		if (this.isActive())
 		    ((HiddenNode) synapse.getConnectionDestination())
 			    .sendPulseToAppendData(this);
-	    } else if (synapse.getConnectionDestination() instanceof Output) {
-
-		Output connectedOutput = (Output) synapse
-			.getConnectionDestination();
-		if (this.active) {
-		    Value concattedValue = connectedOutput.getOutputValue();
-		    concattedValue = concattedValue
-			    .appendToValue(getNodeInfo());
-		    connectedOutput.setValue(concattedValue);
-		    // System.out.println(connectedOutput.getOutputValue());
-		}
+	    } else if (synapse.getConnectionDestination().getNodeVariety() == NodeType.OUTPUT) {
+		if (this.isActive())
+		    ((Output) synapse.getConnectionDestination())
+			    .setNodeInfo(getNodeInfo().getValue());
 	    }
 	}
-
-	// Old regex implementation:
-	// String[] regexes = RegParams.regParamsDel.split(", ");
-	// for (Output out : dataout.keySet()) {
-	// // value.avg(out.getValue());
-	// HiddenValue = new Value(HiddenValue.data.replaceAll(
-	// RegParams.regParamsDel, ""));
-	// out.setValue(HiddenValue);
-	// }
-    }
-
-    public ArrayList<HiddenNode> traceBack() {
-	ArrayList<HiddenNode> trace = new ArrayList<HiddenNode>();
-	trace.addAll(connectedHiddenNodes);
-	for (HiddenNode node : connectedHiddenNodes) {
-	    if (!trace.contains(node))
-		trace.addAll(node.traceBack());
-	}
-	return trace;
     }
 
     public void randomizeNodeConnections(NNetwork parentNet) {
 	Random rand = NNLib.GLOBAL_RANDOM;
-	Set<Input> dataInputs = datain.keySet();
-	Set<Output> dataOutputs = dataout.keySet();
-	for (Input in : dataInputs) {
+	for (Input in : datain) {
 	    in.disconnectNode(this);
 	}
-	for (Output out : dataOutputs) {
+	for (Output out : dataout) {
 	    out.disconnectNode(this);
 	}
 	// datain.clear();
@@ -120,7 +106,7 @@ public class HiddenNode extends Node {
 				.getNodeConnections().isEmpty()) {
 
 		    addSingleInputNode(parentNet.getInputNodesInNetwork()
-			    .get(i));
+			    .get(i), parentNet);
 		}
 	    }
 	}
@@ -132,7 +118,7 @@ public class HiddenNode extends Node {
 				.getNodeConnections().isEmpty()) {
 
 		    addSingleOutputNode(parentNet.getOutputNodesInNetwork()
-			    .get(i));
+			    .get(i), parentNet);
 		}
 	    }
 	}
@@ -140,7 +126,7 @@ public class HiddenNode extends Node {
 	    for (int i = 0; i < parentNet.getHiddenNodesInNetwork().size(); i++) {
 		if (rand.nextInt(101) <= NNLib.CHANCE_FOR_HIDDEN_CONNECTION)
 		    connectWithRandomWeight(parentNet.getHiddenNodesInNetwork()
-			    .get(i));
+			    .get(i), parentNet);
 	    }
 
     }
@@ -163,20 +149,20 @@ public class HiddenNode extends Node {
     public ArrayList<Node> getConnectedNodes() {
 	ArrayList<Node> nodes = new ArrayList<Node>();
 	nodes.addAll(connectedHiddenNodes);
-	nodes.addAll(datain.keySet());
-	nodes.addAll(dataout.keySet());
+	nodes.addAll(datain);
+	nodes.addAll(dataout);
 	return nodes;
     }
 
-    @Override
-    public void connectNodeToNode(Node destination, int weight) {
-	if (destination instanceof Input)
-	    addSingleInputNode((Input) destination);
-	if (destination instanceof Output)
-	    addSingleOutputNode((Output) destination);
-	if (destination instanceof HiddenNode)
-	    connectedHiddenNodes.add((HiddenNode) destination);
-    }
+    // @Override
+    // public void connectNodeToNode(Node destination, double d) {
+    // if (destination instanceof Input)
+    // addSingleInputNode((Input) destination, parentNet);
+    // if (destination instanceof Output)
+    // dataout.add((Output)destination)
+    // if (destination instanceof HiddenNode)
+    // connectedHiddenNodes.add((HiddenNode) destination);
+    // }
 
     public boolean isActive() {
 	return active;
