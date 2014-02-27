@@ -33,10 +33,10 @@ public class NodePaint {
 	Display.setDisplayBackgroundColor(color);
 	if (nodeToPaint instanceof HiddenNode) {
 	    if (((HiddenNode) nodeToPaint).isActive())
-		Display.setDisplayBackgroundColor(Color.YELLOW);
+		Display.setDisplayBackgroundColor(Color.RED);
 	}
 	Display.fillOval(nodeLocation.x, nodeLocation.y, size, size);
-	Display.drawString(x, y, nodeToPaint.getNodeInfo().getValue());
+	Display.drawString(x, y, nodeToPaint.getNodeInfo().getData());
 	Display.setDisplayBackgroundColor(original);
     }
 

@@ -10,7 +10,7 @@ public class Node {
     private ArrayList<Synapse> connections = new ArrayList<Synapse>();
     protected NodeType nodeVariety;
     public static final int NODE_DRAW_SIZE = 10;
-    int maxDataStorage = 50; // this is in words delimited by spaces
+    int maxDataStorage = 5000; // this is in words delimited by spaces
     public NodePaint graphicsRepresentationObject = new NodePaint(
 	    NODE_DRAW_SIZE, Color.GREEN);
     protected Value information = new Value();

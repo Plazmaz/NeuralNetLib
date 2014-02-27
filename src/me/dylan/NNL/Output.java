@@ -31,4 +31,15 @@ public class Output extends Node {
     public Value getOutputValue() {
 	return information;
     }
+
+    public void putOrMove(String value) {
+	String infoData = information.getData();
+	if (!value.isEmpty() && information.getData().contains(value)) {
+	    information.setValue(infoData.replace(value, ""));
+	    information.appendToValue(new Value(value));
+	    setNodeInfo(value);
+	} else {
+	    setNodeInfo(information.getData() + value);
+	}
+    }
 }

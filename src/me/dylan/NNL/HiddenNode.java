@@ -45,13 +45,13 @@ public class HiddenNode extends Node {
 	// return;
 	// }
 
-	if (getNodeInfo().getValue().length()
-		+ sender.getNodeInfo().getValue().length() > maxDataStorage) {
-	    String tmp = sender.getNodeInfo().getValue();
+	if (getNodeInfo().getData().length()
+		+ sender.getNodeInfo().getData().length() > maxDataStorage) {
+	    String tmp = sender.getNodeInfo().getData();
 	    getNodeInfo().setValue("");
 	    for (int i = tmp.split(" ").length - 1; i > maxDataStorage; i--) {
 		setNodeInfo(getNodeInfo().appendToValue(
-			new Value(tmp.split(" ")[i])).getValue());
+			new Value(tmp.split(" ")[i])).getData());
 	    }
 	}
 	// Value vInNode = getNodeInfo().appendToValue(sender.getNodeInfo());
@@ -61,7 +61,7 @@ public class HiddenNode extends Node {
 	// if (sender.originalValue != null)
 	// sender.setNodeInfo(sender.originalValue.getValue());
 	for (Output out : dataout) {
-	    out.setNodeInfo(getNodeInfo().getValue());
+	    out.putOrMove(getNodeInfo().getData());
 	}
 	if (sender.getNodeVariety() == NodeType.HIDDEN)
 	    ((HiddenNode) sender).setActive(false);
@@ -74,6 +74,7 @@ public class HiddenNode extends Node {
 		Input in = (Input) synapse.getConnectionOrigin();
 		if (in.active) {
 		    this.setActive(true);
+		    sendPulseToAppendData(in);
 		    // in.active = false;
 		}
 	    } else if (synapse.getConnectionDestination().getNodeVariety() == NodeType.HIDDEN) {
@@ -81,9 +82,16 @@ public class HiddenNode extends Node {
 		    ((HiddenNode) synapse.getConnectionDestination())
 			    .sendPulseToAppendData(this);
 	    } else if (synapse.getConnectionDestination().getNodeVariety() == NodeType.OUTPUT) {
-		if (this.isActive())
-		    ((Output) synapse.getConnectionDestination())
-			    .setNodeInfo(getNodeInfo().getValue());
+		if (this.isActive()) {
+		    String nodeValue = getNodeInfo().getData();
+		    ((Output) synapse.getConnectionDestination()).
+		    	putOrMove(nodeValue);
+//		    ((Output) synapse.getConnectionDestination())
+//			    .setNodeInfo(synapse.getConnectionDestination()
+//				    .getNodeInfo().getValue()
+//				    + getNodeInfo().getValue());
+//		    this.setActive(active);
+		}
 	    }
 	}
     }

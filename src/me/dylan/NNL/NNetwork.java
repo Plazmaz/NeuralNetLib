@@ -117,7 +117,7 @@ public class NNetwork {
     public String getNetworkOutput() {
 	String result = "";
 	for (Output out : getOutputNodesInNetwork()) {
-	    String outPulse = out.getOutputValue().getValue();
+	    String outPulse = out.getOutputValue().getData();
 	    if (!outPulse.isEmpty())
 		result += "|||||" + outPulse;
 	}

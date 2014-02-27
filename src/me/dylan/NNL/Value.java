@@ -31,7 +31,7 @@ public class Value {
 	this.setValue(value.intern());
     }
 
-    public String getValue() {
+    public String getData() {
 	return data;
     }
 
@@ -59,7 +59,7 @@ public class Value {
     public Value appendToValue(Value value) {
 	Value out = new Value();
 	// try {
-	out.setValue(this.getValue() + value.data);
+	out.setValue(this.getData() + value.data);
 	// } catch (OutOfMemoryError ex) {
 	// ex.printStackTrace();
 	// // System.out.println(this.getValue());

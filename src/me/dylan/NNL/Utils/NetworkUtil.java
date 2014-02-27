@@ -63,14 +63,8 @@ public class NetworkUtil {
 	    if (NNLib.GLOBAL_RANDOM.nextInt(101) <= NNLib.SYNAPSE_MUTATION_CHANCE) {
 		addRandomSynapse(parentNetwork, netSynapse);
 	    }
-	    if (netSynapse.getSynapseWeight() < NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD) {
-
-		parentNetwork.removeSynapse(netSynapse);
-//		addRandomSynapse(parentNetwork, netSynapse);
-	    } else {
 		avgWeight += netSynapse.getSynapseWeight();
 		weightToDistribute += netSynapse.getSynapseWeight();
-	    }
 	}
 	avgWeight /= synapsesClone.size();
 	// parentNetwork.removeUnusedSynapses();
@@ -88,19 +82,15 @@ public class NetworkUtil {
 		    // {
 		    Synapse netSynapseClone = netSynapse.clone();
 
-		    parentNetwork.getNetworkSynapses().set(
-			    parentNetwork.getNetworkSynapses().indexOf(
-				    netSynapse),
+		    parentNetwork.getNetworkSynapses().add(
 			    randomizeSynapse(parentNetwork, netSynapseClone));
 
-		    netSynapse.severConnections();
 
 		    // }
 
 		} else {
-		    if (netSynapse.getSynapseWeight() > 0)
-			netSynapse.setSynapseWeight(netSynapse
-				.getSynapseWeight() - 1);
+		    if (netSynapse.getSynapseWeight() <=NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD)
+			netSynapse.severConnections();
 		}
 	    } else {
 		netSynapse.setSynapseWeight(netSynapse.getSynapseWeight()
