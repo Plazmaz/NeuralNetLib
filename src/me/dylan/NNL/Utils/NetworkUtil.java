@@ -60,9 +60,6 @@ public class NetworkUtil {
 	for (Synapse netSynapse : synapsesClone) {
 	    if (parentNetwork.getNetworkSynapses().isEmpty())
 		break;
-	    if (NNLib.GLOBAL_RANDOM.nextInt(101) <= NNLib.SYNAPSE_MUTATION_CHANCE) {
-		addRandomSynapse(parentNetwork, netSynapse);
-	    }
 		avgWeight += netSynapse.getSynapseWeight();
 		weightToDistribute += netSynapse.getSynapseWeight();
 	}
@@ -73,25 +70,27 @@ public class NetworkUtil {
 	for (Synapse netSynapse : synapsesClone) {
 	    if (parentNetwork.getNetworkSynapses().isEmpty())
 		break;
+	    if (NNLib.GLOBAL_RANDOM.nextInt(101) <= NNLib.SYNAPSE_MUTATION_CHANCE) {
+		addRandomSynapse(parentNetwork, netSynapse);
+	    }
 	    if (netSynapse.getSynapseWeight() < avgWeight
-		    + NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD) {
+		    * NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD_MULTIPLIER) {
 		// randomizeSynapse(parentNetwork, netSynapse);
-		if (parentNetwork.getNetworkSynapses().isEmpty()) {
-		    // if
-		    // (parentNetwork.getNetworkSynapses().contains(netSynapse))
-		    // {
-		    Synapse netSynapseClone = netSynapse.clone();
-
-		    parentNetwork.getNetworkSynapses().add(
-			    randomizeSynapse(parentNetwork, netSynapseClone));
-
-
-		    // }
-
-		} else {
-		    if (netSynapse.getSynapseWeight() <=NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD)
+//		if (parentNetwork.getNetworkSynapses().isEmpty()) {
+//		    // if
+//		    // (parentNetwork.getNetworkSynapses().contains(netSynapse))
+//		    // {
+//		    Synapse netSynapseClone = netSynapse.clone();
+//
+//		    parentNetwork.getNetworkSynapses().add(
+//			    randomizeSynapse(parentNetwork, netSynapseClone));
+//
+//
+//		    // }
+//
+//		} else {
 			netSynapse.severConnections();
-		}
+//		}
 	    } else {
 		netSynapse.setSynapseWeight(netSynapse.getSynapseWeight()
 			+ weightToDistribute / synapsesClone.size());
@@ -192,7 +191,7 @@ public class NetworkUtil {
 				childSynapse.getSynapseWeight()
 					+ INCREASE_WEIGHT_ON_CHOOSE, parentNet);
 		    }
-		    if (parentSynapse.getSynapseWeight() < NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD) {
+		    if (parentSynapse.getSynapseWeight() < NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD_MULTIPLIER) {
 			parentSynapse.severConnections();
 		    }
 		}

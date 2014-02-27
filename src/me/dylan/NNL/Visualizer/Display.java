@@ -8,8 +8,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Robot;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,6 +28,7 @@ public class Display {
     private static JPanel displayPanel;
     private static Graphics graphics;
     private static Robot bot;
+    static ArrayList<Character> keysDown = new ArrayList<Character>();
     public static void showDisplay(String title, Dimension size,
 	    Color backgroundFill) {
 	try {
@@ -35,6 +39,21 @@ public class Display {
 	main = new JFrame(title);
 	displayPanel = new JPanel();
 	displayPanel.setBackground(backgroundFill);
+	displayPanel.addKeyListener(new KeyListener() {
+	    @Override
+	    public void keyTyped(KeyEvent evt) {
+	    }
+	    
+	    @Override
+	    public void keyReleased(KeyEvent evt) {
+		keysDown.remove(evt.getKeyChar());
+	    }
+	    
+	    @Override
+	    public void keyPressed(KeyEvent evt) {
+		keysDown.add(evt.getKeyChar());
+	    }
+	});
 	main.setSize(size);
 	main.add(displayPanel);
 	main.setVisible(true);
@@ -49,7 +68,9 @@ public class Display {
     public static int getHeight() {
 	return main.getHeight();
     }
-
+    public static boolean isKeyDown(char key) {
+	return keysDown.contains(key);
+    }
     public static void clearRect(int x, int y, int width, int height) {
 	getGraphics().clearRect(x, y, width, height);
     }

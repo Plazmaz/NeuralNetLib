@@ -35,7 +35,8 @@ public class Output extends Node {
     public void putOrMove(String value) {
 	String infoData = information.getData();
 	if (!value.isEmpty() && information.getData().contains(value)) {
-	    information.setValue(infoData.replace(value, ""));
+	    int valueIndex = infoData.indexOf(value);
+	    information.setValue(infoData.substring(valueIndex, valueIndex+value.length()));
 	    information.appendToValue(new Value(value));
 	    setNodeInfo(value);
 	} else {
