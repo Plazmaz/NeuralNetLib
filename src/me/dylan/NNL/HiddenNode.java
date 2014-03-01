@@ -1,15 +1,17 @@
 package me.dylan.NNL;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 import me.dylan.NNL.NNLib.NodeType;
+import me.dylan.NNL.Utils.StringUtil;
 
 public class HiddenNode extends Node {
     public ArrayList<Output> dataout = new ArrayList<Output>();
     public ArrayList<Input> datain = new ArrayList<Input>();
     ArrayList<HiddenNode> connectedHiddenNodes = new ArrayList<HiddenNode>();
-    private boolean active = false;
     int pulsesSeen = 0;
 
     public HiddenNode() {
@@ -17,7 +19,7 @@ public class HiddenNode extends Node {
     }
 
     public void addSingleInputNode(Input input, NNetwork parentNet) {
-	connectWithRandomWeight(input, parentNet);
+	connectNodeToNode(input, NNLib.MAX_CONNECTION_WEIGHT / 2, parentNet);
 	datain.add(input);
     }
 
@@ -28,7 +30,7 @@ public class HiddenNode extends Node {
     }
 
     public void addSingleOutputNode(Output output, NNetwork parentNet) {
-	connectWithRandomWeight(output, parentNet);
+	connectNodeToNode(output, NNLib.MAX_CONNECTION_WEIGHT / 2, parentNet);
 	dataout.add(output);
     }
 
@@ -38,60 +40,70 @@ public class HiddenNode extends Node {
 	}
     }
 
-    public void sendPulseToAppendData(Node sender) {
+    public void sendPulseToAppendData(Node sender, Synapse dataLine) {
 	pulsesSeen++;
+
 	// if (pulsesSeen % 2 == 0 && originalValue != null) {
 	// setNodeInfo(originalValue.getValue());
 	// return;
 	// }
-
-	if (getNodeInfo().getData().length()
-		+ sender.getNodeInfo().getData().length() > maxDataStorage) {
+	String originalNodeInfo = getNodeInfo().getData();
+	if (originalNodeInfo.length() + sender.getNodeInfo().getData().length() > maxDataStorage) {
 	    String tmp = sender.getNodeInfo().getData();
 	    getNodeInfo().setValue("");
 	    for (int i = tmp.split(" ").length - 1; i > maxDataStorage; i--) {
-		setNodeInfo(getNodeInfo().appendToValue(
+		setNodeData(getNodeInfo().appendToValue(
 			new Value(tmp.split(" ")[i])).getData());
 	    }
 	}
-	// Value vInNode = getNodeInfo().appendToValue(sender.getNodeInfo());
-	// sender.setNodeInfo("");
-	setActive(true);
+	sender.setNodeData(sender.originalValue.getData());
+	spikeWithInput(dataLine);
 	// setHiddenValueInNode(vInNode, sender.getNodeVariety());
 	// if (sender.originalValue != null)
 	// sender.setNodeInfo(sender.originalValue.getValue());
 	for (Output out : dataout) {
 	    out.putOrMove(getNodeInfo().getData());
 	}
-	if (sender.getNodeVariety() == NodeType.HIDDEN)
-	    ((HiddenNode) sender).setActive(false);
+//	    sender.setActive(false);
 	// setHiddenValueInNode(, sender.getNodeVariety());
     }
 
     public void doTick() {
-	for (Synapse synapse : getNodeConnections()) {
-	    if (synapse.getConnectionOrigin().getNodeVariety() == NodeType.INPUT) {
-		Input in = (Input) synapse.getConnectionOrigin();
-		if (in.active) {
-		    this.setActive(true);
-		    sendPulseToAppendData(in);
-		    // in.active = false;
-		}
-	    } else if (synapse.getConnectionDestination().getNodeVariety() == NodeType.HIDDEN) {
-		if (this.isActive())
-		    ((HiddenNode) synapse.getConnectionDestination())
-			    .sendPulseToAppendData(this);
-	    } else if (synapse.getConnectionDestination().getNodeVariety() == NodeType.OUTPUT) {
-		if (this.isActive()) {
-		    String nodeValue = getNodeInfo().getData();
-		    ((Output) synapse.getConnectionDestination()).
-		    	putOrMove(nodeValue);
-//		    ((Output) synapse.getConnectionDestination())
-//			    .setNodeInfo(synapse.getConnectionDestination()
-//				    .getNodeInfo().getValue()
-//				    + getNodeInfo().getValue());
-//		    this.setActive(active);
-		}
+	Collections.sort(getNodeConnections(), new Comparator<Synapse>() {
+
+	    @Override
+	    public int compare(Synapse synA, Synapse synB) {
+		return (int) (synA.getSynapseWeight() - synB.getSynapseWeight());
+	    }
+
+	});
+	int i = 0;
+	Synapse outLine = null;
+	while (outLine == null || outLine.hasPulsedInTick || outLine.getConnectionDestination().equals(this)) {
+	    outLine = getNodeConnections().get(i);
+	    if (i >= getNodeConnections().size())
+		break;
+	    i++;
+	}
+	if (outLine.getConnectionDestination().getNodeVariety() == NodeType.HIDDEN) {
+	    if (this.isActive()) {
+		outLine.getConnectionDestination().spikeWithInput(outLine);
+		System.out.println("Pulsed to "+outLine.getConnectionDestination().getNodeInfo() + " from "+getNodeInfo());
+//		((HiddenNode) outLine.getConnectionDestination())
+		// .sendPulseToAppendData(this, outLine);
+	    }
+	} else if (outLine.getConnectionDestination().getNodeVariety() == NodeType.OUTPUT) {
+	    if (this.isActive()) {
+		outLine.hasPulsedInTick = true;
+		System.out.println("Pulsed to "+outLine.getConnectionDestination().getNodeInfo() + " from "+getNodeInfo());
+		String nodeValue = getNodeInfo().getData();
+		((Output) outLine.getConnectionDestination())
+			.putOrMove(nodeValue);
+		// ((Output) synapse.getConnectionDestination())
+		// .setNodeInfo(synapse.getConnectionDestination()
+		// .getNodeInfo().getValue()
+		// + getNodeInfo().getValue());
+		// this.setActive(active);
 	    }
 	}
     }
@@ -171,13 +183,5 @@ public class HiddenNode extends Node {
     // if (destination instanceof HiddenNode)
     // connectedHiddenNodes.add((HiddenNode) destination);
     // }
-
-    public boolean isActive() {
-	return active;
-    }
-
-    public void setActive(boolean active) {
-	this.active = active;
-    }
 
 }

@@ -17,15 +17,18 @@ public class NNetwork {
     private ArrayList<Input> networkInputs = new ArrayList<Input>();
     private ArrayList<Output> networkOutputs = new ArrayList<Output>();
     private boolean isLearningMode = false;
+    String desiredOutput = "";
 
     public NNetwork(ArrayList<Input> inputs, ArrayList<HiddenNode> connections,
-	    ArrayList<Output> outputs) {
+	    ArrayList<Output> outputs, String desiredOutput) {
 	this.networkHidden = connections;
 	this.networkInputs = inputs;
 	this.networkOutputs = outputs;
+	this.desiredOutput = desiredOutput;
     }
 
-    public NNetwork() {
+    public NNetwork(String desiredOutput) {
+	this.desiredOutput = desiredOutput;
     }
 
     public void addOutputNodeToNetwork(Output out) {
@@ -106,10 +109,15 @@ public class NNetwork {
 	// }
 	for (Node node : getNodesInNetwork()) {
 	    for (Node node2 : getNodesInNetwork()) {
-		if ((node.getNodeVariety() != NodeType.OUTPUT)
+		boolean allowProgression = !(node2.getNodeVariety() == NodeType.INPUT && node
+			.getNodeVariety() == NodeType.OUTPUT)
+			&& !(node2.getNodeVariety() == NodeType.OUTPUT && node
+				.getNodeVariety() == NodeType.INPUT)
 			&& (node.getNodeVariety() != node2.getNodeVariety() || node
-				.getNodeVariety() == NodeType.HIDDEN))
-		    node.connectWithRandomWeight(node2, this);
+				.getNodeVariety() == NodeType.HIDDEN) && !node.equals(node2);
+		if (allowProgression)
+		    node.connectNodeToNode(node2,
+			    NNLib.MAX_CONNECTION_WEIGHT / 2, this);
 	    }
 	}
     }
@@ -124,7 +132,7 @@ public class NNetwork {
 	return result;
     }
 
-    public double getNetworkSimilarityPercentage(String desiredOutput) {
+    public double getNetworkSimilarityPercentage() {
 	String netOut = getNetworkOutput();
 	if (netOut.isEmpty())
 	    return 0;

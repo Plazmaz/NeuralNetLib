@@ -2,6 +2,10 @@ package me.dylan.NNL.Utils;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
 import me.dylan.NNL.HiddenNode;
@@ -24,25 +28,31 @@ public class NetworkUtil {
      */
     private static int INCREASE_WEIGHT_ON_MATCH = 4;
 
-    public static NNetwork initializeNetwork(int HiddenCount, int inputCount,
-	    int outputCount) {
+    public static NNetwork initializeNetwork(int hiddenCount, int inputCount,
+	    int outputCount, String desiredOutput,
+	    List<String> tmpLines) {
 	ArrayList<HiddenNode> networkHiddenNodes = new ArrayList<HiddenNode>();
 	ArrayList<Input> inputHiddenNodes = new ArrayList<Input>();
 	ArrayList<Output> outputHiddenNodes = new ArrayList<Output>();
 	for (int i = 0; i < inputCount; i++) {
-	    inputHiddenNodes.add(new Input());
+	    inputHiddenNodes.add(new Input(desiredOutput.split("\n")));
 	}
 	for (int i = 0; i < outputCount; i++) {
 	    outputHiddenNodes.add(new Output());
 	}
 	NNetwork net = new NNetwork(inputHiddenNodes, networkHiddenNodes,
-		outputHiddenNodes);
-	for (int i = 0; i < HiddenCount; i++) {
+		outputHiddenNodes, desiredOutput);
+	for (int i = 0; i < hiddenCount; i++) {
 	    HiddenNode Hidden = new HiddenNode();
 	    Hidden.addManyInputNodes(inputHiddenNodes, net);
 	    Hidden.addManyOutputNodes(outputHiddenNodes, net);
 	    networkHiddenNodes.add(Hidden);
 	}
+	for (String s : tmpLines) {
+	    HiddenNode hiddenNode = NetworkUtil.createHidden(s, net);
+	    net.addHiddenNodeToNetwork(hiddenNode);
+	}
+	net.connectAll();
 	return net;
     }
 
@@ -53,50 +63,55 @@ public class NetworkUtil {
     }
 
     public static void updateSynapseGenerations(NNetwork parentNetwork) {
-	ArrayList<Synapse> synapsesClone = (ArrayList<Synapse>) parentNetwork
-		.getNetworkSynapses().clone();
-	double weightToDistribute = 0;
-	double avgWeight = 0;
-	for (Synapse netSynapse : synapsesClone) {
-	    if (parentNetwork.getNetworkSynapses().isEmpty())
-		break;
-		avgWeight += netSynapse.getSynapseWeight();
-		weightToDistribute += netSynapse.getSynapseWeight();
-	}
-	avgWeight /= synapsesClone.size();
-	// parentNetwork.removeUnusedSynapses();
-	synapsesClone = (ArrayList<Synapse>) parentNetwork.getNetworkSynapses()
-		.clone();
-	for (Synapse netSynapse : synapsesClone) {
-	    if (parentNetwork.getNetworkSynapses().isEmpty())
-		break;
-	    if (NNLib.GLOBAL_RANDOM.nextInt(101) <= NNLib.SYNAPSE_MUTATION_CHANCE) {
-		addRandomSynapse(parentNetwork, netSynapse);
-	    }
-	    if (netSynapse.getSynapseWeight() < avgWeight
-		    * NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD_MULTIPLIER) {
-		// randomizeSynapse(parentNetwork, netSynapse);
-//		if (parentNetwork.getNetworkSynapses().isEmpty()) {
-//		    // if
-//		    // (parentNetwork.getNetworkSynapses().contains(netSynapse))
-//		    // {
-//		    Synapse netSynapseClone = netSynapse.clone();
-//
-//		    parentNetwork.getNetworkSynapses().add(
-//			    randomizeSynapse(parentNetwork, netSynapseClone));
-//
-//
-//		    // }
-//
-//		} else {
-			netSynapse.severConnections();
-//		}
-	    } else {
-		netSynapse.setSynapseWeight(netSynapse.getSynapseWeight()
-			+ weightToDistribute / synapsesClone.size());
-		weightToDistribute -= weightToDistribute / synapsesClone.size();
-	    }
-	}
+	parentNetwork.removeUnusedSynapses();
+	/*
+	 * if (synapsesClone.isEmpty()) { for (int i = 0; i < 10; i++) {
+	 * addRandomSynapse(parentNetwork, new Synapse(null, null, avgWeight));
+	 * } }
+	 */
+	Collections.sort(parentNetwork.getNetworkSynapses(),
+		new Comparator<Synapse>() {
+
+		    @Override
+		    public int compare(Synapse synA, Synapse synB) {
+			return (int) (synA.getSynapseWeight() - synB
+				.getSynapseWeight());
+		    }
+		});
+	// if(parentNetwork.getNetworkSynapses().get(0)) {
+	//
+	// }
+
+	/*
+	 * avgWeight /= synapsesClone.size(); //
+	 * parentNetwork.removeUnusedSynapses(); synapsesClone =
+	 * (ArrayList<Synapse>) parentNetwork.getNetworkSynapses() .clone(); for
+	 * (Synapse netSynapse : synapsesClone) { if
+	 * (parentNetwork.getNetworkSynapses().isEmpty()) break; if
+	 * (NNLib.GLOBAL_RANDOM.nextInt(101) <=
+	 * NNLib.SYNAPSE_ADDITION_MUTATION_CHANCE) {
+	 * addRandomSynapse(parentNetwork, netSynapse); } if
+	 * (netSynapse.getSynapseWeight() < avgWeight
+	 * NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD_MULTIPLIER) { // this //
+	 * is // a // problem, // we // can't // judge // the // synapses // by
+	 * // their // weight // randomizeSynapse(parentNetwork, netSynapse); //
+	 * if (parentNetwork.getNetworkSynapses().isEmpty()) { // // if // //
+	 * (parentNetwork.getNetworkSynapses().contains(netSynapse)) // // { //
+	 * Synapse netSynapseClone = netSynapse.clone(); // //
+	 * parentNetwork.getNetworkSynapses().add( //
+	 * randomizeSynapse(parentNetwork, netSynapseClone)); // // // // } //
+	 * // } else { weightToDistribute += netSynapse.getSynapseWeight(); if
+	 * (netSynapse.getSynapseWeight() <= 0)
+	 * parentNetwork.removeSynapse(netSynapse); //
+	 * parentNetwork.removeSynapse(netSynapse); // } } else { if
+	 * (NNLib.GLOBAL_RANDOM.nextInt(101) <=
+	 * NNLib.SYNAPSE_WEIGHT_MUTATION_CHANCE) {
+	 * netSynapse.setSynapseWeight(NNLib.GLOBAL_RANDOM .nextInt((int)
+	 * netSynapse.getSynapseWeight())); } else {
+	 * netSynapse.setSynapseWeight(netSynapse.getSynapseWeight() +
+	 * (weightToDistribute / synapsesClone.size())); weightToDistribute -=
+	 * weightToDistribute / synapsesClone.size(); } } }
+	 */
     }
 
     /**
@@ -110,12 +125,13 @@ public class NetworkUtil {
      *            The chance to discard a parental feature and mutate a random
      *            feature as expressed as a percentage(suggested: 30)
      */
+    @Deprecated
     public static NNetwork breedNetworks(ArrayList<NNetwork> networks,
-	    int mutationChance) {
+	    int mutationChance, String desiredOutput) {
 	Random rand = NNLib.GLOBAL_RANDOM;
-	NNetwork childNet = new NNetwork();
+	NNetwork childNet = new NNetwork(desiredOutput);
 	childNet.addOutputNodeToNetwork(new Output());
-	childNet.addInputNodeToNetwork(new Input());
+	childNet.addInputNodeToNetwork(new Input(desiredOutput.split("\n")));
 	for (NNetwork net : networks) {
 	    for (NNetwork net2 : networks) {
 		ArrayList<HiddenNode> HiddenNodes = (ArrayList<HiddenNode>) net
@@ -154,6 +170,7 @@ public class NetworkUtil {
      *            percentage(suggested: 30%)
      * @return
      */
+    @Deprecated
     public static HiddenNode breedHiddenNodes(HiddenNode parent1,
 	    HiddenNode parent2, int mutationChance, NNetwork parentNet) {
 	HiddenNode child = new HiddenNode();
@@ -191,9 +208,10 @@ public class NetworkUtil {
 				childSynapse.getSynapseWeight()
 					+ INCREASE_WEIGHT_ON_CHOOSE, parentNet);
 		    }
-		    if (parentSynapse.getSynapseWeight() < NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD_MULTIPLIER) {
-			parentSynapse.severConnections();
-		    }
+		    // if (parentSynapse.getSynapseWeight() <
+		    // NNLib.SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD_MULTIPLIER) {
+		    // parentSynapse.severConnections();
+		    // }
 		}
 
 	    }
@@ -231,9 +249,13 @@ public class NetworkUtil {
     }
 
     public static HiddenNode createHidden(String incomingData,
-	    NodeType senderType) {
+	    NNetwork parentNetwork) {
 	HiddenNode hiddenOut = new HiddenNode();
-	hiddenOut.setHiddenValueInNode(new Value(incomingData), senderType);
+	hiddenOut.addManyInputNodes(parentNetwork.getInputNodesInNetwork(),
+		parentNetwork);
+	hiddenOut.addManyOutputNodes(parentNetwork.getOutputNodesInNetwork(),
+		parentNetwork);
+	hiddenOut.setHiddenValueInNode(new Value(incomingData), NodeType.INPUT);
 	return hiddenOut;
     }
 
@@ -242,7 +264,6 @@ public class NetworkUtil {
 	Synapse randSynapse = synapseToRandomize.clone();
 	Node destination = null;
 	Node origin = null;
-	parentNetwork.removeUnusedSynapses();
 	int i = 0;
 	while (i == 0
 		|| destination == synapseToRandomize.getConnectionDestination()

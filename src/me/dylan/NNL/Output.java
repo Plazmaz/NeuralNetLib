@@ -38,9 +38,9 @@ public class Output extends Node {
 	    int valueIndex = infoData.indexOf(value);
 	    information.setValue(infoData.substring(valueIndex, valueIndex+value.length()));
 	    information.appendToValue(new Value(value));
-	    setNodeInfo(value);
+	    setNodeData(value);
 	} else {
-	    setNodeInfo(information.getData() + value);
+	    setNodeData(information.getData() + value);
 	}
     }
 }

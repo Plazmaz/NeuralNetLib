@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import me.dylan.NNL.NNLib.NodeType;
+import me.dylan.NNL.Utils.StringUtil;
 import me.dylan.NNL.Visualizer.NodePaint;
 
 public class Node {
@@ -15,6 +16,8 @@ public class Node {
 	    NODE_DRAW_SIZE, Color.GREEN);
     protected Value information = new Value();
     protected Value originalValue;
+    private boolean active = false;
+
     public NodeType getNodeVariety() {
 	return nodeVariety;
     }
@@ -29,17 +32,20 @@ public class Node {
 	if (weight > NNLib.MAX_CONNECTION_WEIGHT) {
 	    weight = NNLib.MAX_CONNECTION_WEIGHT;
 	}
-	Synapse connection = new Synapse(this, destination, weight);
+	Synapse connection = new Synapse(this, destination, weight,
+		parentNetwork.desiredOutput);
 	this.connections.add(connection);
 	destination.connections.add(connection);
 	parentNetwork.addSynapse(connection);
     }
 
-    public void connectNodeToNode(Node destination, double weight, NNetwork parentNetwork) {
+    public void connectNodeToNode(Node destination, double weight,
+	    NNetwork parentNetwork) {
 	if (weight > NNLib.MAX_CONNECTION_WEIGHT) {
 	    weight = NNLib.MAX_CONNECTION_WEIGHT;
 	}
-	Synapse connection = new Synapse(this, destination, weight);
+	Synapse connection = new Synapse(this, destination, weight,
+		parentNetwork.desiredOutput);
 	this.connections.add(connection);
 	parentNetwork.addSynapse(connection);
 	destination.connections.add(connection);
@@ -96,9 +102,9 @@ public class Node {
 	return information;
     }
 
-    public void setNodeInfo(String info) {
+    public void setNodeData(String info) {
 	this.information = new Value(info);
-	if(this.originalValue == null) {
+	if (this.originalValue == null) {
 	    this.originalValue = new Value(info);
 	}
     }
@@ -128,6 +134,34 @@ public class Node {
 	    }
 	}
 	return validConnections;
+    }
+
+    public void spikeWithInput(Synapse dataLine) {
+//	if(dataLine.getConnectionOrigin().equals(this))
+//	    return;
+	if(dataLine.hasPulsedInTick)
+	    return;
+	String originalNodeInfo = getNodeInfo().getData();
+	double mostRecentStringMatchPercentage = StringUtil
+		.calculateStringSimilarityPercentage(this.getNodeInfo()
+			.getData(), dataLine.desiredOutput);
+	if (mostRecentStringMatchPercentage < dataLine.percentMatchAtOrigin) {
+	    dataLine.setSynapseWeight(dataLine.getSynapseWeight()
+		    - NNLib.WEIGHT_DECREASE_ON_MISMATCH);
+	    setNodeData(originalNodeInfo);
+	    System.out.println("Traced Back.");
+	    return;
+	}
+	dataLine.hasPulsedInTick = true;
+	dataLine.setSynapseWeight(dataLine.getSynapseWeight() + NNLib.WEIGHT_INCREASE_ON_MATCH);
+	setActive(true);
+    }
+    public boolean isActive() {
+	return active;
+    }
+
+    public void setActive(boolean active) {
+	this.active = active;
     }
     // public ArrayList<Synapse> traceBackSynapses(boolean backwards) {
     // boolean hasConnection = false;

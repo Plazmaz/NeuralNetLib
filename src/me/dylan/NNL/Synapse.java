@@ -1,15 +1,21 @@
 package me.dylan.NNL;
 
+import me.dylan.NNL.Utils.StringUtil;
+
 public class Synapse {
     private Node origin;
     private Node destination;
     private double weight = 0;
     private boolean hasPaintedInTick = false;
-
-    public Synapse(Node origin, Node destination, double weight) {
+    public double percentMatchAtOrigin = 0;
+    String desiredOutput = "";
+    public boolean hasPulsedInTick = false;
+    public Synapse(Node origin, Node destination, double weight, String desiredOutput) {
 	this.setConnectionOrigin(origin);
 	this.setConnectionDestination(destination);
 	setSynapseWeight(weight);
+	this.desiredOutput = desiredOutput;
+	percentMatchAtOrigin = StringUtil.calculateStringSimilarityPercentage(desiredOutput, origin.getNodeInfo().getData());
     }
 
     public Node getConnectionOrigin() {
@@ -48,7 +54,7 @@ public class Synapse {
     @Override
     public Synapse clone() {
 	return new Synapse(getConnectionOrigin(), getConnectionDestination(),
-		getSynapseWeight());
+		getSynapseWeight(), desiredOutput);
     }
 
     public boolean hasPaintedInTick() {

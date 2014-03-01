@@ -31,10 +31,8 @@ public class NodePaint {
 	nodeLocation = new Point(x, y);
 	Color original = Display.getDisplayBackgroundColor();
 	Display.setDisplayBackgroundColor(color);
-	if (nodeToPaint instanceof HiddenNode) {
-	    if (((HiddenNode) nodeToPaint).isActive())
-		Display.setDisplayBackgroundColor(Color.RED);
-	}
+	if (nodeToPaint.isActive())
+	    Display.setDisplayBackgroundColor(Color.RED);
 	Display.fillOval(nodeLocation.x, nodeLocation.y, size, size);
 	Display.drawString(x, y, nodeToPaint.getNodeInfo().getData());
 	Display.setDisplayBackgroundColor(original);
