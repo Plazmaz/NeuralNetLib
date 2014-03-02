@@ -5,7 +5,6 @@ import javax.swing.JTextField;
 
 import me.dylan.NNL.NNetwork;
 import me.dylan.NNL.Node;
-import me.dylan.NNL.Synapse;
 
 public class TestUtil {
     public static boolean AnyNodesExist(NNetwork networkToCheck) {

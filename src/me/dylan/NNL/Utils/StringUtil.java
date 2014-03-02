@@ -31,7 +31,7 @@ public class StringUtil {
 		}
 	    }
 	}
-	return ((2.0 * intersection) / ((double) union));
+	return ((2.0 * intersection) / (union));
     }
 
     /*

@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.Random;
 
 import me.dylan.NNL.NNLib.NodeType;
-import me.dylan.NNL.Utils.StringUtil;
 
 public class HiddenNode extends Node {
     public ArrayList<Output> dataout = new ArrayList<Output>();

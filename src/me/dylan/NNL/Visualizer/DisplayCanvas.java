@@ -6,7 +6,6 @@ import java.awt.Image;
 
 public class DisplayCanvas extends Canvas {
     private static final long serialVersionUID = -2139314540043885618L;
-
     @Override
     public void update(Graphics g) {
 	Image next = createImage(getWidth(), getHeight());

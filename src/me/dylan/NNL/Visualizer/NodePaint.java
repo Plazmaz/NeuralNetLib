@@ -3,7 +3,6 @@ package me.dylan.NNL.Visualizer;
 import java.awt.Color;
 import java.awt.Point;
 
-import me.dylan.NNL.HiddenNode;
 import me.dylan.NNL.Node;
 
 public class NodePaint {
