@@ -9,7 +9,7 @@ public class NNLib {
     public static int CHANCE_FOR_HIDDEN_CONNECTION = 40;
     public static Random GLOBAL_RANDOM = new Random();
     public static NNLib LIBRARY_INSTANCE = new NNLib();
-    public static int MAX_CONNECTION_WEIGHT = 100;
+    public static int MAX_CONNECTION_WEIGHT = 10;
     // public static double SYNAPSE_WEIGHT_PROGRESSION_THRESHOLD_MULTIPLIER =
     // .2;
     public static int CHANCE_FOR_IO_CONNECTION = 50;

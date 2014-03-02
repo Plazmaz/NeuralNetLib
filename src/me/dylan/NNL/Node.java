@@ -170,25 +170,23 @@ public class Node {
     }
 
     public void spikeWithInput(Synapse dataLine) {
-	// if(dataLine.getConnectionOrigin().equals(this))
-	// return;
-	if (dataLine.hasPulsedInTick && !dataLine.doesPulseBack())
+	if (dataLine.hasPulsedInTick)
 	    return;
 	String originalNodeInfo = getNodeInfo().getData();
 	double mostRecentStringMatchPercentage = StringUtil
 		.calculateStringSimilarityPercentage(getNodeInfo().getData(),
 			dataLine.desiredOutput);
 	Synapse newDataLine;
-	if (mostRecentStringMatchPercentage < dataLine.percentMatchAtOrigin
-		|| dataLine.doesPulseBack()) {
-	    if (!dataLine.doesPulseBack())
-		dataLine.setPulseBack(true);
+	if (mostRecentStringMatchPercentage < dataLine.percentMatchAtOrigin) {
+//	    if (!dataLine.doesPulseBack())
+//		dataLine.setPulseBack(true);
+	    dataLine.setPulseBack(!dataLine.doesPulseBack());
 	    dataLine.setSynapseWeight(dataLine.getSynapseWeight()
 		    - NNLib.WEIGHT_DECREASE_ON_MISMATCH);
 	    setNodeData(originalNodeInfo);
-//	    cleanupDamage(dataLine);
+	    cleanupDamage(dataLine);
 	    dataLine.getConnectionOrigin().setActive(false);
-	    dataLine.hasPulsedInTick = false;
+	    dataLine.hasPulsedInTick = true;
 	    sortConnectionsByWeight();
 	    newDataLine = getNodeConnections().get(0);
 	    newDataLine.getConnectionDestination().setActive(true);
@@ -197,9 +195,10 @@ public class Node {
 	    dataLine.hasPulsedInTick = true;
 	    dataLine.setSynapseWeight(dataLine.getSynapseWeight()
 		    + NNLib.WEIGHT_INCREASE_ON_MATCH);
+	    dataLine.getConnectionOrigin().setActive(false);
 	    sortConnectionsByWeight();
 	    newDataLine = getNodeConnections().get(0);
-	    newDataLine.getConnectionDestination().setActive(true);
+	     newDataLine.getConnectionDestination().setActive(true);
 	}
     }
 
@@ -208,7 +207,7 @@ public class Node {
 	for (Synapse netConnection : getNodeConnections()) {
 	    if (!netConnection.equals(connectionToIgnore)) {
 		netConnection.hasPulsedInTick = false;
-//		netConnection.setPulseBack(false);
+		 netConnection.setPulseBack(false);
 	    }
 	}
     }
@@ -227,6 +226,7 @@ public class Node {
     public boolean isActive() {
 	return active;
     }
+
 
     public void setActive(boolean active) {
 	this.active = active;

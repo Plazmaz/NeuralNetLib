@@ -49,13 +49,25 @@ public class HiddenNode extends Node {
 	});
 	int i = 0;
 	Synapse outLine = null;
-	while (outLine == null || outLine.hasPulsedInTick
+	while (i == 0 || outLine.hasPulsedInTick
 		|| outLine.getConnectionDestination().equals(this)) {
+
 	    outLine = getNodeConnections().get(i);
-	    if (i >= getNodeConnections().size())
+	    if (i >= getNodeConnections().size()) {
 		break;
+	    }
 	    i++;
 	}
+	if (i == 0) {
+	    while (i == 0 || outLine.getConnectionDestination().equals(this)) {
+		outLine = getNodeConnections().get(i);
+		if (i >= getNodeConnections().size()) {
+		    break;
+		}
+		i++;
+	    }
+	}
+
 	if (outLine.getConnectionDestination().getNodeVariety() == NodeType.HIDDEN) {
 	    if (this.isActive()) {
 		outLine.getConnectionDestination().sendPulseToAppendData(
@@ -68,7 +80,6 @@ public class HiddenNode extends Node {
 	    }
 	} else if (outLine.getConnectionDestination().getNodeVariety() == NodeType.OUTPUT) {
 	    if (this.isActive()) {
-		outLine.hasPulsedInTick = true;
 		System.out.println("Pulsed to Output "
 			+ outLine.getConnectionDestination().getNodeInfo()
 			+ " from " + getNodeInfo());

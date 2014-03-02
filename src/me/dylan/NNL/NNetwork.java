@@ -116,7 +116,7 @@ public class NNetwork {
 		if (inNode.getNodeVariety() != node.getNodeVariety()
 			&& node.getNodeVariety() != NodeType.OUTPUT) {
 		    
-		    node.connectNodeToNode(inNode,
+		    inNode.connectNodeToNode(node,
 			    NNLib.MAX_CONNECTION_WEIGHT / 2, this);
 		    if(node.getNodeVariety() == NodeType.INPUT)
 			System.out.println();

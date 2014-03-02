@@ -29,14 +29,16 @@ public class Input extends Node {
 	if (getNodeInfo().getData().isEmpty())
 	    setNodeData(originalInfo);
 	outInfoQueue = getNodeInfo().getData().split("\n");
-//	if(dataLine.doesPulseBack())
-//	    this.infoIndex = 0;
+	// if(dataLine.doesPulseBack())
+	// this.infoIndex = 0;
 	activateInputNode();
     }
 
     public void activateInputNode() {
-	if (infoIndex >= outInfoQueue.length)
+	if (infoIndex >= outInfoQueue.length) {
+	    // cleanupDamage(null);
 	    return;
+	}
 	System.out.println("Succesfully stimulated input node");
 	int i = 0;
 	Synapse outLine = null;
@@ -44,6 +46,7 @@ public class Input extends Node {
 		|| outLine.getConnectionDestination().equals(this)) {
 	    if (i >= getNodeConnections().size())
 		break;
+
 	    outLine = getNodeConnections().get(i);
 	    i++;
 	}
@@ -75,6 +78,16 @@ public class Input extends Node {
 
     public void setInformation(Value info) {
 	this.information = info;
+    }
+
+    /**
+     * Turn the input node to it's off state, this entails deactivating synapses
+     * and node, as well as restoring original synapse direction
+     */
+    public void deactivateInputNode() {
+	cleanupDamage(null);
+	setActive(false);
+
     }
 
     public void appendInfo(String info) {
