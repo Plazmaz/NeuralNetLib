@@ -61,7 +61,7 @@ public class HiddenNode extends Node {
 	    if (this.isActive()) {
 		outLine.getConnectionDestination().sendPulseToAppendData(
 			outLine);
-		System.out.println("Pulsed to "
+		System.out.println("Pulsed to Hidden "
 			+ outLine.getConnectionDestination().getNodeInfo()
 			+ " from " + getNodeInfo());
 		// ((HiddenNode) outLine.getConnectionDestination())
@@ -70,7 +70,7 @@ public class HiddenNode extends Node {
 	} else if (outLine.getConnectionDestination().getNodeVariety() == NodeType.OUTPUT) {
 	    if (this.isActive()) {
 		outLine.hasPulsedInTick = true;
-		System.out.println("Pulsed to "
+		System.out.println("Pulsed to Output "
 			+ outLine.getConnectionDestination().getNodeInfo()
 			+ " from " + getNodeInfo());
 		((Output) outLine.getConnectionDestination())

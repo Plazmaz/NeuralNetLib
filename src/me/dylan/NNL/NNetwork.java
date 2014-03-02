@@ -98,15 +98,6 @@ public class NNetwork {
     }
 
     public void connectAll() {
-	// for (Input inNode : getInputNodesInNetwork()) {
-	// for (Output outNode : getOutputNodesInNetwork()) {
-	// for (HiddenNode hidden : getHiddenNodesInNetwork()) {
-	// hidden.connectWithRandomWeight(outNode, this);
-	// }
-	// outNode.connectWithRandomWeight(inNode, this);
-	//
-	// }
-	// }
 	for (Node node : getNodesInNetwork()) {
 	    for (Node node2 : getNodesInNetwork()) {
 		boolean allowProgression = !(node.getNodeVariety() == NodeType.INPUT || node2
@@ -124,8 +115,11 @@ public class NNetwork {
 	    for (Input inNode : getInputNodesInNetwork()) {
 		if (inNode.getNodeVariety() != node.getNodeVariety()
 			&& node.getNodeVariety() != NodeType.OUTPUT) {
-		    inNode.connectNodeToNode(node,
+		    
+		    node.connectNodeToNode(inNode,
 			    NNLib.MAX_CONNECTION_WEIGHT / 2, this);
+		    if(node.getNodeVariety() == NodeType.INPUT)
+			System.out.println();
 		}
 	    }
 	}

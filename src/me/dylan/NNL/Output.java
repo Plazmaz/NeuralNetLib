@@ -51,13 +51,9 @@ public class Output extends Node {
 	    connector.setPulseBack(true);
 	    connector.getConnectionOrigin().setActive(false);
 	    setNodeData("");
-	    for (Synapse netConnection : getNodeConnections()) {
-		netConnection.hasPulsedInTick = false;
-	    }
+	    cleanupDamage(connector);
 	    connector.getConnectionDestination().sendPulseToAppendData(
 		    connector);
-	    connector.setSynapseWeight(connector.getSynapseWeight()
-		    - NNLib.WEIGHT_DECREASE_ON_MISMATCH);
 	}
     }
 }

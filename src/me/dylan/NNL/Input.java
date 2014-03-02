@@ -16,10 +16,10 @@ public class Input extends Node {
     private String[] outInfoQueue;
 
     public Input(String[] outInfoQueue) {
-	for (String outVal : outInfoQueue)
-	    information.appendToValue(new Value(outVal));
 	nodeVariety = NodeType.INPUT;
 	this.outInfoQueue = outInfoQueue;
+	for (String outVal : outInfoQueue)
+	    setInformation(information.appendToValue(new Value(outVal)));
     }
 
     @Override
@@ -29,20 +29,15 @@ public class Input extends Node {
 	if (getNodeInfo().getData().isEmpty())
 	    setNodeData(originalInfo);
 	outInfoQueue = getNodeInfo().getData().split("\n");
-	infoIndex = 0;
+//	if(dataLine.doesPulseBack())
+//	    this.infoIndex = 0;
+	activateInputNode();
     }
 
     public void activateInputNode() {
 	if (infoIndex >= outInfoQueue.length)
 	    return;
-	Collections.sort(getNodeConnections(), new Comparator<Synapse>() {
-
-	    @Override
-	    public int compare(Synapse synA, Synapse synB) {
-		return (int) (synA.getSynapseWeight() - synB.getSynapseWeight());
-	    }
-
-	});
+	System.out.println("Succesfully stimulated input node");
 	int i = 0;
 	Synapse outLine = null;
 	while (outLine == null || outLine.hasPulsedInTick
@@ -54,8 +49,17 @@ public class Input extends Node {
 	}
 	setActive(true);
 	setNodeData(outInfoQueue[infoIndex]);
+	Collections.sort(getNodeConnections(), new Comparator<Synapse>() {
+
+	    @Override
+	    public int compare(Synapse synA, Synapse synB) {
+		return (int) (synA.getSynapseWeight() - synB.getSynapseWeight());
+	    }
+
+	});
 	getNodeConnections().get(0).getConnectionDestination()
-		.sendPulseToAppendData(getNodeConnections().get(0));
+		.sendPulseToAppendData(getNodeConnections().get(0)); // Problem
+								     // line
 	// setActive(false);
 	infoIndex++;
     }

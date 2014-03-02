@@ -2,6 +2,8 @@ package me.dylan.NNL;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import me.dylan.NNL.NNLib.NodeType;
 import me.dylan.NNL.Utils.StringUtil;
@@ -86,10 +88,11 @@ public class Node {
 	    }
 
 	}
-//	dataLine.setPulseBack(!dataLine.doesPulseBack());
+	// dataLine.setPulseBack(!dataLine.doesPulseBack());
 	// sender.setNodeData(sender.originalValue.getData());
 	spikeWithInput(dataLine);
-//	dataLine.setPulseBack(!dataLine.doesPulseBack());
+	setActive(true);
+	// dataLine.setPulseBack(!dataLine.doesPulseBack());
 	// setHiddenValueInNode(vInNode, sender.getNodeVariety());
 	// if (sender.originalValue != null)
 	// sender.setNodeInfo(sender.originalValue.getValue());
@@ -175,34 +178,50 @@ public class Node {
 	double mostRecentStringMatchPercentage = StringUtil
 		.calculateStringSimilarityPercentage(getNodeInfo().getData(),
 			dataLine.desiredOutput);
-	if (mostRecentStringMatchPercentage < dataLine.percentMatchAtOrigin/*
-									    * &&
-									    * getNodeVariety
-									    * ()
-									    * !=
-									    * NodeType
-									    * .
-									    * INPUT
-									    */) {
-
-	    dataLine.setPulseBack(true);
+	Synapse newDataLine;
+	if (mostRecentStringMatchPercentage < dataLine.percentMatchAtOrigin
+		|| dataLine.doesPulseBack()) {
+	    if (!dataLine.doesPulseBack())
+		dataLine.setPulseBack(true);
 	    dataLine.setSynapseWeight(dataLine.getSynapseWeight()
 		    - NNLib.WEIGHT_DECREASE_ON_MISMATCH);
 	    setNodeData(originalNodeInfo);
-	    for (Synapse netConnection : dataLine.getConnectionDestination()
-		    .getNodeConnections()) {
-		netConnection.hasPulsedInTick = false;
-	    }
+//	    cleanupDamage(dataLine);
 	    dataLine.getConnectionOrigin().setActive(false);
-	    dataLine.getConnectionDestination().setActive(true);
+	    dataLine.hasPulsedInTick = false;
+	    sortConnectionsByWeight();
+	    newDataLine = getNodeConnections().get(0);
+	    newDataLine.getConnectionDestination().setActive(true);
 	    System.out.println("Traced Back.");
-	    return;
+	} else {
+	    dataLine.hasPulsedInTick = true;
+	    dataLine.setSynapseWeight(dataLine.getSynapseWeight()
+		    + NNLib.WEIGHT_INCREASE_ON_MATCH);
+	    sortConnectionsByWeight();
+	    newDataLine = getNodeConnections().get(0);
+	    newDataLine.getConnectionDestination().setActive(true);
 	}
-	dataLine.getConnectionOrigin().setActive(false);
-	dataLine.getConnectionDestination().setActive(true);
-	dataLine.hasPulsedInTick = true;
-	dataLine.setSynapseWeight(dataLine.getSynapseWeight()
-		+ NNLib.WEIGHT_INCREASE_ON_MATCH);
+    }
+
+    public void cleanupDamage(Synapse connectionToIgnore) {
+
+	for (Synapse netConnection : getNodeConnections()) {
+	    if (!netConnection.equals(connectionToIgnore)) {
+		netConnection.hasPulsedInTick = false;
+//		netConnection.setPulseBack(false);
+	    }
+	}
+    }
+
+    public void sortConnectionsByWeight() {
+	Collections.sort(getNodeConnections(), new Comparator<Synapse>() {
+
+	    @Override
+	    public int compare(Synapse synA, Synapse synB) {
+		return (int) (synA.getSynapseWeight() - synB.getSynapseWeight());
+	    }
+
+	});
     }
 
     public boolean isActive() {

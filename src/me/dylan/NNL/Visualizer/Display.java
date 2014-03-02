@@ -28,6 +28,7 @@ public class Display {
     private static JPanel displayPanel;
     private static Graphics graphics;
     private static Robot bot;
+    private static int width = 0;
     static ArrayList<Character> keysDown = new ArrayList<Character>();
     public static void showDisplay(String title, Dimension size,
 	    Color backgroundFill) {
@@ -84,9 +85,12 @@ public class Display {
     }
 
     public static void setStrokeWidth(int width) {
+	Display.width = width;
 	((Graphics2D) getGraphics()).setStroke(new BasicStroke(width));
     }
-
+    public static int getStrokeWidth() {
+	return width;
+    }
     public static Graphics getGraphics() {
 	return graphics;
     }
