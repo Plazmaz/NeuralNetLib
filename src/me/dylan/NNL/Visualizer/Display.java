@@ -25,7 +25,7 @@ import javax.swing.JPanel;
  */
 public class Display {
     private static JFrame main;
-    private static DisplayCanvas displayPanel;
+    private static JPanel displayPanel;
     private static Graphics graphics;
     private static Robot bot;
     private static int width = 0;
@@ -38,7 +38,7 @@ public class Display {
 	    e.printStackTrace();
 	}
 	main = new JFrame(title);
-	displayPanel = new DisplayCanvas();
+	displayPanel = new JPanel();
 	displayPanel.setSize(main.getSize());
 	displayPanel.setBackground(backgroundFill);
 	displayPanel.addKeyListener(new KeyListener() {
@@ -62,7 +62,8 @@ public class Display {
 	main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	graphics = displayPanel.getGraphics();
     }
-
+    
+    
     public static int getWidth() {
 	return main.getWidth();
     }
