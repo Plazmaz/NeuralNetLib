@@ -8,24 +8,28 @@ public class Synapse {
     private double weight = 0;
     private boolean hasPaintedInTick = false;
     public double percentMatchAtOrigin = 0;
+    private boolean pulseBack = false;
     String desiredOutput = "";
     public boolean hasPulsedInTick = false;
-    public Synapse(Node origin, Node destination, double weight, String desiredOutput) {
+
+    public Synapse(Node origin, Node destination, double weight,
+	    String desiredOutput) {
 	this.setConnectionOrigin(origin);
 	this.setConnectionDestination(destination);
 	setSynapseWeight(weight);
 	this.desiredOutput = desiredOutput;
-	percentMatchAtOrigin = StringUtil.calculateStringSimilarityPercentage(desiredOutput, origin.getNodeInfo().getData());
+	percentMatchAtOrigin = StringUtil.calculateStringSimilarityPercentage(
+		desiredOutput, origin.getNodeInfo().getData());
     }
 
     public Node getConnectionOrigin() {
-	return origin;
+	return  (doesPulseBack() ? destination : origin);
     }
 
     public void severConnections() {
 	if (origin != null)
 	    origin.disconnectNode(this);
-	else if(destination != null)
+	if (destination != null)
 	    destination.disconnectNode(this);
 	origin = null;
 	destination = null;
@@ -36,7 +40,7 @@ public class Synapse {
     }
 
     public Node getConnectionDestination() {
-	return destination;
+	return  (doesPulseBack() ? origin : destination);
     }
 
     public void setConnectionDestination(Node destination) {
@@ -64,9 +68,19 @@ public class Synapse {
     public void setHasPaintedInTick(boolean hasPaintedInTick) {
 	this.hasPaintedInTick = hasPaintedInTick;
     }
-    
+
     @Override
     public String toString() {
-	return "A: "+origin+" B:"+destination+" Weight:"+weight;
+	return "A: " + (doesPulseBack() ? destination : origin) + " B:"
+		+ (doesPulseBack() ? origin : destination) + " Weight:"
+		+ weight;
+    }
+
+    public boolean doesPulseBack() {
+	return pulseBack;
+    }
+
+    public void setPulseBack(boolean pulseBack) {
+	this.pulseBack = pulseBack;
     }
 }

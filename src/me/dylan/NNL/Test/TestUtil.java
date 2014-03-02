@@ -17,23 +17,16 @@ public class TestUtil {
 	return true;
     }
 
-    public static boolean AreAllNodesConnected(NNetwork networkToCheck) {
-	for (Node node : networkToCheck.getNodesInNetwork()) {
-	    for (Node node2 : networkToCheck.getNodesInNetwork()) {
-		boolean hasSynapseMatch = false;
-		synapseLoop: for (Synapse synapse : node2.getNodeConnections()) {
-		    if (synapse.getConnectionDestination().equals(node)
-			    || synapse.getConnectionOrigin().equals(node)) {
-			hasSynapseMatch = true;
-			break synapseLoop;
-		    }
-
-		}
-		if(!hasSynapseMatch)
-		    return false;
-	    }
-	}
-	return true;
+    public static boolean IsSynapseCountProper(NNetwork networkToCheck) {
+	boolean isSynapseCountCorrect = networkToCheck.getNetworkSynapses()
+		.size() == Math.pow((networkToCheck.getHiddenNodesInNetwork().size() + 1), 2) - 1;// the
+											   // -1
+											   // is
+	// needed due to
+	// the missing
+	// connection(input and
+	// output)
+	return isSynapseCountCorrect;
     }
 
     public static void WhatNodesExist(NNetwork networkToCheck) {
@@ -58,7 +51,8 @@ public class TestUtil {
 	System.out.println("Hidden: " + hiddenCount);
 	System.out.println("Inputs: " + inputCount);
 	System.out.println("Outputs: " + outputCount);
-	System.out.println("Synapses: " + networkToCheck.getNetworkSynapses().size());
+	System.out.println("Synapses: "
+		+ networkToCheck.getNetworkSynapses().size());
     }
 
     public static boolean StringSizeIsNotZero(String value) {

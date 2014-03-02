@@ -3,6 +3,7 @@ package me.dylan.NNL;
 import java.awt.Color;
 
 import me.dylan.NNL.NNLib.NodeType;
+import me.dylan.NNL.Utils.StringUtil;
 
 public class Output extends Node {
     /**
@@ -32,15 +33,31 @@ public class Output extends Node {
 	return information;
     }
 
-    public void putOrMove(String value) {
+    public void putOrMove(Synapse connector) {
 	String infoData = information.getData();
+	this.spikeWithInput(connector);
+	String value = connector.getConnectionOrigin().getNodeInfo().getData();
 	if (!value.isEmpty() && information.getData().contains(value)) {
 	    int valueIndex = infoData.indexOf(value);
-	    information.setValue(infoData.substring(valueIndex, valueIndex+value.length()));
+	    information.setValue(infoData.substring(valueIndex, valueIndex
+		    + value.length()));
 	    information.appendToValue(new Value(value));
-	    setNodeData(value);
 	} else {
 	    setNodeData(information.getData() + value);
+	}
+	if (StringUtil.calculateStringSimilarityPercentage(
+		connector.desiredOutput, infoData) < 90) {
+	    System.out.println("Output invalid, backtracing.");
+	    connector.setPulseBack(true);
+	    connector.getConnectionOrigin().setActive(false);
+	    setNodeData("");
+	    for (Synapse netConnection : getNodeConnections()) {
+		netConnection.hasPulsedInTick = false;
+	    }
+	    connector.getConnectionDestination().sendPulseToAppendData(
+		    connector);
+	    connector.setSynapseWeight(connector.getSynapseWeight()
+		    - NNLib.WEIGHT_DECREASE_ON_MISMATCH);
 	}
     }
 }

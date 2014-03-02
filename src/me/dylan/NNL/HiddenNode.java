@@ -11,7 +11,6 @@ import me.dylan.NNL.Utils.StringUtil;
 public class HiddenNode extends Node {
     public ArrayList<Output> dataout = new ArrayList<Output>();
     public ArrayList<Input> datain = new ArrayList<Input>();
-    ArrayList<HiddenNode> connectedHiddenNodes = new ArrayList<HiddenNode>();
     int pulsesSeen = 0;
 
     public HiddenNode() {
@@ -40,34 +39,6 @@ public class HiddenNode extends Node {
 	}
     }
 
-    public void sendPulseToAppendData(Node sender, Synapse dataLine) {
-	pulsesSeen++;
-
-	// if (pulsesSeen % 2 == 0 && originalValue != null) {
-	// setNodeInfo(originalValue.getValue());
-	// return;
-	// }
-	String originalNodeInfo = getNodeInfo().getData();
-	if (originalNodeInfo.length() + sender.getNodeInfo().getData().length() > maxDataStorage) {
-	    String tmp = sender.getNodeInfo().getData();
-	    getNodeInfo().setValue("");
-	    for (int i = tmp.split(" ").length - 1; i > maxDataStorage; i--) {
-		setNodeData(getNodeInfo().appendToValue(
-			new Value(tmp.split(" ")[i])).getData());
-	    }
-	}
-	sender.setNodeData(sender.originalValue.getData());
-	spikeWithInput(dataLine);
-	// setHiddenValueInNode(vInNode, sender.getNodeVariety());
-	// if (sender.originalValue != null)
-	// sender.setNodeInfo(sender.originalValue.getValue());
-	for (Output out : dataout) {
-	    out.putOrMove(getNodeInfo().getData());
-	}
-//	    sender.setActive(false);
-	// setHiddenValueInNode(, sender.getNodeVariety());
-    }
-
     public void doTick() {
 	Collections.sort(getNodeConnections(), new Comparator<Synapse>() {
 
@@ -79,7 +50,8 @@ public class HiddenNode extends Node {
 	});
 	int i = 0;
 	Synapse outLine = null;
-	while (outLine == null || outLine.hasPulsedInTick || outLine.getConnectionDestination().equals(this)) {
+	while (outLine == null || outLine.hasPulsedInTick
+		|| outLine.getConnectionDestination().equals(this)) {
 	    outLine = getNodeConnections().get(i);
 	    if (i >= getNodeConnections().size())
 		break;
@@ -87,18 +59,22 @@ public class HiddenNode extends Node {
 	}
 	if (outLine.getConnectionDestination().getNodeVariety() == NodeType.HIDDEN) {
 	    if (this.isActive()) {
-		outLine.getConnectionDestination().spikeWithInput(outLine);
-		System.out.println("Pulsed to "+outLine.getConnectionDestination().getNodeInfo() + " from "+getNodeInfo());
-//		((HiddenNode) outLine.getConnectionDestination())
+		outLine.getConnectionDestination().sendPulseToAppendData(
+			outLine);
+		System.out.println("Pulsed to "
+			+ outLine.getConnectionDestination().getNodeInfo()
+			+ " from " + getNodeInfo());
+		// ((HiddenNode) outLine.getConnectionDestination())
 		// .sendPulseToAppendData(this, outLine);
 	    }
 	} else if (outLine.getConnectionDestination().getNodeVariety() == NodeType.OUTPUT) {
 	    if (this.isActive()) {
 		outLine.hasPulsedInTick = true;
-		System.out.println("Pulsed to "+outLine.getConnectionDestination().getNodeInfo() + " from "+getNodeInfo());
-		String nodeValue = getNodeInfo().getData();
+		System.out.println("Pulsed to "
+			+ outLine.getConnectionDestination().getNodeInfo()
+			+ " from " + getNodeInfo());
 		((Output) outLine.getConnectionDestination())
-			.putOrMove(nodeValue);
+			.putOrMove(outLine);
 		// ((Output) synapse.getConnectionDestination())
 		// .setNodeInfo(synapse.getConnectionDestination()
 		// .getNodeInfo().getValue()
@@ -118,7 +94,7 @@ public class HiddenNode extends Node {
 	}
 	// datain.clear();
 	// dataout.clear();
-	connectedHiddenNodes.clear();
+	getNodeConnections().clear();
 	if (!parentNet.getInputNodesInNetwork().isEmpty()) {
 	    for (int i = 0; i < parentNet.getInputNodesInNetwork().size(); i++) {
 		if (rand.nextInt(101) <= NNLib.CHANCE_FOR_IO_CONNECTION
@@ -168,9 +144,11 @@ public class HiddenNode extends Node {
 
     public ArrayList<Node> getConnectedNodes() {
 	ArrayList<Node> nodes = new ArrayList<Node>();
-	nodes.addAll(connectedHiddenNodes);
-	nodes.addAll(datain);
-	nodes.addAll(dataout);
+	for (Synapse synapse : getNodeConnections()) {
+	    Node companion = synapse.getConnectionDestination().equals(this) ? synapse
+		    .getConnectionDestination() : synapse.getConnectionOrigin();
+	    nodes.add(companion);
+	}
 	return nodes;
     }
 

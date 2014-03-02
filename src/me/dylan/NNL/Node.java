@@ -17,6 +17,7 @@ public class Node {
     protected Value information = new Value();
     protected Value originalValue;
     private boolean active = false;
+    public int pulsesSeen;
 
     public NodeType getNodeVariety() {
 	return nodeVariety;
@@ -65,6 +66,35 @@ public class Node {
 		connections.remove(nodeBridge);
 	    }
 	}
+    }
+
+    public void sendPulseToAppendData(Synapse dataLine) {
+	pulsesSeen++;
+
+	// if (pulsesSeen % 2 == 0 && originalValue != null) {
+	// setNodeInfo(originalValue.getValue());
+	// return;
+	// }
+	Node sender = dataLine.getConnectionOrigin();
+	String originalNodeInfo = getNodeInfo().getData();
+	if (originalNodeInfo.length() + sender.getNodeInfo().getData().length() > maxDataStorage) {
+	    String tmp = sender.getNodeInfo().getData();
+	    getNodeInfo().setValue("");
+	    for (int i = tmp.split(" ").length - 1; i > maxDataStorage; i--) {
+		setNodeData(getNodeInfo().appendToValue(
+			new Value(tmp.split(" ")[i])).getData());
+	    }
+
+	}
+//	dataLine.setPulseBack(!dataLine.doesPulseBack());
+	// sender.setNodeData(sender.originalValue.getData());
+	spikeWithInput(dataLine);
+//	dataLine.setPulseBack(!dataLine.doesPulseBack());
+	// setHiddenValueInNode(vInNode, sender.getNodeVariety());
+	// if (sender.originalValue != null)
+	// sender.setNodeInfo(sender.originalValue.getValue());
+	// sender.setActive(false);
+	// setHiddenValueInNode(, sender.getNodeVariety());
     }
 
     // public void paint(int x, int y, int maxnodes) {
@@ -137,25 +167,44 @@ public class Node {
     }
 
     public void spikeWithInput(Synapse dataLine) {
-//	if(dataLine.getConnectionOrigin().equals(this))
-//	    return;
-	if(dataLine.hasPulsedInTick)
+	// if(dataLine.getConnectionOrigin().equals(this))
+	// return;
+	if (dataLine.hasPulsedInTick && !dataLine.doesPulseBack())
 	    return;
 	String originalNodeInfo = getNodeInfo().getData();
 	double mostRecentStringMatchPercentage = StringUtil
-		.calculateStringSimilarityPercentage(this.getNodeInfo()
-			.getData(), dataLine.desiredOutput);
-	if (mostRecentStringMatchPercentage < dataLine.percentMatchAtOrigin) {
+		.calculateStringSimilarityPercentage(getNodeInfo().getData(),
+			dataLine.desiredOutput);
+	if (mostRecentStringMatchPercentage < dataLine.percentMatchAtOrigin/*
+									    * &&
+									    * getNodeVariety
+									    * ()
+									    * !=
+									    * NodeType
+									    * .
+									    * INPUT
+									    */) {
+
+	    dataLine.setPulseBack(true);
 	    dataLine.setSynapseWeight(dataLine.getSynapseWeight()
 		    - NNLib.WEIGHT_DECREASE_ON_MISMATCH);
 	    setNodeData(originalNodeInfo);
+	    for (Synapse netConnection : dataLine.getConnectionDestination()
+		    .getNodeConnections()) {
+		netConnection.hasPulsedInTick = false;
+	    }
+	    dataLine.getConnectionOrigin().setActive(false);
+	    dataLine.getConnectionDestination().setActive(true);
 	    System.out.println("Traced Back.");
 	    return;
 	}
+	dataLine.getConnectionOrigin().setActive(false);
+	dataLine.getConnectionDestination().setActive(true);
 	dataLine.hasPulsedInTick = true;
-	dataLine.setSynapseWeight(dataLine.getSynapseWeight() + NNLib.WEIGHT_INCREASE_ON_MATCH);
-	setActive(true);
+	dataLine.setSynapseWeight(dataLine.getSynapseWeight()
+		+ NNLib.WEIGHT_INCREASE_ON_MATCH);
     }
+
     public boolean isActive() {
 	return active;
     }

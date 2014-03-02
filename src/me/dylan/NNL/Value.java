@@ -10,7 +10,7 @@ package me.dylan.NNL;
  * 
  */
 public class Value {
-    String data = "";
+    private String data = "";
 
     // private float min = 0f;
     // private float max = 1f;

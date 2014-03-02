@@ -109,17 +109,27 @@ public class NNetwork {
 	// }
 	for (Node node : getNodesInNetwork()) {
 	    for (Node node2 : getNodesInNetwork()) {
-		boolean allowProgression = !(node2.getNodeVariety() == NodeType.INPUT && node
-			.getNodeVariety() == NodeType.OUTPUT)
-			&& !(node2.getNodeVariety() == NodeType.OUTPUT && node
-				.getNodeVariety() == NodeType.INPUT)
+		boolean allowProgression = !(node.getNodeVariety() == NodeType.INPUT || node2
+			.getNodeVariety() == NodeType.INPUT)
+			&& !(node.getNodeVariety() == NodeType.OUTPUT || node2
+				.getNodeVariety() == NodeType.OUTPUT)
 			&& (node.getNodeVariety() != node2.getNodeVariety() || node
-				.getNodeVariety() == NodeType.HIDDEN) && !node.equals(node2);
+				.getNodeVariety() == NodeType.HIDDEN)
+			&& !node.equals(node2);
+
 		if (allowProgression)
 		    node.connectNodeToNode(node2,
 			    NNLib.MAX_CONNECTION_WEIGHT / 2, this);
 	    }
+	    for (Input inNode : getInputNodesInNetwork()) {
+		if (inNode.getNodeVariety() != node.getNodeVariety()
+			&& node.getNodeVariety() != NodeType.OUTPUT) {
+		    inNode.connectNodeToNode(node,
+			    NNLib.MAX_CONNECTION_WEIGHT / 2, this);
+		}
+	    }
 	}
+
     }
 
     public String getNetworkOutput() {
