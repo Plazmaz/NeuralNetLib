@@ -23,9 +23,9 @@ public class Input extends Node {
     }
 
     @Override
-    public void sendPulseToAppendData(Synapse dataLine) {
+    public void spikeWithInput(Synapse dataLine) {
 	String originalInfo = getNodeInfo().getData();
-	super.sendPulseToAppendData(dataLine);
+	super.spikeWithInput(dataLine);
 	if (getNodeInfo().getData().isEmpty())
 	    setNodeData(originalInfo);
 	outInfoQueue = getNodeInfo().getData().split("\n");
@@ -61,7 +61,7 @@ public class Input extends Node {
 
 	});
 	getNodeConnections().get(0).getConnectionDestination()
-		.sendPulseToAppendData(getNodeConnections().get(0)); // Problem
+		.spikeWithInput(getNodeConnections().get(0)); // Problem
 								     // line
 	// setActive(false);
 	infoIndex++;

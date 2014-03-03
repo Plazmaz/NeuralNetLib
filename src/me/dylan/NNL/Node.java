@@ -13,6 +13,7 @@ public class Node {
     private ArrayList<Synapse> connections = new ArrayList<Synapse>();
     protected NodeType nodeVariety;
     public static final int NODE_DRAW_SIZE = 10;
+    public static int NODE_COUNT = 0;
     int maxDataStorage = 5000; // this is in words delimited by spaces
     public NodePaint graphicsRepresentationObject = new NodePaint(
 	    NODE_DRAW_SIZE, Color.GREEN);
@@ -20,9 +21,12 @@ public class Node {
     protected Value originalValue;
     private boolean active = false;
     public int pulsesSeen;
-
+    public int nodeID = 0;
     public NodeType getNodeVariety() {
 	return nodeVariety;
+    }
+    public Node() {
+	nodeID =  NODE_COUNT++;
     }
 
     /**
@@ -70,35 +74,18 @@ public class Node {
 	}
     }
 
-    public void sendPulseToAppendData(Synapse dataLine) {
-	pulsesSeen++;
-
-	// if (pulsesSeen % 2 == 0 && originalValue != null) {
-	// setNodeInfo(originalValue.getValue());
-	// return;
-	// }
-	Node sender = dataLine.getConnectionOrigin();
-	String originalNodeInfo = getNodeInfo().getData();
-	if (originalNodeInfo.length() + sender.getNodeInfo().getData().length() > maxDataStorage) {
-	    String tmp = sender.getNodeInfo().getData();
-	    getNodeInfo().setValue("");
-	    for (int i = tmp.split(" ").length - 1; i > maxDataStorage; i--) {
-		setNodeData(getNodeInfo().appendToValue(
-			new Value(tmp.split(" ")[i])).getData());
-	    }
-
-	}
+//    public void sendPulseToAppendData(Synapse dataLine) {	}
 	// dataLine.setPulseBack(!dataLine.doesPulseBack());
 	// sender.setNodeData(sender.originalValue.getData());
-	spikeWithInput(dataLine);
-	setActive(true);
+//	spikeWithInput(dataLine);
+//	setActive(true);
 	// dataLine.setPulseBack(!dataLine.doesPulseBack());
 	// setHiddenValueInNode(vInNode, sender.getNodeVariety());
 	// if (sender.originalValue != null)
 	// sender.setNodeInfo(sender.originalValue.getValue());
 	// sender.setActive(false);
 	// setHiddenValueInNode(, sender.getNodeVariety());
-    }
+//    }
 
     // public void paint(int x, int y, int maxnodes) {
     // if(this.nodeVariety == NodeType.OUTPUT) {
@@ -178,28 +165,31 @@ public class Node {
 			dataLine.desiredOutput);
 	Synapse newDataLine;
 	if (mostRecentStringMatchPercentage < dataLine.percentMatchAtOrigin) {
-//	    if (!dataLine.doesPulseBack())
-//		dataLine.setPulseBack(true);
-	    dataLine.setPulseBack(!dataLine.doesPulseBack());
+	    if (!dataLine.doesPulseBack()) {
+		dataLine.setPulseBack(true);
+	    }
+	    // dataLine.setPulseBack(!dataLine.doesPulseBack());
 	    dataLine.setSynapseWeight(dataLine.getSynapseWeight()
 		    - NNLib.WEIGHT_DECREASE_ON_MISMATCH);
 	    setNodeData(originalNodeInfo);
 	    cleanupDamage(dataLine);
-	    dataLine.getConnectionOrigin().setActive(false);
 	    dataLine.hasPulsedInTick = true;
 	    sortConnectionsByWeight();
 	    newDataLine = getNodeConnections().get(0);
+	    newDataLine.getConnectionOrigin().setActive(false);
 	    newDataLine.getConnectionDestination().setActive(true);
 	    System.out.println("Traced Back.");
 	} else {
 	    dataLine.hasPulsedInTick = true;
 	    dataLine.setSynapseWeight(dataLine.getSynapseWeight()
 		    + NNLib.WEIGHT_INCREASE_ON_MATCH);
-	    dataLine.getConnectionOrigin().setActive(false);
+//	    
 	    sortConnectionsByWeight();
 	    newDataLine = getNodeConnections().get(0);
-	     newDataLine.getConnectionDestination().setActive(true);
+	    newDataLine.getConnectionDestination().setActive(true);
+	    newDataLine.getConnectionOrigin().setActive(false);
 	}
+	setActive(true);
     }
 
     public void cleanupDamage(Synapse connectionToIgnore) {
@@ -207,7 +197,7 @@ public class Node {
 	for (Synapse netConnection : getNodeConnections()) {
 	    if (!netConnection.equals(connectionToIgnore)) {
 		netConnection.hasPulsedInTick = false;
-		 netConnection.setPulseBack(false);
+		netConnection.setPulseBack(false);
 	    }
 	}
     }
@@ -226,7 +216,6 @@ public class Node {
     public boolean isActive() {
 	return active;
     }
-
 
     public void setActive(boolean active) {
 	this.active = active;

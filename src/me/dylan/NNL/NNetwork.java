@@ -99,7 +99,7 @@ public class NNetwork {
 
     public void connectAll() {
 	for (Node node : getNodesInNetwork()) {
-	    for (Node node2 : getNodesInNetwork()) {
+	    for (HiddenNode node2 : getHiddenNodesInNetwork()) {
 		boolean allowProgression = !(node.getNodeVariety() == NodeType.INPUT || node2
 			.getNodeVariety() == NodeType.INPUT)
 			&& !(node.getNodeVariety() == NodeType.OUTPUT || node2

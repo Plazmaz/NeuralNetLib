@@ -70,11 +70,10 @@ public class HiddenNode extends Node {
 
 	if (outLine.getConnectionDestination().getNodeVariety() == NodeType.HIDDEN) {
 	    if (this.isActive()) {
-		outLine.getConnectionDestination().sendPulseToAppendData(
-			outLine);
+		outLine.getConnectionDestination().spikeWithInput(outLine);
 		System.out.println("Pulsed to Hidden "
-			+ outLine.getConnectionDestination().getNodeInfo()
-			+ " from " + getNodeInfo());
+			+ +outLine.getConnectionDestination().nodeID + " from Hidden "
+			+ nodeID);
 		// ((HiddenNode) outLine.getConnectionDestination())
 		// .sendPulseToAppendData(this, outLine);
 	    }

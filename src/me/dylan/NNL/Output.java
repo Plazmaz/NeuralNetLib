@@ -50,7 +50,7 @@ public class Output extends Node {
 	    System.out.println("Output invalid, backtracing.");
 	    connector.setPulseBack(true);
 	    connector.getConnectionOrigin().setActive(false);
-	    connector.getConnectionDestination().sendPulseToAppendData(
+	    connector.getConnectionDestination().spikeWithInput(
 		    connector);
 	    cleanupDamage(connector);
 	    setNodeData("");
