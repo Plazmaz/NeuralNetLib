@@ -24,6 +24,30 @@ public class TestUtil {
     	System.out.println("Nodes found!");
     	return true;
     }
+    
+    public static boolean InputNodesExist(NNetwork networkToCheck) {
+    	if (networkToCheck.getInputNodesInNetwork().isEmpty()) {
+    		System.out.println("No Input Nodes Exist In Network!");
+    		return false;
+    	}
+    	return true;
+    }
+    
+    public static boolean OutputNodesExist(NNetwork networkToCheck) {
+    	if (networkToCheck.getOutputNodesInNetwork().isEmpty()) {
+    		System.out.println("No Output Nodes Exist In Network!");
+    		return false;
+    	}
+    	return true;
+    }
+    
+    public static boolean HiddenNodesExist(NNetwork networkToCheck) {
+    	if (networkToCheck.getHiddenNodesInNetwork().isEmpty()) {
+    		System.out.println("No Hidden Nodes Exist In Network!");
+    		return false;
+    	}
+    	return true;
+    }
 
     /**
      * Verifies that the proper amount of Synapses exist inside of the network

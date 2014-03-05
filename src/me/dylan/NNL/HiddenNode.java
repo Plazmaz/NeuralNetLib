@@ -15,9 +15,9 @@ public class HiddenNode extends Node {
     public HiddenNode() {
 	nodeVariety = NodeType.HIDDEN;
     }
-
+    
     public void addSingleInputNode(Input input, NNetwork parentNet) {
-	connectNodeToNode(input, NNLib.MAX_CONNECTION_WEIGHT / 2, parentNet);
+	connectNodeToNode(input, NNLib.MAX_CONNECTION_WEIGHT / 2, parentNet); //TODO: Issue: WHERE DOES 'connectNodeToNode' come from!?!?
 	datain.add(input);
     }
 
@@ -28,7 +28,7 @@ public class HiddenNode extends Node {
     }
 
     public void addSingleOutputNode(Output output, NNetwork parentNet) {
-	connectNodeToNode(output, NNLib.MAX_CONNECTION_WEIGHT / 2, parentNet);
+	connectNodeToNode(output, NNLib.MAX_CONNECTION_WEIGHT / 2, parentNet); //TODO: Issue: WHERE DOES 'connectNodeToNode' come from!?!?
 	dataout.add(output);
     }
 
@@ -94,10 +94,10 @@ public class HiddenNode extends Node {
     }
 
     public void randomizeNodeConnections(NNetwork parentNet) {
-	Random rand = NNLib.GLOBAL_RANDOM;
-	for (Input in : datain) {
-	    in.disconnectNode(this);
-	}
+    	Random rand = NNLib.GLOBAL_RANDOM;
+    	for (Input in : datain) {
+    		in.disconnectNode(this);
+    	}
 	for (Output out : dataout) {
 	    out.disconnectNode(this);
 	}

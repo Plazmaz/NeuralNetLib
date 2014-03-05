@@ -22,6 +22,9 @@ public class Input extends Node {
 	    setInformation(information.appendToValue(new Value(outVal)));
     }
 
+    /**
+     * @see me.dylan.NNL.Node#spikeWithInput(me.dylan.NNL.Synapse)
+     */
     @Override
     public void spikeWithInput(Synapse dataLine) {
 	String originalInfo = getNodeInfo().getData();
@@ -33,7 +36,7 @@ public class Input extends Node {
 	// this.infoIndex = 0;
 	activateInputNode();
     }
-
+    
     public void activateInputNode() {
 	if (infoIndex >= outInfoQueue.length) {
 	    // cleanupDamage(null);
