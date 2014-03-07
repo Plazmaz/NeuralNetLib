@@ -10,201 +10,206 @@ import me.dylan.NNL.Utils.StringUtil;
  * 
  */
 public class NNetwork {
-	private ArrayList<HiddenNode> networkHidden = new ArrayList<HiddenNode>();
-	private ArrayList<Synapse> networkSynapses = new ArrayList<Synapse>();
-	private ArrayList<Input> networkInputs = new ArrayList<Input>();
-	private ArrayList<Output> networkOutputs = new ArrayList<Output>();
-	private boolean isLearningMode = false;
-	String desiredOutput = "";
+    private ArrayList<HiddenNode> networkHidden = new ArrayList<HiddenNode>();
+    private ArrayList<Synapse> networkSynapses = new ArrayList<Synapse>();
+    private ArrayList<Input> networkInputs = new ArrayList<Input>();
+    private ArrayList<Output> networkOutputs = new ArrayList<Output>();
+    private boolean isLearningMode = false;
+    String desiredOutput = "";
 
-	public NNetwork(ArrayList<Input> inputs, ArrayList<HiddenNode> connections,
-			ArrayList<Output> outputs, String desiredOutput) {
-		this.networkHidden = connections;
-		this.networkInputs = inputs;
-		this.networkOutputs = outputs;
-		this.desiredOutput = desiredOutput;
+    public NNetwork(ArrayList<Input> inputs, ArrayList<HiddenNode> connections,
+	    ArrayList<Output> outputs, String desiredOutput) {
+	this.networkHidden = connections;
+	this.networkInputs = inputs;
+	this.networkOutputs = outputs;
+	this.desiredOutput = desiredOutput;
+    }
+
+    // TODO: DO WE NEED THIS?
+    public NNetwork(String desiredOutput) {
+	this.desiredOutput = desiredOutput;
+    }
+
+    // TODO: DOES THIS ADD A NODE TO NETWORK OR ADD A NODE TO THE LIST OF OUTPUT
+    // NODES IN THE NETWORK? ALSO HAS A SIMILAR FUNCTION IN HIDDEN NODE
+    public void addOutputNodeToNetwork(Output out) {
+	networkOutputs.add(out);
+    }
+
+    // TODO: DOES THIS ADD A NODE TO NETWORK OR ADD A NODE TO THE LIST OF OUTPUT
+    // NODES IN THE NETWORK? ALSO HAS A SIMILAR FUNCTION IN HIDDEN NODE
+    public void addInputNodeToNetwork(Input in) {
+	networkInputs.add(in);
+    }
+
+    // TODO: SIMILAR FUNCTION 'addManyInputNodes' EXISTS IN HIDDEN NODE. -- I
+    // believe we should consolidate the add functions to either NNetwork or
+    // NetworkUtil
+    public void addManyInputNodesToNetwork(ArrayList<Input> inputs) {
+	for (Input input : inputs) {
+	    addInputNodeToNetwork(input);
 	}
+    }
 
-	// TODO: DO WE NEED THIS?
-	public NNetwork(String desiredOutput) {
-		this.desiredOutput = desiredOutput;
+    // TODO: SIMILAR FUNCTION 'addManyOutputNodes' EXISTS IN HIDDEN NODE -- I
+    // believe we should consolidate the add functions to either NNetwork or
+    // NetworkUtil
+    public void addManyOutputNodesToNetwork(ArrayList<Output> outputs) {
+	for (Output output : outputs) {
+	    addOutputNodeToNetwork(output);
 	}
+    }
 
-	// TODO: DOES THIS ADD A NODE TO NETWORK OR ADD A NODE TO THE LIST OF OUTPUT
-	// NODES IN THE NETWORK? ALSO HAS A SIMILAR FUNCTION IN HIDDEN NODE
-	public void addOutputNodeToNetwork(Output out) {
-		networkOutputs.add(out);
+    public void addManyHiddenNodesToNetwork(ArrayList<HiddenNode> HiddenNodes) {
+	for (HiddenNode Hidden : HiddenNodes) {
+	    addHiddenNodeToNetwork(Hidden);
 	}
+    }
 
-	// TODO: DOES THIS ADD A NODE TO NETWORK OR ADD A NODE TO THE LIST OF OUTPUT
-	// NODES IN THE NETWORK? ALSO HAS A SIMILAR FUNCTION IN HIDDEN NODE
-	public void addInputNodeToNetwork(Input in) {
-		networkInputs.add(in);
-	}
+    public ArrayList<Node> getNodesInNetwork() {
+	ArrayList<Node> nodes = new ArrayList<Node>();
+	nodes.addAll(networkHidden);
+	nodes.addAll(networkInputs);
+	nodes.addAll(networkOutputs);
+	return nodes;
+    }
 
-	// TODO: SIMILAR FUNCTION 'addManyInputNodes' EXISTS IN HIDDEN NODE. -- I
-	// believe we should consolidate the add functions to either NNetwork or
-	// NetworkUtil
-	public void addManyInputNodesToNetwork(ArrayList<Input> inputs) {
-		for (Input input : inputs) {
-			addInputNodeToNetwork(input);
-		}
-	}
+    public ArrayList<HiddenNode> getHiddenNodesInNetwork() {
+	return networkHidden;
+    }
 
-	// TODO: SIMILAR FUNCTION 'addManyOutputNodes' EXISTS IN HIDDEN NODE -- I
-	// believe we should consolidate the add functions to either NNetwork or
-	// NetworkUtil
-	public void addManyOutputNodesToNetwork(ArrayList<Output> outputs) {
-		for (Output output : outputs) {
-			addOutputNodeToNetwork(output);
-		}
-	}
+    public ArrayList<Input> getInputNodesInNetwork() {
+	return networkInputs;
+    }
 
-	public void addManyHiddenNodesToNetwork(ArrayList<HiddenNode> HiddenNodes) {
-		for (HiddenNode Hidden : HiddenNodes) {
-			addHiddenNodeToNetwork(Hidden);
-		}
-	}
+    public ArrayList<Output> getOutputNodesInNetwork() {
+	return networkOutputs;
+    }
 
-	public ArrayList<Node> getNodesInNetwork() {
-		ArrayList<Node> nodes = new ArrayList<Node>();
-		nodes.addAll(networkHidden);
-		nodes.addAll(networkInputs);
-		nodes.addAll(networkOutputs);
-		return nodes;
-	}
-
-	public ArrayList<HiddenNode> getHiddenNodesInNetwork() {
-		return networkHidden;
-	}
-
-	public ArrayList<Input> getInputNodesInNetwork() {
-		return networkInputs;
-	}
-
-	public ArrayList<Output> getOutputNodesInNetwork() {
-		return networkOutputs;
-	}
-
-	public void addHiddenNodeToNetwork(HiddenNode Hidden) {
-		for (Synapse synapse : Hidden.getNodeConnections()) {
-			if (!networkSynapses.contains(synapse))
-				networkSynapses.add(synapse);
-		}
-		networkHidden.add(Hidden);
-	}
-
-	@Deprecated
-	public void randomizeConnections() {
-		networkSynapses.clear();
-		for (HiddenNode hidden : networkHidden) {
-			hidden.randomizeNodeConnections(this);
-			for (Synapse synapse : hidden.getNodeConnections()) {
-				if (!networkSynapses.contains(synapse))
-					networkSynapses.add(synapse);
-			}
-		}
-	}
-
-	public void connectAll() {
-		for (Node node : getNodesInNetwork()) {
-			for (HiddenNode node2 : getHiddenNodesInNetwork()) {
-				boolean allowProgression = !(node.getNodeVariety() == NodeType.INPUT || node2
-						.getNodeVariety() == NodeType.INPUT)
-						&& !(node.getNodeVariety() == NodeType.OUTPUT || node2
-								.getNodeVariety() == NodeType.OUTPUT)
-						&& (node.getNodeVariety() != node2.getNodeVariety() || node
-								.getNodeVariety() == NodeType.HIDDEN)
-						&& !node.equals(node2);
-
-				if (allowProgression)
-					node.connectNodeToNode(node2,
-							NNLib.MAX_CONNECTION_WEIGHT / 2, this); // TODO:
-																	// Issue:
-																	// WHERE
-																	// DOES
-																	// 'connectNodeToNode'
-																	// come
-																	// from!?!?
-			}
-			for (Input inNode : getInputNodesInNetwork()) {
-				if (inNode.getNodeVariety() != node.getNodeVariety()
-						&& node.getNodeVariety() != NodeType.OUTPUT) {
-
-					inNode.connectNodeToNode(node,
-							NNLib.MAX_CONNECTION_WEIGHT / 2, this); // TODO:
-																	// Issue:
-																	// WHERE
-																	// DOES
-																	// 'connectNodeToNode'
-																	// come
-																	// from!?!?
-					if (node.getNodeVariety() == NodeType.INPUT)
-						System.out.println();
-				}
-
-			}
-		}
-
-	}
-
-	public String getNetworkOutput() {
-		String result = "";
-		for (Output out : getOutputNodesInNetwork()) {
-			String outPulse = out.getOutputValue().getData();
-			if (!outPulse.isEmpty())
-				result += "|||||" + outPulse;
-		}
-		return result;
-	}
-
-	public double getNetworkSimilarityPercentage() {
-		String netOut = getNetworkOutput();
-		if (netOut.isEmpty())
-			return 0;
-		double percentMatch = StringUtil.calculateStringSimilarityPercentage(
-				netOut, desiredOutput);
-		return percentMatch * 100;
-	}
-
-	public boolean isNetworkInLearningMode() {
-		return isLearningMode;
-	}
-
-	public void setNetworkLearningMode(boolean isLearningMode) {
-		this.isLearningMode = isLearningMode;
-	}
-
-	public ArrayList<Synapse> getNetworkSynapses() {
-		return networkSynapses;
-	}
-
-	public void removeUnusedSynapses() {
-		ArrayList<Synapse> netSynapsesClone = (ArrayList<Synapse>) getNetworkSynapses()
-				.clone();
-		for (Synapse synapse : netSynapsesClone) {
-			if (synapse == null) {
-				removeSynapse(synapse);
-				continue;
-			}
-			if (synapse.getConnectionDestination() == null
-					|| synapse.getConnectionOrigin() == null) {
-				removeSynapse(synapse);
-			}
-		}
-	}
-
-	public void clearSynapses() {
-		networkSynapses.clear();
-	}
-
-	public void addSynapse(Synapse synapse) {
+    public void addHiddenNodeToNetwork(HiddenNode Hidden) {
+	for (Synapse synapse : Hidden.getNodeConnections()) {
+	    if (!networkSynapses.contains(synapse))
 		networkSynapses.add(synapse);
 	}
+	networkHidden.add(Hidden);
+    }
 
-	public void removeSynapse(Synapse connection) {
-		if (connection != null)
-			connection.severConnections();
-		networkSynapses.remove(connection);
+    @Deprecated
+    public void randomizeConnections() {
+	networkSynapses.clear();
+	for (HiddenNode hidden : networkHidden) {
+	    hidden.randomizeNodeConnections(this);
+	    for (Synapse synapse : hidden.getNodeConnections()) {
+		if (!networkSynapses.contains(synapse))
+		    networkSynapses.add(synapse);
+	    }
 	}
+    }
+
+    /**
+     * Connect all nodes in the network together, possibly a root to our problem
+     * of node pulses.
+     */
+    public void connectAll() {
+	for (Node node : getNodesInNetwork()) {
+	    for (HiddenNode node2 : getHiddenNodesInNetwork()) {
+		boolean allowProgression = node.getNodeVariety() == NodeType.HIDDEN
+			&& !node.equals(node2);
+
+		if (allowProgression)
+		    node.connectNodeToNode(node2,
+			    NNLib.MAX_CONNECTION_WEIGHT / 2, this); // TODO:
+								    // Issue:
+								    // WHERE
+								    // DOES
+								    // 'connectNodeToNode'
+								    // come
+								    // from!?!?
+	    }
+	    for (Input inNode : getInputNodesInNetwork()) {
+		if (inNode.getNodeVariety() != node.getNodeVariety()
+			&& node.getNodeVariety() != NodeType.OUTPUT) {
+
+		    inNode.connectNodeToNode(node,
+			    NNLib.MAX_CONNECTION_WEIGHT / 2, this); // TODO:
+								    // Issue:
+								    // WHERE
+								    // DOES
+								    // 'connectNodeToNode'
+								    // come
+		}
+
+	    }
+	    for (Output outNode : getOutputNodesInNetwork()) {
+		if (outNode.getNodeVariety() != node.getNodeVariety()
+			&& node.getNodeVariety() != NodeType.INPUT) {
+
+		    node.connectNodeToNode(outNode,
+			    NNLib.MAX_CONNECTION_WEIGHT / 2, this);
+		}
+
+	    }
+	}
+
+    }
+
+    public String getNetworkOutput() {
+	String result = "";
+	for (Output out : getOutputNodesInNetwork()) {
+	    String outPulse = out.getOutputValue().getData();
+	    if (!outPulse.isEmpty())
+		result += "|||||" + outPulse;
+	}
+	return result;
+    }
+
+    public double getNetworkSimilarityPercentage() {
+	String netOut = getNetworkOutput();
+	if (netOut.isEmpty())
+	    return 0;
+	double percentMatch = StringUtil.calculateStringSimilarityPercentage(
+		netOut, desiredOutput);
+	return percentMatch * 100;
+    }
+
+    public boolean isNetworkInLearningMode() {
+	return isLearningMode;
+    }
+
+    public void setNetworkLearningMode(boolean isLearningMode) {
+	this.isLearningMode = isLearningMode;
+    }
+
+    public ArrayList<Synapse> getNetworkSynapses() {
+	return networkSynapses;
+    }
+
+    public void removeUnusedSynapses() {
+	ArrayList<Synapse> netSynapsesClone = (ArrayList<Synapse>) getNetworkSynapses()
+		.clone();
+	for (Synapse synapse : netSynapsesClone) {
+	    if (synapse == null) {
+		removeSynapse(synapse);
+		continue;
+	    }
+	    if (synapse.getConnectionDestination() == null
+		    || synapse.getConnectionOrigin() == null) {
+		removeSynapse(synapse);
+	    }
+	}
+    }
+
+    public void clearSynapses() {
+	networkSynapses.clear();
+    }
+
+    public void addSynapse(Synapse synapse) {
+	networkSynapses.add(synapse);
+    }
+
+    public void removeSynapse(Synapse connection) {
+	if (connection != null)
+	    connection.severConnections();
+	networkSynapses.remove(connection);
+    }
 }

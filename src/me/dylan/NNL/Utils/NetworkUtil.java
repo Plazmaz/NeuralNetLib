@@ -55,25 +55,24 @@ public class NetworkUtil {
 	// TODO: MAYBE NEED TO REFACTOR THIS FUNCTION TO BE CLEARER -- SEE CRAIG
 	public static NNetwork initializeNetwork(int hiddenCount, int inputCount,
 			int outputCount, String desiredOutput, List<String> tmpLines) {
-		// why is everything listen as hidden; ex: inputHiddenNodes
 		ArrayList<HiddenNode> networkHiddenNodes = new ArrayList<HiddenNode>();
-		ArrayList<Input> inputHiddenNodes = new ArrayList<Input>();
-		ArrayList<Output> outputHiddenNodes = new ArrayList<Output>();
+		ArrayList<Input> networkInputNodes = new ArrayList<Input>();
+		ArrayList<Output> networkOutputNodes = new ArrayList<Output>();
 		for (int i = 0; i < inputCount; i++) {
-			inputHiddenNodes.add(new Input(desiredOutput.split("\n")));
+			networkInputNodes.add(new Input(desiredOutput.split("\n")));
 		}
 		for (int i = 0; i < outputCount; i++) {
-			outputHiddenNodes.add(new Output());
+			networkOutputNodes.add(new Output());
 		}
-		NNetwork net = new NNetwork(inputHiddenNodes, networkHiddenNodes,
-				outputHiddenNodes, desiredOutput);
+		NNetwork net = new NNetwork(networkInputNodes, networkHiddenNodes,
+				networkOutputNodes, desiredOutput);
 		// TODO: Not exactly sure of the point of this - See Craig
-		for (int i = 0; i < hiddenCount; i++) {
+		/*for (int i = 0; i < hiddenCount; i++) {
 			HiddenNode Hidden = new HiddenNode();
-			Hidden.addManyInputNodes(inputHiddenNodes, net);
-			Hidden.addManyOutputNodes(outputHiddenNodes, net);
+			Hidden.addManyInputNodes(networkInputNodes, net);
+			Hidden.addManyOutputNodes(networkOutputNodes, net);
 			networkHiddenNodes.add(Hidden);
-		}
+		}*/
 		for (String s : tmpLines) {
 			HiddenNode hiddenNode = NetworkUtil.createHidden(s, net);
 			net.addHiddenNodeToNetwork(hiddenNode);
