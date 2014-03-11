@@ -27,12 +27,24 @@ public class Output extends Node {
 	/**
 	 * Get the value of this output
 	 * 
-	 * @return value - This is the power/value of the output.
+	 * @return The power/value of the output. --may not be accurate currently
+	 *         3/10/14
 	 */
+	// TODO: how can you be sure information contains only the output value that
+	// we need?
 	public Value getOutputValue() {
 		return information;
 	}
 
+	/**
+	 * Takes the synapse and determines if the information that came from origin
+	 * fits into the output properly. Then it determines what to do with the
+	 * data based on its percentage match with desired output
+	 * 
+	 * @param connector
+	 *            The synapse that links the output node to the one or more
+	 *            hidden nodes that are apart of the current output
+	 */
 	public void putOrMove(Synapse connector) {
 		String infoData = information.getData();
 		this.spikeWithInput(connector);
@@ -53,7 +65,7 @@ public class Output extends Node {
 			connector.getConnectionDestination().spikeWithInput(connector);
 			cleanupDamage(connector);
 			setNodeData("");
-		
+
 		}
 	}
 }
