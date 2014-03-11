@@ -19,14 +19,10 @@ import me.dylan.NNL.Value;
 import me.dylan.NNL.Test.TestUtil;
 
 public class NetworkUtil {
-	/**
-	 * How much to increase the weight when a pathway is chosen over another
-	 */
+
 	@Deprecated
 	private static int INCREASE_WEIGHT_ON_CHOOSE = 2;
-	/**
-	 * How much to increase the weight when two pathways are identical
-	 */
+
 	@Deprecated
 	private static int INCREASE_WEIGHT_ON_MATCH = 4;
 
