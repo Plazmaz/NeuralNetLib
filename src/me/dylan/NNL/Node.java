@@ -48,15 +48,22 @@ public class Node {
 		destination.connections.add(connection);
 		parentNetwork.addSynapse(connection);
 	}
-	
+
 	/**
 	 * Connects the nodes to each other
+	 * 
 	 * @param destination
+	 *            TODO: Is destination being used to represent the node its
+	 *            being connected to? If so, why do we not take in the origin
+	 *            node as well?
 	 * @param weight
+	 *            The value that will be used to determine the weight of the
+	 *            synapse connecting the nodes
 	 * @param parentNetwork
+	 *            The network that the node will be added to.
 	 */
-	//TODO: DONT WE CONNECT NODES ELSEWHERE?
-	//TODO: WE SHOULD BE WEIGHT CHECKING ELSEWHERE -- WHY HERE?
+	// TODO: DONT WE CONNECT NODES ELSEWHERE?
+	// TODO: WE SHOULD BE WEIGHT CHECKING ELSEWHERE -- WHY HERE?
 	public void connectNodeToNode(Node destination, double weight,
 			NNetwork parentNetwork) {
 		if (weight > NNLib.MAX_CONNECTION_WEIGHT) {
@@ -69,11 +76,27 @@ public class Node {
 		destination.connections.add(connection);
 	}
 
+	/**
+	 * Takes the passed synapse and disconnects it from the two nodes its
+	 * connected to
+	 * 
+	 * @param bridge
+	 *            The synapse that is to be disconnected on both sides
+	 */
 	public void disconnectNode(Synapse bridge) {
 		bridge.getConnectionDestination().connections.remove(bridge);
 		bridge.getConnectionOrigin().connections.remove(bridge);
 	}
 
+	/**
+	 * Takes the passed node and disconnects it from all other nodes by
+	 * disconnecting the synapses
+	 * 
+	 * @param nodeToDisconnect
+	 *            The node that is to be disconnected from all other nodes
+	 */
+	// TODO: If we are disconnecting this node from all other nodes, shouldn't
+	// we delete the node?
 	public void disconnectNode(Node nodeToDisconnect) {
 		ArrayList<Synapse> synapsesClone = (ArrayList<Synapse>) connections
 				.clone();
@@ -101,21 +124,42 @@ public class Node {
 		graphicsRepresentationObject.setColor(c);
 	}
 
+	/**
+	 * Returns an arraylist of all connections that are associated with the node
+	 * 
+	 * @return connections The arraylist that contains all of the current
+	 *         connections for the node.
+	 */
 	public ArrayList<Synapse> getNodeConnections() {
 		return connections;
 	}
 
+	// TODO: Not sure what information is.. and not sure where it gets set. Not
+	// sure what the "Value" type is either.
 	public Value getNodeInfo() {
 		return information;
 	}
 
+	/**
+	 * Takes in the information that will be assigned to a hidden node. Checks
+	 * to make sure that the node does not currently have a value, then assigns
+	 * it the value of info
+	 * 
+	 * @param info
+	 *            The string containing the information that the node will
+	 *            contain
+	 */
 	public void setNodeData(String info) {
 		this.information = new Value(info);
 		if (this.originalValue == null) {
 			this.originalValue = new Value(info);
 		}
 	}
-
+	/**
+	 * 
+	 * @param backwards
+	 * @return
+	 */
 	public ArrayList<Node> traceBack(boolean backwards) {
 		ArrayList<Node> trace = new ArrayList<Node>();
 		trace.add(this);
@@ -127,7 +171,12 @@ public class Node {
 		}
 		return trace;
 	}
-
+	/**
+	 * 
+	 * @param backwards
+	 * @param parentNetwork
+	 * @return
+	 */
 	public ArrayList<Synapse> traceBackSynapses(boolean backwards,
 			NNetwork parentNetwork) {
 		ArrayList<Synapse> validConnections = new ArrayList<Synapse>();
@@ -149,7 +198,9 @@ public class Node {
 	 * the highest weight is activated and then the data is pushed to it.
 	 * Afterwards, the sending node, is deactivated
 	 * 
-	 * @param dataLine	The current synapse that is being checked, and then assigned data, to carry to the next node
+	 * @param dataLine
+	 *            The current synapse that is being checked, and then assigned
+	 *            data, to carry to the next node
 	 */
 
 	// TODO: SHOULDNT WE BE CHECKING IF THE NODE HAS PULSED, NOT THE SYNAPSE
@@ -197,7 +248,9 @@ public class Node {
 	}
 
 	/**
-	 * Takes the passed synapse and resets the state to not having pulsed, and not 
+	 * Takes the passed synapse and resets the state to not having pulsed, and
+	 * not
+	 * 
 	 * @param connectionToIgnore
 	 */
 	public void cleanupDamage(Synapse connectionToIgnore) {
@@ -210,6 +263,10 @@ public class Node {
 		}
 	}
 
+	/**
+	 * Takes all of the current synapses and arranges them in a list by their
+	 * weight. This does not affect the connections of the synapses
+	 */
 	public void sortConnectionsByWeight() {
 		Collections.sort(getNodeConnections(), new Comparator<Synapse>() {
 
@@ -217,17 +274,30 @@ public class Node {
 			public int compare(Synapse synA, Synapse synB) {
 				return (int) (synA.getSynapseWeight() - synB.getSynapseWeight());
 			}
-
 		});
 	}
 
+	/**
+	 * Returns the state of the node
+	 * 
+	 * @return active The boolean variable that stores the nodes
+	 *         active/deactivated state
+	 */
 	public boolean isActive() {
 		return active;
 	}
 
+	/**
+	 * Sets the state of the node
+	 * 
+	 * @param active
+	 *            The state that we want to adjust our node to
+	 */
 	public void setActive(boolean active) {
 		this.active = active;
 	}
+
+	// @Deprecated
 	// public ArrayList<Synapse> traceBackSynapses(boolean backwards) {
 	// boolean hasConnection = false;
 	// ArrayList<Synapse> trace = new ArrayList<Synapse>();
