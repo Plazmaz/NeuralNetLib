@@ -7,68 +7,73 @@ package me.dylan.NNL;
  * information as possible. such as all the pixels in the FOV instead of
  * something more traditional, like all other animals in FOV)
  * 
- * 
  */
 public class Value {
-    private String data = "";
+	private String data = "";
 
-    // private float min = 0f;
-    // private float max = 1f;
-    // public Object extraInfo;
+	/**
+	 * Initialize a blank-slate Value object.
+	 */
+	public Value() {
+	}
 
-    /**
-     * Initialize a blank-slate Value object.
-     */
-    public Value() {
-    }
+	/**
+	 * Initialize a Value object with the given string as the current value.
+	 * 
+	 * @param value
+	 *            The string used to create the Value object
+	 */
+	public Value(String value) {
+		this.setValue(value.intern());
+	}
 
-    /**
-     * Initialize a Value object with the given float as the current value.
-     * 
-     * @param value
-     */
-    public Value(String value) {
-	this.setValue(value.intern());
-    }
+	/**
+	 * Checks to see if there is currently data contained in Value and then
+	 * returns the data or an error
+	 * 
+	 * @return the data variable of Value which contains the raw data for Value
+	 */
+	// TODO: should check if null then return 'data' or an error message
+	public String getData() {
+		return data;
+	}
 
-    public String getData() {
-	return data;
-    }
+	/**
+	 * Sets the information in Value. Also checks to make sure that string
+	 * doesnt already exist
+	 * 
+	 * @param value
+	 *            the information that will be added to value
+	 */
+	// TODO: do not fully understand intern()
+	public void setValue(String value) {
 
-    public void setValue(String value) {
+		this.data = value.intern();
+	}
 
-	this.data = value.intern();
-    }
+	/**
+	 * Takes a Value and adds it to the existing data inside of Value. Does not
+	 * delete the current Value data.
+	 * 
+	 * @param value
+	 *            The information to be added onto data in Value
+	 * @return the new Value containing the new information added into the old
+	 *         information in Value
+	 */
+	public Value appendToValue(Value value) {
+		Value out = new Value();
+		// try {
+		out.setValue(this.getData() + value.data);
+		// } catch (OutOfMemoryError ex) {
+		// ex.printStackTrace();
+		// // System.out.println(this.getValue());
+		// }
+		return out;
+	}
 
-    // public float getMin() {
-    // return min;
-    // }
-    //
-    // public void setMin(float min) {
-    // this.min = min;
-    // }
-    //
-    // public float getMax() {
-    // return max;
-    // }
-    //
-    // public void setMax(float max) {
-    // this.max = max;
-    // }
-
-    public Value appendToValue(Value value) {
-	Value out = new Value();
-	// try {
-	out.setValue(this.getData() + value.data);
-	// } catch (OutOfMemoryError ex) {
-	// ex.printStackTrace();
-	// // System.out.println(this.getValue());
-	// }
-	return out;
-    }
-
-    @Override
-    public String toString() {
-	return data;
-    }
+	// TODO: Do we need this? How is this a toString method?
+	@Override
+	public String toString() {
+		return data;
+	}
 }
