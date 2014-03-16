@@ -6,8 +6,6 @@ import java.util.HashMap;
  * Utility used in the creation, usage, and modifying of threads for Neuroticz
  * 
  */
-// TODO: Review all javadocs with Dylan. Not entirely sure how accurate
-// documentation is.
 public class ThreadUtil {
 	private static HashMap<String, Thread> threadPool = new HashMap<String, Thread>();
 
@@ -27,7 +25,7 @@ public class ThreadUtil {
 	}
 
 	/**
-	 * Checks if a thread in the pool has the key passed via string. IF it does
+	 * Checks if a thread in the pool has the key passed via string. If it does
 	 * it interupts/stops the thread
 	 * 
 	 * @param threadName
@@ -35,7 +33,6 @@ public class ThreadUtil {
 	 * @throws IllegalArgumentException
 	 *             The exception if the key is not found
 	 */
-	// TODO: why not remove thread as well?
 	public static void endThread(String threadName)
 			throws IllegalArgumentException {
 		if (threadPool.containsKey(threadName)) {
@@ -53,7 +50,6 @@ public class ThreadUtil {
 	 * @param threadName
 	 *            the key to be checked against threadpool
 	 */
-	// TODO: maybe combine with endthread?
 	public static void untrackThread(String threadName) {
 		if (threadPool.containsKey(threadName)) {
 			threadPool.remove(threadName);
@@ -64,9 +60,9 @@ public class ThreadUtil {
 	}
 
 	/**
-	 * Interupts/stops all threads that currently exist in threadpool
+	 * Interrupts/stops all threads that currently exist in threadpool
 	 */
-	// TODO: May want to check if they are active first? Will it cause an error
+	// TODO: Craig: May want to check if they are active first? Will it cause an error
 	// if you try and interrupt a thread that is already interrupted?
 	public static void stopAll() {
 		for (Thread th : threadPool.values()) {

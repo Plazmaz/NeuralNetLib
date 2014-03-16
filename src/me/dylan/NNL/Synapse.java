@@ -2,6 +2,7 @@ package me.dylan.NNL;
 
 import me.dylan.NNL.Utils.StringUtil;
 
+//TODO: CRAIG: Javadocs plux
 public class Synapse {
 	private Node origin;
 	private Node destination;

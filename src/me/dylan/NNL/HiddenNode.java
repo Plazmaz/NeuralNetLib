@@ -26,13 +26,7 @@ public class HiddenNode extends Node {
 	 *            The network that the node will be added to.
 	 */
 	public void addSingleInputNode(Input input, NNetwork parentNet) {
-		connectNodeToNode(input, NNLib.MAX_CONNECTION_WEIGHT / 2, parentNet); // TODO:
-																				// Issue:
-																				// WHERE
-																				// DOES
-																				// 'connectNodeToNode'
-																				// come
-																				// from!?!?
+		connectNodeToNode(input, NNLib.MAX_CONNECTION_WEIGHT / 2, parentNet);
 		datain.add(input);
 	}
 
@@ -61,13 +55,7 @@ public class HiddenNode extends Node {
 	 *            The network that the node will be added to.
 	 */
 	public void addSingleOutputNode(Output output, NNetwork parentNet) {
-		connectNodeToNode(output, NNLib.MAX_CONNECTION_WEIGHT / 2, parentNet); // TODO:
-																				// Issue:
-																				// WHERE
-																				// DOES
-																				// 'connectNodeToNode'
-																				// come
-																				// from!?!?
+		connectNodeToNode(output, NNLib.MAX_CONNECTION_WEIGHT / 2, parentNet);
 		dataout.add(output);
 	}
 
@@ -87,14 +75,13 @@ public class HiddenNode extends Node {
 	}
 
 	/**
-	 * //TODO: How often does this run? Runs every ____ and tests for synapses.
-	 * After finding a synapse it cheks tomake sure that
+	 * Runs every time the mainloop updates and tests for synapses.
+	 * After finding a synapse it checks to make sure that
 	 */
 	public void doTick() {
 		Collections.sort(getNodeConnections(), new Comparator<Synapse>() {
 
 			@Override
-			// TODO: Should I javadocs this?
 			public int compare(Synapse synA, Synapse synB) {
 				return (int) (synA.getSynapseWeight() - synB.getSynapseWeight());
 			}
@@ -103,7 +90,7 @@ public class HiddenNode extends Node {
 
 		int i = 0;
 		Synapse outLine = null;
-		// TODO: Really similar to code below -- see 'todo' a few lines down
+		// TODO: DYLAN: Really similar to code below -- see 'todo' a few lines down
 		while (i == 0 || outLine.hasPulsedInTick
 				|| outLine.getConnectionDestination().equals(this)) {
 
@@ -113,7 +100,8 @@ public class HiddenNode extends Node {
 			}
 			i++;
 		}
-		if (i == 0) {
+		//TODO: DO NOTE DELETE CURRENTLY --- TESTING IF USED
+		/*if (i == 0) {
 			// TODO: Same as above
 			while (i == 0 || outLine.getConnectionDestination().equals(this)) {
 				outLine = getNodeConnections().get(i);
@@ -122,17 +110,14 @@ public class HiddenNode extends Node {
 				}
 				i++;
 			}
-		}
-		// TODO: What if its a INPUT node? Hidden and Output are checked below,
-		// but not hidden
+		}*/
+		// TODO: Dylan: Add a check for input
 		if (outLine.getConnectionDestination().getNodeVariety() == NodeType.HIDDEN) {
 			if (this.isActive()) {
 				outLine.getConnectionDestination().spikeWithInput(outLine);
 				System.out.println("Pulsed to Hidden "
 						+ +outLine.getConnectionDestination().nodeID
 						+ " from Hidden " + nodeID);
-				// ((HiddenNode) outLine.getConnectionDestination())
-				// .sendPulseToAppendData(this, outLine);
 			}
 		} else if (outLine.getConnectionDestination().getNodeVariety() == NodeType.OUTPUT) {
 			if (this.isActive()) {
@@ -141,11 +126,6 @@ public class HiddenNode extends Node {
 						+ " from " + getNodeInfo());
 				((Output) outLine.getConnectionDestination())
 						.putOrMove(outLine);
-				// ((Output) synapse.getConnectionDestination())
-				// .setNodeInfo(synapse.getConnectionDestination()
-				// .getNodeInfo().getValue()
-				// + getNodeInfo().getValue());
-				// this.setActive(active);
 			}
 		}
 	}
@@ -158,8 +138,7 @@ public class HiddenNode extends Node {
 	 *            The network which does not currently have synapses connecting
 	 *            the nodes
 	 */
-	// TODO: Shouldn't we should check to see if the network already has
-	// connections so we do not accidently assign secondary connections?
+	@Deprecated
 	public void randomizeNodeConnections(NNetwork parentNet) {
 		Random rand = NNLib.GLOBAL_RANDOM;
 		for (Input in : datain) {
@@ -168,8 +147,6 @@ public class HiddenNode extends Node {
 		for (Output out : dataout) {
 			out.disconnectNode(this);
 		}
-		// datain.clear();
-		// dataout.clear();
 		getNodeConnections().clear();
 		if (!parentNet.getInputNodesInNetwork().isEmpty()) {
 			for (int i = 0; i < parentNet.getInputNodesInNetwork().size(); i++) {
@@ -204,34 +181,10 @@ public class HiddenNode extends Node {
 	}
 
 	/**
-	 * Takes in the value that is to be assigned to the hidden node originally
+	 * Gets all nodes connected to the current node
 	 * 
-	 * @param value
-	 * @param senderType
-	 *            The node variety of the node that sent the value.
+	 * @return List of nodes
 	 */
-	// TODO: is this description correct? What is value and where does it come
-	// from
-	public void setHiddenValueInNode(Value value, NodeType senderType) {
-		switch (senderType) {
-		case HIDDEN:
-			this.information = value;
-			break;
-		case INPUT:
-			this.information = value;
-			break;
-		case OUTPUT:
-			break;
-		default:
-			break;
-		}
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	// TODO: Not sure about the ? and : in the statement will document later
 	public ArrayList<Node> getConnectedNodes() {
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		for (Synapse synapse : getNodeConnections()) {
@@ -241,16 +194,4 @@ public class HiddenNode extends Node {
 		}
 		return nodes;
 	}
-
-	// @Deprecated
-	// @Override
-	// public void connectNodeToNode(Node destination, double d) {
-	// if (destination instanceof Input)
-	// addSingleInputNode((Input) destination, parentNet);
-	// if (destination instanceof Output)
-	// dataout.add((Output)destination)
-	// if (destination instanceof HiddenNode)
-	// connectedHiddenNodes.add((HiddenNode) destination);
-	// }
-
 }

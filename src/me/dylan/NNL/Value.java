@@ -8,6 +8,8 @@ package me.dylan.NNL;
  * something more traditional, like all other animals in FOV)
  * 
  */
+// TODO: REVIEW AND POSSIBLY REMOVE VALUE CLASS - CONVERT ALL VALUE OBJECTS TO
+// STRING IN OTHER CODE
 public class Value {
 	private String data = "";
 
@@ -33,7 +35,7 @@ public class Value {
 	 * 
 	 * @return the data variable of Value which contains the raw data for Value
 	 */
-	// TODO: should check if null then return 'data' or an error message
+	// TODO: Craig: Should check if null then return 'data' or an error message
 	public String getData() {
 		return data;
 	}
@@ -45,7 +47,6 @@ public class Value {
 	 * @param value
 	 *            the information that will be added to value
 	 */
-	// TODO: do not fully understand intern()
 	public void setValue(String value) {
 
 		this.data = value.intern();
@@ -71,8 +72,9 @@ public class Value {
 		return out;
 	}
 
-	// TODO: Do we need this? How is this a toString method?
 	@Override
+	@Deprecated
+	// Deprecated on 3/16/14
 	public String toString() {
 		return data;
 	}

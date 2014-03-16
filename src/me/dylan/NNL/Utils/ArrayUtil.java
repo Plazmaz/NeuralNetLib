@@ -4,14 +4,13 @@ import java.util.ArrayList;
 
 import me.dylan.NNL.NNetwork;
 
+@Deprecated
+//Nothing in class is being used
+//Deprecated on 3/16/14
 public class ArrayUtil {
-	/**
-	 * 
-	 * @param objects
-	 * @param indexOffset
-	 * @return
-	 */
-	// TODO: Not entirely sure what this does.. review with Dylan
+	
+	@Deprecated
+	//Deprecated on 3/16/14
 	public static ArrayList<NNetwork> shiftNetworkArray(
 			ArrayList<NNetwork> objects, int indexOffset) {
 		ArrayList<NNetwork> shifted = new ArrayList<NNetwork>();
@@ -33,12 +32,12 @@ public class ArrayUtil {
 	 * @param list
 	 *            The list that contains the objects to be swaped
 	 */
-	// TODO: shouldnt this return the new list after the swap?
+	@Deprecated
+	//Deprecated on 3/16/14
 	public static void swapItems(Object item1, Object item2, ArrayList list) {
 		int item1index = list.indexOf(item1);
 		int item2index = list.indexOf(item2);
 		list.set(item1index, item2);
 		list.set(item2index, item1);
-
 	}
 }
