@@ -20,8 +20,6 @@ import javax.swing.JPanel;
 /**
  * Basic painting and frame class
  * 
- * @author Dylan
- * 
  */
 // TODO: No javadocs for this file since pretty self explanatory. Will need to
 // have javadocs added in future for release and/or when its determined
@@ -144,7 +142,4 @@ public class Display {
 	public static void setMouseLocation(Point location) {
 		bot.mouseMove((int) location.getX(), (int) location.getY());
 	}
-	// public static void updateDoubleBuffer() {
-	// displayPanel.update(getGraphics());
-	// }
 }

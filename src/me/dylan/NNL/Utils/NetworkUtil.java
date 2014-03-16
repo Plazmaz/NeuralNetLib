@@ -48,27 +48,24 @@ public class NetworkUtil {
 	 *            strings gets the current weight of the synapse being colored
 	 * @return Returns the created network
 	 */
-	// TODO: MAYBE NEED TO REFACTOR THIS FUNCTION TO BE CLEARER -- SEE CRAIG
 	public static NNetwork initializeNetwork(int hiddenCount, int inputCount,
 			int outputCount, String desiredOutput, List<String> tmpLines) {
-		// why is everything listen as hidden; ex: inputHiddenNodes
 		ArrayList<HiddenNode> networkHiddenNodes = new ArrayList<HiddenNode>();
-		ArrayList<Input> inputHiddenNodes = new ArrayList<Input>();
-		ArrayList<Output> outputHiddenNodes = new ArrayList<Output>();
+		ArrayList<Input> networkInputNodes = new ArrayList<Input>();
+		ArrayList<Output> networkOutputNodes = new ArrayList<Output>();
 		for (int i = 0; i < inputCount; i++) {
-			inputHiddenNodes.add(new Input(desiredOutput.split("\n")));
+			networkInputNodes.add(new Input(desiredOutput.split("\n")));
 		}
 		for (int i = 0; i < outputCount; i++) {
-			outputHiddenNodes.add(new Output());
+			networkOutputNodes.add(new Output());
 		}
-		NNetwork net = new NNetwork(inputHiddenNodes, networkHiddenNodes,
-				outputHiddenNodes, desiredOutput);
-		// TODO: Not exactly sure of the point of this - See Craig
+		NNetwork net = new NNetwork(networkInputNodes, networkHiddenNodes,
+				networkOutputNodes, desiredOutput);
 		for (int i = 0; i < hiddenCount; i++) {
 			HiddenNode Hidden = new HiddenNode();
-			Hidden.addManyInputNodes(inputHiddenNodes, net);
-			Hidden.addManyOutputNodes(outputHiddenNodes, net);
-			networkHiddenNodes.add(Hidden);
+			Hidden.addManyInputNodes(networkInputNodes, net);
+			Hidden.addManyOutputNodes(networkOutputNodes, net);
+			networkHiddenNodes.add(Hidden); //TODO: Possibly redundant -- do we add hidden nodes to network elsewhere based on a list?
 		}
 		for (String s : tmpLines) {
 			HiddenNode hiddenNode = NetworkUtil.createHidden(s, net);
@@ -133,7 +130,7 @@ public class NetworkUtil {
 	 *            Network to which the nodes belong
 	 * @return Returns color to represent weight based on current weight
 	 */
-	// TODO: ADD FUNCTIONALITY FOR HIDDEN NODES TO BE CONNECTED TO EACH OTHER
+	// TODO: Dylan: ADD FUNCTIONALITY FOR HIDDEN NODES TO BE CONNECTED TO EACH OTHER
 	// UPON CREATION AS DONE WITH INPUT AND OUTPUT NODES
 	public static HiddenNode createHidden(String incomingData,
 			NNetwork parentNetwork) {
@@ -146,13 +143,13 @@ public class NetworkUtil {
 			hiddenOut.addManyOutputNodes(
 					parentNetwork.getOutputNodesInNetwork(), parentNetwork);
 		if (TestUtil.HiddenNodesExist(parentNetwork))
-			hiddenOut.setHiddenValueInNode(new Value(incomingData),
-					NodeType.INPUT);
+			hiddenOut.setNodeData(incomingData);
 
 		return hiddenOut;
 	}
 
 	@Deprecated
+	//Deprecated on 3/16/14
 	public static Synapse randomizeSynapse(NNetwork parentNetwork,
 			Synapse synapseToRandomize) {
 		Synapse randSynapse = synapseToRandomize.clone();

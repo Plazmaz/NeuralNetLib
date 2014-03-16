@@ -39,39 +39,48 @@ public class NNetwork {
 		this.desiredOutput = desiredOutput;
 	}
 
-	// TODO: DO WE NEED THIS?
+	@Deprecated
+	// Deprecated on 3/16
 	public NNetwork(String desiredOutput) {
 		this.desiredOutput = desiredOutput;
 	}
 
-	// TODO: DOES THIS ADD A NODE TO NETWORK OR ADD A NODE TO THE LIST OF OUTPUT
-	// NODES IN THE NETWORK? ALSO HAS A SIMILAR FUNCTION IN HIDDEN NODE
+	// TODO: Combine into addManyNodesToNetwork
 	public void addOutputNodeToNetwork(Output out) {
 		networkOutputs.add(out);
 	}
 
-	// TODO: DOES THIS ADD A NODE TO NETWORK OR ADD A NODE TO THE LIST OF OUTPUT
-	// NODES IN THE NETWORK? ALSO HAS A SIMILAR FUNCTION IN HIDDEN NODE
+	// TODO: Combine into addManyNodesToNetwork
 	public void addInputNodeToNetwork(Input in) {
 		networkInputs.add(in);
 	}
 
-	// TODO: SIMILAR FUNCTION 'addManyInputNodes' EXISTS IN HIDDEN NODE. -- I
-	// believe we should consolidate the add functions to either NNetwork or
-	// NetworkUtil
+	// TODO: Combine into addManyNodesToNetwork
 	public void addManyInputNodesToNetwork(ArrayList<Input> inputs) {
 		for (Input input : inputs) {
 			addInputNodeToNetwork(input);
 		}
 	}
 
-	// TODO: SIMILAR FUNCTION 'addManyOutputNodes' EXISTS IN HIDDEN NODE -- I
-	// believe we should consolidate the add functions to either NNetwork or
-	// NetworkUtil
+	// TODO: Combine into addManyNodesToNetwork
 	public void addManyOutputNodesToNetwork(ArrayList<Output> outputs) {
 		for (Output output : outputs) {
 			addOutputNodeToNetwork(output);
 		}
+	}
+
+	/**
+	 * Add the passed hidden node to the list of all hidden nodes in the network
+	 * 
+	 * @param Hidden
+	 *            The node that needs to be added to the network
+	 */
+	public void addHiddenNodeToNetwork(HiddenNode Hidden) {
+		for (Synapse synapse : Hidden.getNodeConnections()) {
+			if (!networkSynapses.contains(synapse))
+				networkSynapses.add(synapse);
+		}
+		networkHidden.add(Hidden);
 	}
 
 	/**
@@ -81,8 +90,7 @@ public class NNetwork {
 	 * @param HiddenNodes
 	 *            The list of nodes that need to be added to the network
 	 */
-	// TODO: Why does this one not have a parent network passed as a variable
-	// but the other fucntions that add input/output nodes do
+	// TODO: Combine into addManyNodesToNetwork
 	public void addManyHiddenNodesToNetwork(ArrayList<HiddenNode> HiddenNodes) {
 		for (HiddenNode Hidden : HiddenNodes) {
 			addHiddenNodeToNetwork(Hidden);
@@ -133,23 +141,8 @@ public class NNetwork {
 		return networkOutputs;
 	}
 
-	/**
-	 * Add the passed hidden node to the list of all hidden nodes in the network
-	 * 
-	 * @param Hidden
-	 *            The node that needs to be added to the network
-	 */
-	// TODO: Why no add input/output nodes - Why arent the other functions that
-	// do this here in NNetwork
-	public void addHiddenNodeToNetwork(HiddenNode Hidden) {
-		for (Synapse synapse : Hidden.getNodeConnections()) {
-			if (!networkSynapses.contains(synapse))
-				networkSynapses.add(synapse);
-		}
-		networkHidden.add(Hidden);
-	}
-
 	@Deprecated
+	// Deprecated on 3/07/14
 	public void randomizeConnections() {
 		networkSynapses.clear();
 		for (HiddenNode hidden : networkHidden) {
@@ -164,7 +157,7 @@ public class NNetwork {
 	/**
 	 * Finds all of the input, hidden, and output nodes and then connects them
 	 */
-	// TODO: Is this being done randomly?
+	// TODO: Dylan: Clean up -- "Looks Terrible" - said Dylan
 	public void connectAll() {
 		for (Node node : getNodesInNetwork()) {
 			for (HiddenNode node2 : getHiddenNodesInNetwork()) {
@@ -178,26 +171,14 @@ public class NNetwork {
 
 				if (allowProgression)
 					node.connectNodeToNode(node2,
-							NNLib.MAX_CONNECTION_WEIGHT / 2, this); // TODO:
-																	// Issue:
-																	// WHERE
-																	// DOES
-																	// 'connectNodeToNode'
-																	// come
-																	// from!?!?
+							NNLib.MAX_CONNECTION_WEIGHT / 2, this);
 			}
 			for (Input inNode : getInputNodesInNetwork()) {
 				if (inNode.getNodeVariety() != node.getNodeVariety()
 						&& node.getNodeVariety() != NodeType.OUTPUT) {
 
 					inNode.connectNodeToNode(node,
-							NNLib.MAX_CONNECTION_WEIGHT / 2, this); // TODO:
-																	// Issue:
-																	// WHERE
-																	// DOES
-																	// 'connectNodeToNode'
-																	// come
-																	// from!?!?
+							NNLib.MAX_CONNECTION_WEIGHT / 2, this);
 					if (node.getNodeVariety() == NodeType.INPUT)
 						System.out.println();
 				}
@@ -236,27 +217,6 @@ public class NNetwork {
 		double percentMatch = StringUtil.calculateStringSimilarityPercentage(
 				netOut, desiredOutput);
 		return percentMatch * 100;
-	}
-
-	/**
-	 * Checks to see the status of learning mode for the network
-	 * 
-	 * @return the boolean status of the networks learning mode
-	 */
-	public boolean isNetworkInLearningMode() {
-		return isLearningMode;
-	}
-
-	/**
-	 * Sets the networks learning mode to the boolean value contained int he
-	 * parameter
-	 * 
-	 * @param isLearningMode
-	 *            The boolean value that the networks isLearningMode will be set
-	 *            to.
-	 */
-	public void setNetworkLearningMode(boolean isLearningMode) {
-		this.isLearningMode = isLearningMode;
 	}
 
 	/**

@@ -27,11 +27,8 @@ public class Output extends Node {
 	/**
 	 * Get the value of this output
 	 * 
-	 * @return The power/value of the output. --may not be accurate currently
-	 *         3/10/14
+	 * @return The value of the output.
 	 */
-	// TODO: how can you be sure information contains only the output value that
-	// we need?
 	public Value getOutputValue() {
 		return information;
 	}

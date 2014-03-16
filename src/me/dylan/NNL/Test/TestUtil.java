@@ -89,8 +89,7 @@ public class TestUtil {
 	 * network Outputs the findings to console
 	 * 
 	 */
-
-	// TODO: ****** To Upgrade: ******
+	// TODO: Dylan: ****** To Upgrade: ******
 	// Update to return the node count to the visualizer
 	// Print the results in the visualizer window
 	public static void WhatNodesExist(NNetwork networkToCheck) {

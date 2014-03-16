@@ -41,12 +41,9 @@ public class StringUtil {
 			pairs[Math.round(i / 3)] = str.substring(i, i + 3);
 		}
 		if (numPairs % 3 != 0) {
-			for (int i = 0; i < (numPairs % 3); i++) { // overflow
-				// letters(single
+			for (int i = 0; i < (numPairs % 3); i++) {
 				pairs[roundedPairCount + i] = ""
-						+ str.charAt(roundedPairCount + i); // and
-				// double
-				// pairs)
+						+ str.charAt(roundedPairCount + i);
 			}
 		}
 		ArrayList<String> formatTemp = new ArrayList<String>();
@@ -84,9 +81,6 @@ public class StringUtil {
 	 *            second string to be compared to first
 	 * @return The percentage of match
 	 */
-
-	// TODO: Can we rename these strings are is this copied from that link
-	// above?
 	public static double calculateStringSimilarityPercentage(String a, String b) {
 		return compareStrings(a, b);
 	}

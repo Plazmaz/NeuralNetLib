@@ -53,17 +53,14 @@ public class Node {
 	 * Connects the nodes to each other
 	 * 
 	 * @param destination
-	 *            TODO: Is destination being used to represent the node its
-	 *            being connected to? If so, why do we not take in the origin
-	 *            node as well?
+	 *            The node that will receive the pulse of data
 	 * @param weight
 	 *            The value that will be used to determine the weight of the
 	 *            synapse connecting the nodes
 	 * @param parentNetwork
 	 *            The network that the node will be added to.
 	 */
-	// TODO: DONT WE CONNECT NODES ELSEWHERE?
-	// TODO: WE SHOULD BE WEIGHT CHECKING ELSEWHERE -- WHY HERE?
+	// TODO: Dylan: Move weight checking to synapse
 	public void connectNodeToNode(Node destination, double weight,
 			NNetwork parentNetwork) {
 		if (weight > NNLib.MAX_CONNECTION_WEIGHT) {
@@ -95,8 +92,8 @@ public class Node {
 	 * @param nodeToDisconnect
 	 *            The node that is to be disconnected from all other nodes
 	 */
-	// TODO: If we are disconnecting this node from all other nodes, shouldn't
-	// we delete the node?
+	// TODO: May need to be changed when we convert code to Synapse based vs
+	// Node based
 	public void disconnectNode(Node nodeToDisconnect) {
 		ArrayList<Synapse> synapsesClone = (ArrayList<Synapse>) connections
 				.clone();
@@ -134,8 +131,6 @@ public class Node {
 		return connections;
 	}
 
-	// TODO: Not sure what information is.. and not sure where it gets set. Not
-	// sure what the "Value" type is either.
 	public Value getNodeInfo() {
 		return information;
 	}
@@ -155,11 +150,9 @@ public class Node {
 			this.originalValue = new Value(info);
 		}
 	}
-	/**
-	 * 
-	 * @param backwards
-	 * @return
-	 */
+
+	@Deprecated
+	// Deprecated on 3/16
 	public ArrayList<Node> traceBack(boolean backwards) {
 		ArrayList<Node> trace = new ArrayList<Node>();
 		trace.add(this);
@@ -171,12 +164,15 @@ public class Node {
 		}
 		return trace;
 	}
+
 	/**
 	 * 
 	 * @param backwards
 	 * @param parentNetwork
 	 * @return
 	 */
+	@Deprecated
+	// Deprecated on 3/16
 	public ArrayList<Synapse> traceBackSynapses(boolean backwards,
 			NNetwork parentNetwork) {
 		ArrayList<Synapse> validConnections = new ArrayList<Synapse>();
@@ -203,9 +199,6 @@ public class Node {
 	 *            data, to carry to the next node
 	 */
 
-	// TODO: SHOULDNT WE BE CHECKING IF THE NODE HAS PULSED, NOT THE SYNAPSE
-	// LINE? -- MAY BE ISSUE BECAUSE SYNAPSES CAN PULSE BOTH WAYS, SO IT COULD
-	// HAVE PULSED BUT NEEDS TO ALSO RECEIVE A PULSE
 	public void spikeWithInput(Synapse dataLine) {
 		if (dataLine.hasPulsedInTick)
 			return;
@@ -215,13 +208,14 @@ public class Node {
 						dataLine.desiredOutput);
 		Synapse newDataLine;
 		if (mostRecentStringMatchPercentage < dataLine.percentMatchAtOrigin) {
+			// TODO: Possibly root of problem -- Maybe Change if to:
+			// dataLine.setPulseBack(!dataLine.doesPulseBack);
 			if (!dataLine.doesPulseBack()) {
 				dataLine.setPulseBack(true);
 			}
-			// dataLine.setPulseBack(!dataLine.doesPulseBack())
 
-			// TODO: Pretty sure we could combine from here down to the 'TO
-			// HERE' into a function. Lots of repeated code
+			// TODO: Dylan: Take code from here down to comment and make
+			// function somehow
 			dataLine.setSynapseWeight(dataLine.getSynapseWeight()
 					- NNLib.WEIGHT_DECREASE_ON_MISMATCH);
 			setNodeData(originalNodeInfo);
@@ -296,25 +290,4 @@ public class Node {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-
-	// @Deprecated
-	// public ArrayList<Synapse> traceBackSynapses(boolean backwards) {
-	// boolean hasConnection = false;
-	// ArrayList<Synapse> trace = new ArrayList<Synapse>();
-	// for (Synapse connection : getNodeConnections()) {
-	// hasConnection = true;
-	// Node node = backwards ? connection.getConnectionDestination()
-	// : connection.getConnectionOrigin();
-	// if (!trace.contains(connection)) {
-	// trace.add(connection);
-	// ArrayList<Synapse> returnTrace = node.traceBackSynapses(backwards);
-	// if(returnTrace.isEmpty())
-	// return trace;
-	// trace.addAll(returnTrace);
-	// }
-	// }
-	// if(!hasConnection)
-	// return null;
-	// return trace;
-	// }
 }

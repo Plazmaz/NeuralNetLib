@@ -26,8 +26,6 @@ public class Input extends Node {
 		if (getNodeInfo().getData().isEmpty())
 			setNodeData(originalInfo);
 		outInfoQueue = getNodeInfo().getData().split("\n");
-		// if(dataLine.doesPulseBack())
-		// this.infoIndex = 0;
 		activateInputNode();
 	}
 
@@ -36,13 +34,8 @@ public class Input extends Node {
 	 * to activate it. Then sorts the list.
 	 * 
 	 */
-	// TODO: Examine code with Dylan -- Not sure exactly whats going on or if
-	// the while loop is actually useful
-	// TODO: Dont we have multiple of these compare functions all over the
-	// place? Shouldnt be combine them?
 	public void activateInputNode() {
 		if (infoIndex >= outInfoQueue.length) {
-			// cleanupDamage(null);
 			return;
 		}
 		System.out.println("Succesfully stimulated input node");
@@ -61,15 +54,14 @@ public class Input extends Node {
 		Collections.sort(getNodeConnections(), new Comparator<Synapse>() {
 
 			@Override
+			// TODO: DYLAN: Compare Function Below -- Merge with rest
 			public int compare(Synapse synA, Synapse synB) {
 				return (int) (synA.getSynapseWeight() - synB.getSynapseWeight());
 			}
 
 		});
 		getNodeConnections().get(0).getConnectionDestination()
-				.spikeWithInput(getNodeConnections().get(0)); // Problem
-		// line
-		// setActive(false);
+				.spikeWithInput(getNodeConnections().get(0)); 
 		infoIndex++;
 	}
 
@@ -100,12 +92,5 @@ public class Input extends Node {
 	public void deactivateInputNode() {
 		cleanupDamage(null);
 		setActive(false);
-
 	}
-
-	// TODO: How is this different then setInformation above?
-	public void appendInfo(String info) {
-		this.information.setValue(info);
-	}
-
 }
