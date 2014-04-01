@@ -4,17 +4,18 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import me.dylan.NNL.NNLib.NodeType;
 import me.dylan.NNL.Utils.StringUtil;
 import me.dylan.NNL.Visualizer.NodePaint;
 
 public class Node {
-	private ArrayList<Synapse> connections = new ArrayList<Synapse>();
+//	private ArrayList<Synapse> connections = new ArrayList<Synapse>();
+	private HashMap<Node, Double> connectedNodes = new HashMap<Node, Double>();
 	protected NodeType nodeVariety;
 	public static final int NODE_DRAW_SIZE = 10;
 	public static int NODE_COUNT = 0;
-	int maxDataStorage = 5000; // this is in words delimited by spaces
 	public NodePaint graphicsRepresentationObject = new NodePaint(
 			NODE_DRAW_SIZE, Color.GREEN);
 	protected Value information = new Value();
@@ -38,15 +39,12 @@ public class Node {
 	 *            The node to be connected
 	 */
 	public void connectWithRandomWeight(Node destination, NNetwork parentNetwork) {
-		int weight = NNLib.GLOBAL_RANDOM.nextInt(NNLib.MAX_CONNECTION_WEIGHT);
+		double weight = NNLib.GLOBAL_RANDOM.nextInt(NNLib.MAX_CONNECTION_WEIGHT);
 		if (weight > NNLib.MAX_CONNECTION_WEIGHT) {
 			weight = NNLib.MAX_CONNECTION_WEIGHT;
 		}
-		Synapse connection = new Synapse(this, destination, weight,
-				parentNetwork.desiredOutput);
-		this.connections.add(connection);
-		destination.connections.add(connection);
-		parentNetwork.addSynapse(connection);
+		connectedNodes.put(destination, weight);
+//		parentNetwork.addSynapse(connection);
 	}
 
 	/**
@@ -66,11 +64,11 @@ public class Node {
 		if (weight > NNLib.MAX_CONNECTION_WEIGHT) {
 			weight = NNLib.MAX_CONNECTION_WEIGHT;
 		}
-		Synapse connection = new Synapse(this, destination, weight,
-				parentNetwork.desiredOutput);
-		this.connections.add(connection);
-		parentNetwork.addSynapse(connection);
-		destination.connections.add(connection);
+//		Synapse connection = new Synapse(this, destination, weight,
+//				parentNetwork.desiredOutput);
+		this.connectedNodes.put(destination, weight);
+//		parentNetwork.addSynapse(connection);
+//		destination.connections.add(connection);
 	}
 
 	/**
@@ -80,30 +78,33 @@ public class Node {
 	 * @param bridge
 	 *            The synapse that is to be disconnected on both sides
 	 */
-	public void disconnectNode(Synapse bridge) {
-		bridge.getConnectionDestination().connections.remove(bridge);
-		bridge.getConnectionOrigin().connections.remove(bridge);
-	}
+//	public void disconnectNode(Synapse bridge) {
+//		bridge.getConnectionDestination().connections.remove(bridge);
+//		bridge.getConnectionOrigin().connections.remove(bridge);
+//	}
 
-	/**
-	 * Takes the passed node and disconnects it from all other nodes by
-	 * disconnecting the synapses
-	 * 
-	 * @param nodeToDisconnect
-	 *            The node that is to be disconnected from all other nodes
-	 */
+	public void disconnectNode(Node connected) {
+		this.connectedNodes.remove(connected);
+	}
+//	/**
+//	 * Takes the passed node and disconnects it from all other nodes by
+//	 * disconnecting the synapses
+//	 * 
+//	 * @param nodeToDisconnect
+//	 *            The node that is to be disconnected from all other nodes
+//	 */
 	// TODO: May need to be changed when we convert code to Synapse based vs
 	// Node based
-	public void disconnectNode(Node nodeToDisconnect) {
-		ArrayList<Synapse> synapsesClone = (ArrayList<Synapse>) connections
-				.clone();
-		for (Synapse nodeBridge : synapsesClone) {
-			if (nodeBridge.getConnectionDestination().equals(nodeToDisconnect)) {
-				nodeBridge.getConnectionOrigin().disconnectNode(nodeBridge);
-				connections.remove(nodeBridge);
-			}
-		}
-	}
+//	public void disconnectNode(Node nodeToDisconnect) {
+//		ArrayList<Synapse> synapsesClone = (ArrayList<Synapse>) connections
+//				.clone();
+//		for (Synapse nodeBridge : synapsesClone) {
+//			if (nodeBridge.getConnectionDestination().equals(nodeToDisconnect)) {
+//				nodeBridge.getConnectionOrigin().disconnectNode(nodeBridge);
+//				connections.remove(nodeBridge);
+//			}
+//		}
+//	}
 
 	public void paint(int x, int y) {
 		if (this.nodeVariety == NodeType.OUTPUT) {
@@ -127,9 +128,9 @@ public class Node {
 	 * @return connections The arraylist that contains all of the current
 	 *         connections for the node.
 	 */
-	public ArrayList<Synapse> getNodeConnections() {
-		return connections;
-	}
+//	public ArrayList<Synapse> getNodeConnections() {
+//		return connections;
+//	}
 
 	public Value getNodeInfo() {
 		return information;
@@ -151,19 +152,6 @@ public class Node {
 		}
 	}
 
-	@Deprecated
-	// Deprecated on 3/16
-	public ArrayList<Node> traceBack(boolean backwards) {
-		ArrayList<Node> trace = new ArrayList<Node>();
-		trace.add(this);
-		for (Synapse connection : getNodeConnections()) {
-			Node node = backwards ? connection.getConnectionDestination()
-					: connection.getConnectionOrigin();
-			if (!trace.contains(node))
-				trace.addAll(node.traceBack(backwards));
-		}
-		return trace;
-	}
 
 	/**
 	 * 
@@ -199,7 +187,7 @@ public class Node {
 	 *            data, to carry to the next node
 	 */
 
-	public void spikeWithInput(Synapse dataLine) {
+	/*public void spikeWithInput(Synapse dataLine) {
 		if (dataLine.hasPulsedInTick)
 			return;
 		String originalNodeInfo = getNodeInfo().getData();
@@ -242,31 +230,15 @@ public class Node {
 	}
 
 	/**
-	 * Takes the passed synapse and resets the state to not having pulsed, and
-	 * not
-	 * 
-	 * @param connectionToIgnore
-	 */
-	public void cleanupDamage(Synapse connectionToIgnore) {
-
-		for (Synapse netConnection : getNodeConnections()) {
-			if (!netConnection.equals(connectionToIgnore)) {
-				netConnection.hasPulsedInTick = false;
-				netConnection.setPulseBack(false);
-			}
-		}
-	}
-
-	/**
 	 * Takes all of the current synapses and arranges them in a list by their
 	 * weight. This does not affect the connections of the synapses
 	 */
 	public void sortConnectionsByWeight() {
-		Collections.sort(getNodeConnections(), new Comparator<Synapse>() {
+		Collections.sort(new ArrayList<Double>(connectedNodes.values()), new Comparator<Double>() {
 
 			@Override
-			public int compare(Synapse synA, Synapse synB) {
-				return (int) (synA.getSynapseWeight() - synB.getSynapseWeight());
+			public int compare(Double weightA, Double weightB) {
+				return (int) (weightA - weightB);
 			}
 		});
 	}
@@ -289,5 +261,9 @@ public class Node {
 	 */
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	
+	public HashMap<Node, Double> getConnectedNodes() {
+	    return connectedNodes;
 	}
 }

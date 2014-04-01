@@ -79,27 +79,10 @@ public class HiddenNode extends Node {
 	 * After finding a synapse it checks to make sure that
 	 */
 	public void doTick() {
-		Collections.sort(getNodeConnections(), new Comparator<Synapse>() {
+		sortConnectionsByWeight();
 
-			@Override
-			public int compare(Synapse synA, Synapse synB) {
-				return (int) (synA.getSynapseWeight() - synB.getSynapseWeight());
-			}
-
-		});
-
-		int i = 0;
-		Synapse outLine = null;
+//		getNodeConnections().get(0);
 		// TODO: DYLAN: Really similar to code below -- see 'todo' a few lines down
-		while (i == 0 || outLine.hasPulsedInTick
-				|| outLine.getConnectionDestination().equals(this)) {
-
-			outLine = getNodeConnections().get(i);
-			if (i >= getNodeConnections().size()) {
-				break;
-			}
-			i++;
-		}
 		//TODO: DO NOTE DELETE CURRENTLY --- TESTING IF USED
 		/*if (i == 0) {
 			// TODO: Same as above
@@ -112,86 +95,22 @@ public class HiddenNode extends Node {
 			}
 		}*/
 		// TODO: Dylan: Add a check for input
-		if (outLine.getConnectionDestination().getNodeVariety() == NodeType.HIDDEN) {
-			if (this.isActive()) {
-				outLine.getConnectionDestination().spikeWithInput(outLine);
-				System.out.println("Pulsed to Hidden "
-						+ +outLine.getConnectionDestination().nodeID
-						+ " from Hidden " + nodeID);
-			}
-		} else if (outLine.getConnectionDestination().getNodeVariety() == NodeType.OUTPUT) {
-			if (this.isActive()) {
-				System.out.println("Pulsed to Output "
-						+ outLine.getConnectionDestination().getNodeInfo()
-						+ " from " + getNodeInfo());
-				((Output) outLine.getConnectionDestination())
-						.putOrMove(outLine);
-			}
-		}
+//		if (outLine.getConnectionDestination().getNodeVariety() == NodeType.HIDDEN) {
+//			if (this.isActive()) {
+//				outLine.sendDataPulse(getNodeInfo());
+//				System.out.println("Pulsed to Hidden "
+//						+ +outLine.getConnectionDestination().nodeID
+//						+ " from Hidden " + nodeID);
+//			}
+//		} else if (outLine.getConnectionDestination().getNodeVariety() == NodeType.OUTPUT) {
+//			if (this.isActive()) {
+//				System.out.println("Pulsed to Output "
+//						+ outLine.getConnectionDestination().getNodeInfo()
+//						+ " from " + getNodeInfo());
+//				((Output) outLine.getConnectionDestination())
+//						.putOrMove(outLine);
+//			}
+//		}
 	}
 
-	/**
-	 * Takes the active network that it is passed, and randomly connects all
-	 * nodes to each other
-	 * 
-	 * @param parentNet
-	 *            The network which does not currently have synapses connecting
-	 *            the nodes
-	 */
-	@Deprecated
-	public void randomizeNodeConnections(NNetwork parentNet) {
-		Random rand = NNLib.GLOBAL_RANDOM;
-		for (Input in : datain) {
-			in.disconnectNode(this);
-		}
-		for (Output out : dataout) {
-			out.disconnectNode(this);
-		}
-		getNodeConnections().clear();
-		if (!parentNet.getInputNodesInNetwork().isEmpty()) {
-			for (int i = 0; i < parentNet.getInputNodesInNetwork().size(); i++) {
-				if (rand.nextInt(101) <= NNLib.CHANCE_FOR_IO_CONNECTION
-						|| parentNet.getInputNodesInNetwork().get(i)
-								.getNodeConnections().isEmpty()) {
-
-					addSingleInputNode(parentNet.getInputNodesInNetwork()
-							.get(i), parentNet);
-				}
-			}
-		}
-
-		if (!parentNet.getOutputNodesInNetwork().isEmpty()) {
-			for (int i = 0; i < parentNet.getOutputNodesInNetwork().size(); i++) {
-				if (rand.nextInt(101) <= NNLib.CHANCE_FOR_IO_CONNECTION
-						|| parentNet.getOutputNodesInNetwork().get(i)
-								.getNodeConnections().isEmpty()) {
-
-					addSingleOutputNode(parentNet.getOutputNodesInNetwork()
-							.get(i), parentNet);
-				}
-			}
-		}
-		if (!parentNet.getHiddenNodesInNetwork().isEmpty())
-			for (int i = 0; i < parentNet.getHiddenNodesInNetwork().size(); i++) {
-				if (rand.nextInt(101) <= NNLib.CHANCE_FOR_HIDDEN_CONNECTION)
-					connectWithRandomWeight(parentNet.getHiddenNodesInNetwork()
-							.get(i), parentNet);
-			}
-
-	}
-
-	/**
-	 * Gets all nodes connected to the current node
-	 * 
-	 * @return List of nodes
-	 */
-	public ArrayList<Node> getConnectedNodes() {
-		ArrayList<Node> nodes = new ArrayList<Node>();
-		for (Synapse synapse : getNodeConnections()) {
-			Node companion = synapse.getConnectionDestination().equals(this) ? synapse
-					.getConnectionDestination() : synapse.getConnectionOrigin();
-			nodes.add(companion);
-		}
-		return nodes;
-	}
 }

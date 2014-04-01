@@ -76,10 +76,6 @@ public class NNetwork {
 	 *            The node that needs to be added to the network
 	 */
 	public void addHiddenNodeToNetwork(HiddenNode Hidden) {
-		for (Synapse synapse : Hidden.getNodeConnections()) {
-			if (!networkSynapses.contains(synapse))
-				networkSynapses.add(synapse);
-		}
 		networkHidden.add(Hidden);
 	}
 
@@ -141,18 +137,6 @@ public class NNetwork {
 		return networkOutputs;
 	}
 
-	@Deprecated
-	// Deprecated on 3/07/14
-	public void randomizeConnections() {
-		networkSynapses.clear();
-		for (HiddenNode hidden : networkHidden) {
-			hidden.randomizeNodeConnections(this);
-			for (Synapse synapse : hidden.getNodeConnections()) {
-				if (!networkSynapses.contains(synapse))
-					networkSynapses.add(synapse);
-			}
-		}
-	}
 
 	/**
 	 * Finds all of the input, hidden, and output nodes and then connects them
@@ -224,6 +208,8 @@ public class NNetwork {
 	 * 
 	 * @return the list of synapses that exist in the network
 	 */
+	@Deprecated
+	//Deprecated on 3/29
 	public ArrayList<Synapse> getNetworkSynapses() {
 		return networkSynapses;
 	}
@@ -232,6 +218,8 @@ public class NNetwork {
 	 * Creates a copy of the network synapses and then removes any synapses that
 	 * contain the value null, or are connected to a node with a null value
 	 */
+	@Deprecated
+	//Deprecated on 3/29
 	public void removeUnusedSynapses() {
 		ArrayList<Synapse> netSynapsesClone = (ArrayList<Synapse>) getNetworkSynapses()
 				.clone();
@@ -250,6 +238,8 @@ public class NNetwork {
 	/**
 	 * Removes all synapses from the network list of synapses
 	 */
+	@Deprecated
+	//Deprecated on 3/29
 	public void clearSynapses() {
 		networkSynapses.clear();
 	}
@@ -260,6 +250,8 @@ public class NNetwork {
 	 * @param synapse
 	 *            The synapse to be added to the network list
 	 */
+	@Deprecated
+	//Deprecated on 3/29
 	public void addSynapse(Synapse synapse) {
 		networkSynapses.add(synapse);
 	}
@@ -270,6 +262,8 @@ public class NNetwork {
 	 * @param connection
 	 *            The synapse to be severed and deleted
 	 */
+	@Deprecated
+	//Deprecated on 3/29
 	public void removeSynapse(Synapse connection) {
 		if (connection != null)
 			connection.severConnections();

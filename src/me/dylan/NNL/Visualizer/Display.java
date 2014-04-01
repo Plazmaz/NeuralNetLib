@@ -126,7 +126,6 @@ public class Display {
 	public static void fillRect(int x, int y, int width, int height) {
 		getGraphics().fillRect(x, y, width, height);
 	}
-
 	public static Color getDisplayBackgroundColor() {
 		return getGraphics().getColor();
 	}

@@ -19,7 +19,7 @@ public class Input extends Node {
 	/**
 	 * @see me.dylan.NNL.Node#spikeWithInput(me.dylan.NNL.Synapse)
 	 */
-	@Override
+	/*@Override
 	public void spikeWithInput(Synapse dataLine) {
 		String originalInfo = getNodeInfo().getData();
 		super.spikeWithInput(dataLine);
@@ -27,7 +27,7 @@ public class Input extends Node {
 			setNodeData(originalInfo);
 		outInfoQueue = getNodeInfo().getData().split("\n");
 		activateInputNode();
-	}
+	}*/
 
 	/**
 	 * Activates the input node after running a check to make sure that it needs
@@ -41,27 +41,21 @@ public class Input extends Node {
 		System.out.println("Succesfully stimulated input node");
 		int i = 0;
 		Synapse outLine = null;
-		while (outLine == null || outLine.hasPulsedInTick
-				|| outLine.getConnectionDestination().equals(this)) {
-			if (i >= getNodeConnections().size())
-				break;
-
-			outLine = getNodeConnections().get(i);
-			i++;
-		}
+//		while (outLine == null || outLine.hasPulsedInTick
+//				|| outLine.getConnectionDestination().equals(this)) {
+//			if (i >= getNodeConnections().size())
+//				break;
+//
+//			outLine = getNodeConnections().get(i);
+//			i++;
+//		}
 		setActive(true);
 		setNodeData(outInfoQueue[infoIndex]);
-		Collections.sort(getNodeConnections(), new Comparator<Synapse>() {
-
-			@Override
-			// TODO: DYLAN: Compare Function Below -- Merge with rest
-			public int compare(Synapse synA, Synapse synB) {
-				return (int) (synA.getSynapseWeight() - synB.getSynapseWeight());
-			}
-
-		});
-		getNodeConnections().get(0).getConnectionDestination()
-				.spikeWithInput(getNodeConnections().get(0)); 
+		sortConnectionsByWeight();
+		//TODO: Change to functional code.
+		((Node) getConnectedNodes().keySet().toArray()[0]).setNodeData(getInputData().getData());
+//		getNodeConnections().get(0).getConnectionDestination()
+//				.spikeWithInput(getNodeConnections().get(0)); 
 		infoIndex++;
 	}
 
@@ -90,7 +84,7 @@ public class Input extends Node {
 	 * and node, as well as restoring original synapse direction
 	 */
 	public void deactivateInputNode() {
-		cleanupDamage(null);
+//		cleanupDamage(null);
 		setActive(false);
 	}
 }

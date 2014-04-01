@@ -44,7 +44,7 @@ public class Output extends Node {
 	 */
 	public void putOrMove(Synapse connector) {
 		String infoData = information.getData();
-		this.spikeWithInput(connector);
+//		this.spikeWithInput();
 		String value = connector.getConnectionOrigin().getNodeInfo().getData();
 		if (!value.isEmpty() && information.getData().contains(value)) {
 			int valueIndex = infoData.indexOf(value);
@@ -59,8 +59,9 @@ public class Output extends Node {
 			System.out.println("Output invalid, backtracing.");
 			connector.setPulseBack(true);
 			connector.getConnectionOrigin().setActive(false);
-			connector.getConnectionDestination().spikeWithInput(connector);
-			cleanupDamage(connector);
+			//TODO: Change to functional code.
+//			connector.getConnectionDestination().spikeWithInput(connector);
+//			cleanupDamage(connector);
 			setNodeData("");
 
 		}
