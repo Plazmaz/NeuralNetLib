@@ -80,7 +80,11 @@ public class HiddenNode extends Node {
 	 */
 	public void doTick() {
 		sortConnectionsByWeight();
-
+		if(this.isActive()) {
+		    Node nodeOut = (Node) getConnectedNodes().keySet().toArray()[0];
+		    nodeOut.setActive(true);
+		    nodeOut.setNodeData(getNodeInfo().getData());
+		}
 //		getNodeConnections().get(0);
 		// TODO: DYLAN: Really similar to code below -- see 'todo' a few lines down
 		//TODO: DO NOTE DELETE CURRENTLY --- TESTING IF USED

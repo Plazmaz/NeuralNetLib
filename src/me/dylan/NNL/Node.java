@@ -137,7 +137,7 @@ public class Node {
 	}
 
 	/**
-	 * Takes in the information that will be assigned to a hidden node. Checks
+	 * Takes in the information that will be assigned to a node. Checks
 	 * to make sure that the node does not currently have a value, then assigns
 	 * it the value of info
 	 * 
@@ -150,30 +150,6 @@ public class Node {
 		if (this.originalValue == null) {
 			this.originalValue = new Value(info);
 		}
-	}
-
-
-	/**
-	 * 
-	 * @param backwards
-	 * @param parentNetwork
-	 * @return
-	 */
-	@Deprecated
-	// Deprecated on 3/16
-	public ArrayList<Synapse> traceBackSynapses(boolean backwards,
-			NNetwork parentNetwork) {
-		ArrayList<Synapse> validConnections = new ArrayList<Synapse>();
-		parentNetwork.removeUnusedSynapses();
-		for (Synapse synapse : parentNetwork.getNetworkSynapses()) {
-			if ((!backwards && synapse.getConnectionOrigin().equals(
-					synapse.getConnectionOrigin()))
-					|| (backwards && synapse.getConnectionDestination().equals(
-							synapse.getConnectionDestination()))) {
-				validConnections.add(synapse);
-			}
-		}
-		return validConnections;
 	}
 
 	/**
